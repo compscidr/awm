@@ -15,8 +15,6 @@ android:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
-    - 'build-tools'
-    - 'platforms'
 
 stages:
   - name: build
@@ -33,3 +31,8 @@ jobs:
       script: ./gradlew build
     - stage: release
       script: ./gradlew bintrayUpload -Dbintray.user=$bintray.user -Dbintray.key=$bintray.key -Dgpgpassphrass=$gpgpassphrase -Dbuild.number=$TRAVIS_BUILD_NUMBER
+
+before_install:
+  # Install SDK license so Android Gradle plugin can install deps.
+  - mkdir "$ANDROID_HOME/licenses" || true
+  - echo "d56f5187479451eabf01fb78af6dfcb131a6481e" > "$ANDROID_HOME/licenses/android-sdk-license"
