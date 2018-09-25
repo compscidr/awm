@@ -20,7 +20,7 @@ plugins {
 }
 
 group 'io.rightmesh'
-version '1.0.1'
+version '1.0.2'
 
 android {
     buildToolsVersion "28.0.3"
@@ -73,6 +73,18 @@ task sourceJar(type: Jar) {
     classifier "sources"
 }
 
+task javadoc(type: Javadoc) {
+    failOnError false
+    source = android.sourceSets.main.java.sourceFiles
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    classpath += configurations.compile
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
 publishing.publications {
     publicLib(MavenPublication) {
         from components.android
@@ -82,6 +94,7 @@ publishing.publications {
             version this.version
 
             artifact(sourceJar)
+            artifact(javadocJar)
 
             pom.withXml {
                 def root = asNode()
