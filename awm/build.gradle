@@ -1,3 +1,13 @@
+// bintray howto: https://reflectoring.io/guide-publishing-to-bintray-with-gradle/#create-a-repository
+// snapshots howto on oss.jfrog.org: https://reflectoring.io/publish-snapshots-with-gradle/
+// releases with jcenter and maven central: https://reflectoring.io/bintray-jcenter-maven-central/
+
+// more info on snapshots
+// https://stackoverflow.com/questions/47872069/confused-about-process-to-publish-snapshots-to-bintray
+
+// open source release chain: https://reflectoring.io/fully-automated-open-source-release-chain/
+// ci build stages: https://docs.travis-ci.com/user/build-stages/
+
 plugins {
     id 'com.android.library'
 
@@ -10,7 +20,7 @@ plugins {
 }
 
 group 'io.rightmesh'
-version '1.0.0'
+version '1.0.1'
 
 android {
     buildToolsVersion "28.0.3"
@@ -20,7 +30,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0.0"
+        versionName this.version
     }
 
     buildTypes {
@@ -58,6 +68,11 @@ def pomConfig = {
     }
 }
 
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
+}
+
 publishing.publications {
     publicLib(MavenPublication) {
         from components.android
@@ -65,6 +80,8 @@ publishing.publications {
             groupId this.group
             artifactId project.name
             version this.version
+
+            artifact(sourceJar)
 
             pom.withXml {
                 def root = asNode()
