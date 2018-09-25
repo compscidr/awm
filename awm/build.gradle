@@ -20,7 +20,7 @@ plugins {
 }
 
 group 'io.rightmesh'
-version '1.0.2'
+version '1.0.4'
 
 android {
     buildToolsVersion "28.0.3"
@@ -117,11 +117,8 @@ repositories {
 bintray {
     user = System.getProperty('bintray.user')
     key = System.getProperty('bintray.key')
+    def pphrase = System.getProperty('gpgpassphrase')
     publications = ['publicLib']
-
-    println "${user}"
-    println "${key}"
-    println "${project.name}"
 
     pkg {
         repo = 'maven'
@@ -138,7 +135,12 @@ bintray {
             vcsTag = this.version
             desc = this.version
             released  = new Date()
+            gpg {
+                sign = true
+                passphrase = pphrase
+            }
         }
     }
 
+    publish = true
 }
