@@ -6,9 +6,9 @@ import com.vanniktech.rxpermission.Permission;
 
 import java.util.Map;
 
-public abstract class StatsCollector {
+abstract class StatsCollector {
 
-    protected Bus eventBus = BusProvider.getInstance();
+    Bus eventBus = BusProvider.getInstance();
     Map<String, Permission> permissions = null;
 
     void setPermissions(Map<String, Permission> permissions) {
