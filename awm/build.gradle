@@ -13,6 +13,7 @@ group 'io.rightmesh'
 version '1.0.0'
 
 android {
+    buildToolsVersion "28.0.3"
     compileSdkVersion 28
 
     defaultConfig {
