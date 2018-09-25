@@ -5,7 +5,12 @@ plugins {
     //"configuration on demand is not supported" error. Fix is to do this:
     //https://stackoverflow.com/questions/49990933/configuration-on-demand-is-not-supported-by-the-current-version-of-the-android-g/49996317
     id 'digital.wup.android-maven-publish' version '3.6.2'
+
+    id "com.jfrog.bintray" version "1.8.4"
 }
+
+group 'io.rightmesh'
+version '1.0.0'
 
 android {
     compileSdkVersion 28
@@ -14,7 +19,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
 
     buildTypes {
@@ -31,13 +36,78 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:15.0.1'
 }
 
+def pomConfig = {
+    licenses {
+        license {
+            name "The GNU General Public License, Version 3.0"
+            url "https://www.gnu.org/licenses/gpl-3.0.en.html"
+            distribution "repo"
+        }
+    }
+    developers {
+        developer {
+            id "compscidr"
+            name "Jason Ernst"
+            email "ernstjason1@gmail.com"
+        }
+    }
+
+    scm {
+        url "https://github.com/compscidr/awm-lib"
+    }
+}
+
 publishing.publications {
     publicLib(MavenPublication) {
         from components.android
         afterEvaluate {
-            groupId 'io.rightmesh'
-            artifactId 'awm'
-            version '1.0'
+            groupId this.group
+            artifactId project.name
+            version this.version
+
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('description', '\t\n' +
+                        'Android Wireless Measurement Library aims to collect and open source wireless statistics and information in a way that does not disrupt the functioning of apps.')
+                root.appendNode('name', 'Android Wireless Measurement Library')
+                root.appendNode('url', 'https://github.com/compscidr/awm-lib')
+                root.children().last() + pomConfig
+            }
         }
     }
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    jcenter()
+}
+
+bintray {
+    user = System.getProperty('bintray.user')
+    key = System.getProperty('bintray.key')
+    publications = ['publicLib']
+
+    println "${user}"
+    println "${key}"
+    println "${project.name}"
+
+    pkg {
+        repo = 'maven'
+        name = 'awm'
+        userOrg = 'compscidr'
+        licenses = ['GPL-3.0']
+        websiteUrl = 'https://github.com/compscidr/awm-lib'
+        issueTrackerUrl = 'https://github.com/compscidr/awm-lib/issues'
+        vcsUrl = 'https://github.com/compscidr/awm-lib.git'
+        githubRepo = 'compscidr/awm-lib'
+
+        version {
+            name = this.version
+            vcsTag = this.version
+            desc = this.version
+            released  = new Date()
+        }
+    }
+
 }
