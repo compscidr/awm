@@ -115,8 +115,8 @@ repositories {
 }
 
 bintray {
-    user = System.getProperty('bintray.user')
-    key = System.getProperty('bintray.key')
+    user = System.getProperty('bintrayuser')
+    key = System.getProperty('bintraykey')
     def pphrase = System.getProperty('gpgpassphrase')
     publications = ['publicLib']
 
