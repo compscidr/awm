@@ -15,6 +15,15 @@ android:
 stages:
   - name: build
   - name: snapshot
-  if: branch = master
+    if: branch = master
   - name: release
-  if: branch = release
+    if: branch = release
+
+jobs:
+  include:
+    - stage: build
+      script: ./gradlew build
+    - stage: snapshot
+      script: ./gradlew build
+    - stage: release
+      script: ./gradlew bintrayUpload -Dbintray.user=$bintray.user -Dbintray.key=$bintray.key -Dgpgpassphrass=$gpgpassphrase -Dbuild.number=$TRAVIS_BUILD_NUMBER
