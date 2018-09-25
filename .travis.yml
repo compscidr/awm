@@ -31,8 +31,3 @@ jobs:
       script: ./gradlew build
     - stage: release
       script: ./gradlew bintrayUpload -Dbintray.user=$bintray.user -Dbintray.key=$bintray.key -Dgpgpassphrass=$gpgpassphrase -Dbuild.number=$TRAVIS_BUILD_NUMBER
-
-before_install:
-  - pwd
-  - ls -la
-  - chmod +x /.gradlew
