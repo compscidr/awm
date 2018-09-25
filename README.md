@@ -24,7 +24,18 @@ awsc.stop();
 ```
 
 ## Receiving the stats that are being collected
-The library is setup to publish RxJava events to the applications so they can receive the stats as they are being collected. Currently, there are only Bluetooth and GPS stats being collected. 
+The library is setup to publish RxJava events to the applications so they can receive the stats as they are being collected. 
+Currently, there are only Bluetooth and GPS stats being collected. 
+
+In order to receive the EventBus events you need to initailise the event bus:
+```
+protected Bus eventBus = BusProvider.getInstance();
+```
+
+and register to receive the events:
+```
+eventBus.register(this);
+```
 
 To obtain Bluetooth stats:
 ```
