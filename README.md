@@ -9,3 +9,35 @@ This project aims to collect and open source wireless statistics and information
 * how often and for how long are users within Wi-Fi or Wi-Fi direct range of each other?
 * how often and for how long are users within NFC range of each other?
 * periodically sample their network performance: throughput, delay, jitter, etc.
+
+## Using the library
+Simply construct an `AndroidWirelessStatsCollector` and call the `start()` function. You can do this in the `onCreate` call if you like.
+
+```
+awsc = new AndroidWirelessStatsCollector(getApplicationContext());
+awsc.start();
+```
+
+Then to clean up, in the onDestroy just call the `stop()` function.
+```
+awsc.stop();
+```
+
+## Receiving the stats that are being collected
+The library is setup to publish RxJava events to the applications so they can receive the stats as they are being collected. Currently, there are only Bluetooth and GPS stats being collected. 
+
+To obtain Bluetooth stats:
+```
+@Subscribe public void updateBTDevices(BluetoothStats btStats) {
+}
+```
+
+And to obtain GPS stats:
+```
+@Subscribe public void updateGPS(GPSStats gpsStats) {
+}
+```
+
+You can see an example of this data being displayed in an activity in the example project:
+https://github.com/compscidr/awm-lib-example/blob/master/app/src/main/java/io/rightmesh/awm_lib_example/MainActivity.java
+
