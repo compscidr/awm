@@ -28,9 +28,9 @@ jobs:
     - stage: build
       script: ./gradlew build
     - stage: snapshot
-      script: ./gradlew build
+      script: ./gradlew artifactoryPublish -Dsnapshot=true -Dbintrayuser=$bintrayuser -Dbintraykey=$bintraykey -Dbuild.number=$TRAVIS_BUILD_NUMBER
     - stage: release
-      script: ./gradlew bintrayUpload -Dbintray.user=$bintray.user -Dbintray.key=$bintray.key -Dgpgpassphrass=$gpgpassphrase -Dbuild.number=$TRAVIS_BUILD_NUMBER
+      script: ./gradlew bintrayUpload -Dbintrayuser=$bintrayuser -Dbintraykey=$bintraykey -Dgpgpassphrass=$gpgpassphrase -Dbuild.number=$TRAVIS_BUILD_NUMBER
 
 before_install:
   # Install SDK license so Android Gradle plugin can install deps.

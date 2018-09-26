@@ -17,10 +17,11 @@ plugins {
     id 'digital.wup.android-maven-publish' version '3.6.2'
 
     id "com.jfrog.bintray" version "1.8.4"
+    id "com.jfrog.artifactory" version "4.5.4"
 }
 
 group 'io.rightmesh'
-version '1.0.4'
+version '1.0.4' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
 android {
     buildToolsVersion "28.0.3"
@@ -143,4 +144,24 @@ bintray {
     }
 
     publish = true
+}
+
+artifactory {
+    contextUrl = 'http://oss.jfrog.org'
+    publish {
+        repository {
+            repoKey = 'oss-snapshot-local'
+            username = System.getProperty('bintrayuser')
+            password = System.getProperty('bintraykey')
+        }
+        defaults {
+            publications('mavenPublication')
+            publishArtifacts = true
+            publishPom = true
+        }
+    }
+    resolve {
+        repoKey = 'oss-snapshot-local'
+    }
+    clientConfig.info.setBuildNumber(System.getProperty('build.number'))
 }

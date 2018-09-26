@@ -1,5 +1,5 @@
-# awm-lib
-Android Wireless Measurement Library
+# awm-lib: Android Wireless Measurement Library
+![Android Build Status](https://travis-ci.com/compscidr/awm-lib.svg?branch=master)
 
 This project aims to collect and open source wireless statistics and information in a way that does not disrupt the functioning of apps, but provides useful data such as:
 
@@ -24,8 +24,8 @@ awsc.stop();
 ```
 
 ## Receiving the stats that are being collected
-The library is setup to publish RxJava events to the applications so they can receive the stats as they are being collected. 
-Currently, there are only Bluetooth and GPS stats being collected. 
+The library is setup to publish RxJava events to the applications so they can receive the stats as they are being collected.
+Currently, there are only Bluetooth and GPS stats being collected.
 
 In order to receive the EventBus events you need to initailise the event bus:
 ```
@@ -51,4 +51,3 @@ And to obtain GPS stats:
 
 You can see an example of this data being displayed in an activity in the example project:
 https://github.com/compscidr/awm-lib-example/blob/master/app/src/main/java/io/rightmesh/awm_lib_example/MainActivity.java
-
