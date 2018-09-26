@@ -11,6 +11,15 @@ This project aims to collect and open source wireless statistics and information
 * periodically sample their network performance: throughput, delay, jitter, etc.
 
 ## Using the library
+Add to your `build.gradle` file the following:
+```
+dependencies {
+  implementation 'io.rightmesh:awm:1.0.4'
+}
+```
+This has been tested with gradle 4.9 and Android Studio 3.2.
+
+
 Simply construct an `AndroidWirelessStatsCollector` and call the `start()` function. You can do this in the `onCreate` call if you like.
 
 ```
