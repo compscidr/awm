@@ -45,7 +45,9 @@ android {
 dependencies {
     implementation 'com.vanniktech:rxpermission:0.4.0'
     implementation 'com.github.anadea:rxbus:1.0.1'
-    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation ('com.google.android.gms:play-services-location:15.0.1') {
+        exclude group: "com.android.support"
+    }
 }
 
 def pomConfig = {
