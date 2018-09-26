@@ -40,12 +40,14 @@ eventBus.register(this);
 To obtain Bluetooth stats:
 ```
 @Subscribe public void updateBTDevices(BluetoothStats btStats) {
+  ...
 }
 ```
 
 And to obtain GPS stats:
 ```
 @Subscribe public void updateGPS(GPSStats gpsStats) {
+  ...
 }
 ```
 
