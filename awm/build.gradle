@@ -17,7 +17,7 @@ plugins {
     id 'digital.wup.android-maven-publish' version '3.6.2'
 
     id "com.jfrog.bintray" version "1.8.4"
-    id "com.jfrog.artifactory" version "4.5.4"
+    id "com.jfrog.artifactory" version "4.7.3"
 }
 
 group 'io.rightmesh'
@@ -74,11 +74,11 @@ task sourceJar(type: Jar) {
     classifier "sources"
 }
 
+
 task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
+    source = android.sourceSets.main.java.srcDirs
+    ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+    classpath += files(ext.androidJar)
 }
 
 task javadocJar(type: Jar, dependsOn: javadoc) {
@@ -155,7 +155,7 @@ artifactory {
             password = System.getProperty('bintraykey')
         }
         defaults {
-            publications('mavenPublication')
+            publications('publicLib')
             publishArtifacts = true
             publishPom = true
         }
