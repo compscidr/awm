@@ -22,6 +22,8 @@ public class AndroidWirelessStatsCollector {
 
     private static final String TAG = AndroidWirelessStatsCollector.class.getCanonicalName();
     private Set<StatsCollector> statsCollectors;
+    private StatsLogger statsLogger;
+
 
     //permission checking code
     private RxPermission rxPermission;
@@ -51,6 +53,8 @@ public class AndroidWirelessStatsCollector {
 
         BluetoothStatsCollector btStats = new BluetoothStatsCollector(context);
         statsCollectors.add(btStats);
+
+        statsLogger = new StatsLogger();
     }
 
     public void start() {
@@ -68,6 +72,7 @@ public class AndroidWirelessStatsCollector {
                         }
                     }
                 }));
+        statsLogger.start();
     }
 
     private void startStats() {
@@ -90,5 +95,7 @@ public class AndroidWirelessStatsCollector {
         for(StatsCollector statsInterface : statsCollectors) {
             statsInterface.stop();
         }
+
+        statsLogger.stop();
     }
 }

@@ -9,6 +9,7 @@ import java.util.List;
 public class BluetoothStats {
     public int size;
     public List<String> macs = new LinkedList<>();
+    public GPSStats position;
 
     BluetoothStats(Collection<BluetoothDevice> btDevices) {
         this.size = btDevices.size();
