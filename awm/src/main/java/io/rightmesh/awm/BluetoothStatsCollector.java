@@ -92,7 +92,7 @@ public class BluetoothStatsCollector extends StatsCollector {
                 }
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                 Log.d(TAG, "After scan found a total of " + btDevices.size() + " devices");
-                eventBus.post(new BluetoothStats(btDevices));
+                eventBus.post(new BluetoothStats(btDevices, mBluetoothAdapter.getAddress()));
                 btDevices.clear();
                 mBluetoothAdapter.startDiscovery();
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)) {

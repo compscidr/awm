@@ -8,10 +8,11 @@ import java.util.List;
 
 public class BluetoothStats {
     public int size;
-    public List<String> macs = new LinkedList<>();
+    public String mac;                                  //the device reporting the stats mac address
+    public List<String> macs = new LinkedList<>();      //the macs that were scanned nearby
     public GPSStats position;
 
-    BluetoothStats(Collection<BluetoothDevice> btDevices) {
+    BluetoothStats(Collection<BluetoothDevice> btDevices, String mac) {
         this.size = btDevices.size();
         for(BluetoothDevice device : btDevices) {
             macs.add(device.getAddress());
