@@ -23,7 +23,7 @@ This has been tested with gradle 4.9 and Android Studio 3.2.
 Simply construct an `AndroidWirelessStatsCollector` and call the `start()` function. You can do this in the `onCreate` call if you like.
 
 ```
-awsc = new AndroidWirelessStatsCollector(getApplicationContext());
+awsc = new AndroidWirelessStatsCollector(this);
 awsc.start();
 ```
 

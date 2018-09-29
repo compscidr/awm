@@ -1,9 +1,12 @@
 package io.rightmesh.awm;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.vanniktech.rxpermission.Permission;
 import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
@@ -24,8 +27,8 @@ public class AndroidWirelessStatsCollector {
     private Set<StatsCollector> statsCollectors;
     private StatsLogger statsLogger;
 
-
     //permission checking code
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 101;
     private RxPermission rxPermission;
     @NonNull final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private HashMap<String, Permission> permissionResults;
@@ -42,19 +45,31 @@ public class AndroidWirelessStatsCollector {
             Manifest.permission.INTERNET
     };
 
-    public AndroidWirelessStatsCollector(Context context) {
+    public AndroidWirelessStatsCollector(Activity activity) {
         Log.i(TAG, "Initializing Android Wireless Stats Collector");
 
         statsCollectors = new HashSet<>();
-        rxPermission = RealRxPermission.getInstance(context);
+        rxPermission = RealRxPermission.getInstance(activity.getApplicationContext());
 
-        GPSStatsCollector gpsStats = new GPSStatsCollector(context);
+
+        GPSStatsCollector gpsStats = new GPSStatsCollector(activity.getApplicationContext());
         statsCollectors.add(gpsStats);
 
-        BluetoothStatsCollector btStats = new BluetoothStatsCollector(context);
+        //bluetooth stats
+        BluetoothStatsCollector btStats = new BluetoothStatsCollector(activity.getApplicationContext());
         statsCollectors.add(btStats);
 
+        //internet stats
+        InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
+        statsCollectors.add(itStats);
+
+        //logger to server
         statsLogger = new StatsLogger();
+
+        //position stats
+        if (!checkPlayServices(activity)) {
+            Log.d(TAG, "Missing Google Play Services - GPS likely won't work.");
+        }
     }
 
     public void start() {
@@ -73,6 +88,26 @@ public class AndroidWirelessStatsCollector {
                     }
                 }));
         statsLogger.start();
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices(Activity activity) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(activity);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(activity, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+            }
+            return false;
+        }
+        return true;
     }
 
     private void startStats() {
