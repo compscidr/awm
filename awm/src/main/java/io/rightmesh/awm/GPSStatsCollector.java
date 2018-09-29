@@ -32,6 +32,7 @@ class GPSStatsCollector extends StatsCollector {
     private LocationCallback locationCallback;
 
     GPSStatsCollector(Context context) {
+
         this.context = context;
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(context);
         locationRequest = new LocationRequest();
