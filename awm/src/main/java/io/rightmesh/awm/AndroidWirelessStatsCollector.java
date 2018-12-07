@@ -30,7 +30,7 @@ public class AndroidWirelessStatsCollector {
     //permission checking code
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 101;
     private RxPermission rxPermission;
-    @NonNull final CompositeDisposable compositeDisposable = new CompositeDisposable();
+    private @NonNull final CompositeDisposable compositeDisposable = new CompositeDisposable();
     private HashMap<String, Permission> permissionResults;
     //all of the permissions that the library needs
     String[] permissions = { Manifest.permission.BLUETOOTH,
@@ -42,7 +42,8 @@ public class AndroidWirelessStatsCollector {
             Manifest.permission.CHANGE_WIFI_MULTICAST_STATE,
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_NETWORK_STATE,
-            Manifest.permission.INTERNET
+            Manifest.permission.INTERNET,
+            Manifest.permission.WAKE_LOCK
     };
 
     public AndroidWirelessStatsCollector(Activity activity) {
@@ -51,13 +52,16 @@ public class AndroidWirelessStatsCollector {
         statsCollectors = new HashSet<>();
         rxPermission = RealRxPermission.getInstance(activity.getApplicationContext());
 
-
         GPSStatsCollector gpsStats = new GPSStatsCollector(activity.getApplicationContext());
         statsCollectors.add(gpsStats);
 
         //bluetooth stats
         BluetoothStatsCollector btStats = new BluetoothStatsCollector(activity.getApplicationContext());
         statsCollectors.add(btStats);
+
+        //WiFi AP stats
+        WiFiAPStatsCollector wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext());
+        statsCollectors.add(wifiStats);
 
         //internet stats
         InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
@@ -76,15 +80,13 @@ public class AndroidWirelessStatsCollector {
         Log.i(TAG, "Checking permissions");
         permissionResults = new HashMap<>();
         compositeDisposable.add(rxPermission.requestEach(permissions)
-                .subscribe(new Consumer<Permission>() {
-                    @Override public void accept(final Permission permission) {
-                        Log.i(TAG, permission.name() + " " + permission.state());
-                        permissionResults.put(permission.name(), permission);
+                .subscribe(permission -> {
+                    Log.i(TAG, permission.name() + " " + permission.state());
+                    permissionResults.put(permission.name(), permission);
 
-                        //see if we've received all the permissions yet
-                        if(permissionResults.size() == permissions.length) {
-                            startStats();
-                        }
+                    //see if we've received all the permissions yet
+                    if(permissionResults.size() == permissions.length) {
+                        startStats();
                     }
                 }));
         statsLogger.start();
