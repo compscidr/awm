@@ -45,8 +45,12 @@ public class StatsLogger {
         eventBus.unregister(this);
 
         try {
-            bufferedWriter.close();
-            bufferedReader.close();
+            if(bufferedWriter != null) {
+                bufferedWriter.close();
+            }
+            if(bufferedReader != null) {
+                bufferedReader.close();
+            }
         } catch(IOException ex) {
             ex.printStackTrace();
         }

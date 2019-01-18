@@ -43,7 +43,8 @@ public class AndroidWirelessStatsCollector {
             Manifest.permission.ACCESS_NETWORK_STATE,
             Manifest.permission.CHANGE_NETWORK_STATE,
             Manifest.permission.INTERNET,
-            Manifest.permission.WAKE_LOCK
+            Manifest.permission.WAKE_LOCK,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     public AndroidWirelessStatsCollector(Activity activity) {
@@ -62,6 +63,10 @@ public class AndroidWirelessStatsCollector {
         //WiFi AP stats
         WiFiAPStatsCollector wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext());
         statsCollectors.add(wifiStats);
+
+        //WiFi Direct stats
+        WiFiDirectStatsCollector wifiDirectStats = new WiFiDirectStatsCollector(activity.getApplicationContext());
+        statsCollectors.add(wifiDirectStats);
 
         //internet stats
         InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
