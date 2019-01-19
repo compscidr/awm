@@ -14,7 +14,7 @@ This project aims to collect and open source wireless statistics and information
 Add to your `build.gradle` file the following:
 ```
 dependencies {
-  implementation 'io.rightmesh:awm:1.0.4'
+  implementation 'io.rightmesh:awm:1.0.5'
 }
 ```
 This has been tested with gradle 4.9 and Android Studio 3.2.
