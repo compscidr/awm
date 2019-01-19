@@ -17,7 +17,7 @@ dependencies {
   implementation 'io.rightmesh:awm:1.0.5'
 }
 ```
-This has been tested with gradle 4.9 and Android Studio 3.2.
+This has been tested with gradle 4.9 and Android Studio 3.3.
 
 
 Simply construct an `AndroidWirelessStatsCollector` and call the `start()` function. You can do this in the `onCreate` call if you like.
