@@ -53,6 +53,13 @@ To obtain Bluetooth stats:
 }
 ```
 
+To obtain Wi-Fi hotspots:
+```
+@Subscribe public void updateWiFiDevices(WiFiStats wifiStats) {
+    ...
+}
+```
+
 And to obtain GPS stats:
 ```
 @Subscribe public void updateGPS(GPSStats gpsStats) {
