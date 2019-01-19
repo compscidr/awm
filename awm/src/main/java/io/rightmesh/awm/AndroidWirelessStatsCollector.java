@@ -53,6 +53,7 @@ public class AndroidWirelessStatsCollector {
         statsCollectors = new HashSet<>();
         rxPermission = RealRxPermission.getInstance(activity.getApplicationContext());
 
+        //get position so we can log where we are encountering what devices
         GPSStatsCollector gpsStats = new GPSStatsCollector(activity.getApplicationContext());
         statsCollectors.add(gpsStats);
 
@@ -72,7 +73,7 @@ public class AndroidWirelessStatsCollector {
         InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
         statsCollectors.add(itStats);
 
-        //logger to server
+        //logger to disk and server
         statsLogger = new StatsLogger();
 
         //position stats

@@ -25,12 +25,12 @@ public class StatsLogger {
 
     private static final String TAG = StatsLogger.class.getCanonicalName();
 
-    Bus eventBus = BusProvider.getInstance();
-    GPSStats lastPosition = new GPSStats(0,0);
-    BufferedWriter bufferedWriter;
-    BufferedReader bufferedReader;
+    private Bus eventBus = BusProvider.getInstance();
+    private GPSStats lastPosition = new GPSStats(0,0);
+    private BufferedWriter bufferedWriter;
+    private BufferedReader bufferedReader;
 
-    public void start() {
+    void start() {
         try {
             bufferedWriter = new BufferedWriter(new FileWriter("data.dat", true));
             bufferedReader = new BufferedReader(new FileReader("data.dat"));
@@ -41,7 +41,7 @@ public class StatsLogger {
         eventBus.register(this);
     }
 
-    public void stop() {
+    void stop() {
         eventBus.unregister(this);
 
         try {
@@ -59,13 +59,25 @@ public class StatsLogger {
     @Subscribe
     public void updateBTDevices(BluetoothStats btStats) {
         btStats.setPosition(lastPosition);
-        logNetwork(btStats);
+
+        try {
+            logDisk(btStats);
+        } catch(IOException ex) {
+            Log.e(TAG, "Couldn't write to log file, measurement lost: " + ex.toString());
+        }
+        //logNetwork(btStats);
     }
 
     @Subscribe
     public void updateWiFiStats(WiFiStats wiFiStats) {
         wiFiStats.setPosition(lastPosition);
-        logNetwork(wiFiStats);
+
+        try {
+            logDisk(wiFiStats);
+        } catch(IOException ex) {
+            Log.e(TAG, "Couldn't write to log file, measurement lost: " + ex.toString());
+        }
+        //logNetwork(wiFiStats);
     }
 
     @Subscribe
@@ -73,9 +85,64 @@ public class StatsLogger {
         lastPosition = gpsStats;
     }
 
-    //used to log to disk in case the network fails
-    private void logDisk(NetworkStat networkStat) {
+    /**
+     * Used to log to disk in case the network fails
+     */
+    private void logDisk(NetworkStat networkStat) throws IOException {
 
+        String outputString;
+        if(networkStat instanceof BluetoothStats) {
+            outputString = "  \t\"bt\": [\n";
+        } else if (networkStat instanceof WiFiStats) {
+            outputString = "  \t\"wifi\": [\n";
+        } else {
+            Log.e(TAG, "Unknown stats instance. Can't log to disk. ignoring");
+            return;
+        }
+        outputString = outputString + "  \t\t[" + networkStat.getPosition().longitude
+                + " , " + networkStat.getPosition().latitude + ", "
+                + networkStat.getSize() + "]\n\t]\n";
+        bufferedWriter.write(outputString);
+    }
+
+    /**
+     * Attempts to upload the saved stats to the server.
+     */
+    private void uploadDisk() {
+        Runnable sendData = () -> {
+            try {
+                URL url = new URL("https://test.rightmesh.io/");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                String jsondata = "{\n" +
+                        "  \"stats\": {\n";
+
+                String line = bufferedReader.readLine();
+                while(line != null) {
+                    jsondata = jsondata.concat(line);
+                    line = bufferedReader.readLine();
+                }
+
+                jsondata = jsondata + "  }\n}\n";
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsondata);
+                os.flush();
+                os.close();
+                Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                Log.i("MSG", conn.getResponseMessage());
+                conn.disconnect();
+
+            } catch(Exception ex) {
+                Log.d(TAG, "Error uploading disk to the server: " + ex.toString());
+            }
+        };
+        new Thread(sendData).start();
     }
 
     //todo: check if there is an internet connection first
