@@ -6,6 +6,8 @@ jdk:
   - oraclejdk8
 android:
   components:
+    - build-tools-26.1.1
+    - android-28
     - tools
     - platform-tools
     - tools
@@ -40,4 +42,3 @@ before_install:
   - echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
   - echo "33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > "$ANDROID_HOME/licenses/google-gdk-license"
   - echo "e9acab5b5fbb560a72cfaecce8946896ff6aab9d" > "$ANDROID_HOME/licenses/mips-android-sysimage-license"
-  - yes | sdkmanager --licenses
