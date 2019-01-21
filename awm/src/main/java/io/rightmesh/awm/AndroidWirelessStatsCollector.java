@@ -74,7 +74,7 @@ public class AndroidWirelessStatsCollector {
         statsCollectors.add(itStats);
 
         //logger to disk and server
-        statsLogger = new StatsLogger();
+        statsLogger = new StatsLogger(activity.getApplicationContext());
 
         //position stats
         if (!checkPlayServices(activity)) {
@@ -83,6 +83,8 @@ public class AndroidWirelessStatsCollector {
     }
 
     public void start() {
+        statsLogger.start();
+
         Log.i(TAG, "Checking permissions");
         permissionResults = new HashMap<>();
         compositeDisposable.add(rxPermission.requestEach(permissions)
@@ -95,7 +97,6 @@ public class AndroidWirelessStatsCollector {
                         startStats();
                     }
                 }));
-        statsLogger.start();
     }
 
     /**
