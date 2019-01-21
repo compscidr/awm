@@ -1,5 +1,6 @@
 package io.rightmesh.awm;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.anadeainc.rxbus.Bus;
@@ -9,9 +10,9 @@ import com.anadeainc.rxbus.Subscribe;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -25,17 +26,24 @@ public class StatsLogger {
 
     private static final String TAG = StatsLogger.class.getCanonicalName();
 
-    private Bus eventBus = BusProvider.getInstance();
-    private GPSStats lastPosition = new GPSStats(0,0);
-    private BufferedWriter bufferedWriter;
-    private BufferedReader bufferedReader;
+    Bus eventBus = BusProvider.getInstance();
+    GPSStats lastPosition = new GPSStats(0,0);
+    BufferedWriter bufferedWriter;
+    BufferedReader bufferedReader;
+    Context context;
+
+    public StatsLogger(Context context) {
+        this.context = context;
+    }
 
     void start() {
         try {
-            bufferedWriter = new BufferedWriter(new FileWriter("data.dat", true));
-            bufferedReader = new BufferedReader(new FileReader("data.dat"));
-
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                    context.openFileOutput("data.dat", Context.MODE_APPEND)));
+            bufferedReader = new BufferedReader(new InputStreamReader(
+                    context.openFileInput("data.dat")));
         } catch(IOException ex) {
+            Log.d(TAG, "Failed to open files for logging: " + ex.toString());
             ex.printStackTrace();
         }
         eventBus.register(this);
@@ -43,7 +51,6 @@ public class StatsLogger {
 
     void stop() {
         eventBus.unregister(this);
-
         try {
             if(bufferedWriter != null) {
                 bufferedWriter.close();
@@ -60,24 +67,32 @@ public class StatsLogger {
     public void updateBTDevices(BluetoothStats btStats) {
         btStats.setPosition(lastPosition);
 
-        try {
-            logDisk(btStats);
-        } catch(IOException ex) {
-            Log.e(TAG, "Couldn't write to log file, measurement lost: " + ex.toString());
+        //if the user doesn't give permission for storage, this could be null
+        if(bufferedWriter != null) {
+            try {
+                logDisk(btStats);
+            } catch (IOException ex) {
+                Log.e(TAG, "Couldn't write to log file, measurement lost: " + ex.toString());
+            }
+        } else {
+            logNetwork(btStats);
         }
-        //logNetwork(btStats);
     }
 
     @Subscribe
     public void updateWiFiStats(WiFiStats wiFiStats) {
         wiFiStats.setPosition(lastPosition);
 
-        try {
-            logDisk(wiFiStats);
-        } catch(IOException ex) {
-            Log.e(TAG, "Couldn't write to log file, measurement lost: " + ex.toString());
+        //if the user doesn't give permission for storage, this could be null
+        if(bufferedWriter != null) {
+            try {
+                logDisk(wiFiStats);
+            } catch (IOException ex) {
+                Log.e(TAG, "Couldn't write to log file, measurement lost: " + ex.toString());
+            }
+        } else {
+            logNetwork(wiFiStats);
         }
-        //logNetwork(wiFiStats);
     }
 
     @Subscribe
@@ -129,6 +144,7 @@ public class StatsLogger {
                 }
 
                 jsondata = jsondata + "  }\n}\n";
+                Log.d(TAG, "JSONDATA: " + jsondata);
 
                 DataOutputStream os = new DataOutputStream(conn.getOutputStream());
                 os.writeBytes(jsondata);
