@@ -17,6 +17,9 @@ import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class is used to send the stats to the remote server (or if it is unavailable because the
@@ -26,6 +29,7 @@ public class StatsLogger {
 
     private static final String TAG = StatsLogger.class.getCanonicalName();
 
+    ScheduledExecutorService scheduleTaskExecutor;
     Bus eventBus = BusProvider.getInstance();
     GPSStats lastPosition = new GPSStats(0,0);
     BufferedWriter bufferedWriter;
@@ -33,6 +37,7 @@ public class StatsLogger {
     Context context;
 
     public StatsLogger(Context context) {
+        scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
         this.context = context;
     }
 
@@ -47,6 +52,11 @@ public class StatsLogger {
             ex.printStackTrace();
         }
         eventBus.register(this);
+        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+            public void run() {
+                uploadDisk();
+            }
+        }, 0, 10, TimeUnit.SECONDS);
     }
 
     void stop() {
@@ -118,6 +128,7 @@ public class StatsLogger {
                 + " , " + networkStat.getPosition().latitude + ", "
                 + networkStat.getSize() + "]\n\t]\n";
         bufferedWriter.write(outputString);
+        bufferedWriter.flush();
     }
 
     /**
@@ -153,6 +164,13 @@ public class StatsLogger {
                 Log.i("STATUS", String.valueOf(conn.getResponseCode()));
                 Log.i("MSG", conn.getResponseMessage());
                 conn.disconnect();
+
+
+                /*
+                bufferedWriter.close();
+                bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                        context.openFileOutput("data.dat",0)));
+                        */
 
             } catch(Exception ex) {
                 Log.d(TAG, "Error uploading disk to the server: " + ex.toString());
