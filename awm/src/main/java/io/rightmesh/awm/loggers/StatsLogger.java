@@ -1,6 +1,8 @@
 package io.rightmesh.awm;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.os.Build;
 import android.util.Log;
 
 import com.anadeainc.rxbus.Bus;
@@ -17,9 +19,15 @@ import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import io.rightmesh.awm.stats.BluetoothStats;
+import io.rightmesh.awm.stats.GPSStats;
+import io.rightmesh.awm.stats.NetworkStat;
+import io.rightmesh.awm.stats.WiFiStats;
 
 /**
  * This class is used to send the stats to the remote server (or if it is unavailable because the
@@ -27,21 +35,41 @@ import java.util.concurrent.TimeUnit;
  */
 public class StatsLogger {
 
+    private static final String SHARED_PREF_FILE = "uuid.dat";
     private static final String TAG = StatsLogger.class.getCanonicalName();
 
-    ScheduledExecutorService scheduleTaskExecutor;
-    Bus eventBus = BusProvider.getInstance();
-    GPSStats lastPosition = new GPSStats(0,0);
-    BufferedWriter bufferedWriter;
-    BufferedReader bufferedReader;
-    Context context;
+    private ObservingDevice thisDevice;
+    private SharedPreferences sharedPreferences;
+    private ScheduledExecutorService scheduleTaskExecutor;
+    private Bus eventBus = BusProvider.getInstance();
+    private BufferedWriter bufferedWriter;
+    private BufferedReader bufferedReader;
+    private Context context;
 
-    public StatsLogger(Context context) {
+    StatsLogger(Context context) {
         scheduleTaskExecutor = Executors.newScheduledThreadPool(5);
+        sharedPreferences = context.getSharedPreferences(SHARED_PREF_FILE, Context.MODE_PRIVATE);
         this.context = context;
     }
 
     void start() {
+
+        UUID uuid;
+        String uuidString = sharedPreferences.getString("uuid", null);
+        if(uuidString == null) {
+            uuid = UUID.randomUUID();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("uuid", uuid.toString());
+            editor.apply();
+        } else {
+            uuid = UUID.fromString(uuidString);
+        }
+
+        //detect Android OS version
+        String OS = Build.MANUFACTURER + " " + Build.MODEL + " " + Build.VERSION.SDK_INT + " "
+                + Build.VERSION.RELEASE;
+        thisDevice = new ObservingDevice(uuid, OS);
+
         try {
             bufferedWriter = new BufferedWriter(new OutputStreamWriter(
                     context.openFileOutput("data.dat", Context.MODE_APPEND)));
@@ -51,12 +79,11 @@ public class StatsLogger {
             Log.d(TAG, "Failed to open files for logging: " + ex.toString());
             ex.printStackTrace();
         }
+
         eventBus.register(this);
-        scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                uploadDisk();
-            }
-        }, 0, 10, TimeUnit.SECONDS);
+
+        scheduleTaskExecutor.scheduleAtFixedRate(
+                this::uploadDisk, 0, 10, TimeUnit.SECONDS);
     }
 
     void stop() {
@@ -75,7 +102,7 @@ public class StatsLogger {
 
     @Subscribe
     public void updateBTDevices(BluetoothStats btStats) {
-        btStats.setPosition(lastPosition);
+        thisDevice.setBluetoothMac(btStats.getMac());
 
         //if the user doesn't give permission for storage, this could be null
         if(bufferedWriter != null) {
@@ -91,7 +118,7 @@ public class StatsLogger {
 
     @Subscribe
     public void updateWiFiStats(WiFiStats wiFiStats) {
-        wiFiStats.setPosition(lastPosition);
+        thisDevice.setWifiMac(wiFiStats.getMac());
 
         //if the user doesn't give permission for storage, this could be null
         if(bufferedWriter != null) {
@@ -107,7 +134,7 @@ public class StatsLogger {
 
     @Subscribe
     public void updateGPS(GPSStats gpsStats) {
-        lastPosition = gpsStats;
+        thisDevice.updatePosition(gpsStats);
     }
 
     /**
@@ -124,8 +151,8 @@ public class StatsLogger {
             Log.e(TAG, "Unknown stats instance. Can't log to disk. ignoring");
             return;
         }
-        outputString = outputString + "  \t\t[" + networkStat.getPosition().longitude
-                + " , " + networkStat.getPosition().latitude + ", "
+        outputString = outputString + "  \t\t[" + thisDevice.getPosition().longitude
+                + " , " + thisDevice.getPosition().latitude + ", "
                 + networkStat.getSize() + "]\n\t]\n";
         bufferedWriter.write(outputString);
         bufferedWriter.flush();
@@ -206,7 +233,7 @@ public class StatsLogger {
                     return;
                 }
 
-                jsondata = jsondata + "  \t\t[" + networkStat.getPosition().longitude + " , " + networkStat.getPosition().latitude + ", " + networkStat.getSize() + "]\n" +
+                jsondata = jsondata + "  \t\t[" + thisDevice.getPosition().longitude + " , " + thisDevice.getPosition().latitude + ", " + networkStat.getSize() + "]\n" +
                         "  \t]\n" +
                         "  }\n" +
                         "}\n";

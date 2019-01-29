@@ -6,7 +6,6 @@ import java.util.Set;
 public abstract class NetworkStat {
 
     String mac;
-    GPSStats position;
     Set<String> macs = new HashSet<>();
 
     public int getSize() {
@@ -19,13 +18,5 @@ public abstract class NetworkStat {
 
     public Set<String> getMacs() {
         return macs;
-    }
-
-    public GPSStats getPosition() {
-        return position;
-    }
-
-    public void setPosition(GPSStats position) {
-        this.position = position;
     }
 }
