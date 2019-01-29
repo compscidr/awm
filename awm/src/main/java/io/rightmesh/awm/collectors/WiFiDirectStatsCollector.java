@@ -6,6 +6,8 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.util.Log;
 
+import io.rightmesh.awm.collectors.StatsCollector;
+
 import static android.os.Looper.getMainLooper;
 
 public class WiFiDirectStatsCollector extends StatsCollector {

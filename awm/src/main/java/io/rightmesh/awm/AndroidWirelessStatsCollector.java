@@ -1,8 +1,7 @@
-package io.rightmesh.awm;
+package io.rightmesh.awm.collectors;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -17,7 +16,7 @@ import java.util.Set;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.functions.Consumer;
+import io.rightmesh.awm.loggers.StatsLogger;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 

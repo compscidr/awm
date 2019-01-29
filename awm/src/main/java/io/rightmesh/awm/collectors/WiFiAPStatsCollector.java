@@ -10,6 +10,8 @@ import android.util.Log;
 
 import java.util.List;
 
+import io.rightmesh.awm.collectors.StatsCollector;
+
 public class WiFiAPStatsCollector extends StatsCollector {
 
     private static final String TAG = WiFiAPStatsCollector.class.getCanonicalName();
