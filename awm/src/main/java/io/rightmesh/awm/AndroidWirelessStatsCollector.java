@@ -16,6 +16,8 @@ import com.vanniktech.rxpermission.Permission;
 import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -79,7 +81,9 @@ public class AndroidWirelessStatsCollector {
     private ObservingDevice thisDevice;
     private SharedPreferences sharedPreferences;
 
-    public AndroidWirelessStatsCollector(Activity activity, boolean uploadImmediately) {
+    public AndroidWirelessStatsCollector(Activity activity,
+                                         boolean uploadImmediately,
+                                         boolean cleanFile) {
         Log.i(TAG, "Initializing Android Wireless Stats Collector");
 
         this.uploadImmediately = uploadImmediately;
@@ -128,7 +132,7 @@ public class AndroidWirelessStatsCollector {
         networkLogger = new NetworkLogger();
         statsLoggers.add(networkLogger);
 
-        diskLogger = new DiskLogger(activity.getApplicationContext());
+        diskLogger = new DiskLogger(activity.getApplicationContext(), cleanFile);
         statsLoggers.add(diskLogger);
 
         if (!checkPlayServices(activity)) {
