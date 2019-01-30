@@ -1,5 +1,5 @@
 # awm-lib: Android Wireless Measurement Library
-![Android Build Status](https://travis-ci.com/compscidr/awm-lib.svg?branch=master)
+[![Android Build Status](https://travis-ci.com/compscidr/awm-lib.svg?branch=master)](https://travis-ci.com/compscidr/awm-lib?branch=master)
 
 This project aims to collect and open source wireless statistics and information
 in a way that does not disrupt the functioning of apps, but provides useful data
