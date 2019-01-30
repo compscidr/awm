@@ -249,7 +249,7 @@ public class AndroidWirelessStatsCollector {
     }
 
     private void uploadDisk() {
-        String jsondata;
+        ArrayList<String> jsondata;
         try {
             jsondata = diskLogger.getPendingLogs();
         } catch(Exception ex) {
@@ -258,11 +258,13 @@ public class AndroidWirelessStatsCollector {
             return;
         }
 
-        try {
-            networkLogger.uploadPendingLogs(jsondata);
-        } catch(Exception ex) {
-            Log.d(TAG, "Unable to upload presently: " + ex.toString());
-            ex.printStackTrace();
+        if(jsondata.size() > 0) {
+            try {
+                networkLogger.uploadPendingLogs(jsondata);
+            } catch (Exception ex) {
+                Log.d(TAG, "Unable to upload presently: " + ex.toString());
+                ex.printStackTrace();
+            }
         }
     }
 }
