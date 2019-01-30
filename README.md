@@ -24,7 +24,7 @@ This has been tested with gradle 4.9 and Android Studio 3.3.
 
 
 Simply construct an `AndroidWirelessStatsCollector` and call the `start()`
-function. You can do this in the `onCreate` call if you like. The boolean value
+function. You can do this in the `onCreate` call if you like. The first boolean value
 is used to set whether data should be sent immediately to the network server, or
 if the data should be stored first locally and sent in larger groups, which is
 more efficient, but less "real-time". The second boolean is for whether you'd
@@ -33,7 +33,7 @@ using the cached saved data that may not have uploaded if Internet access was
 not available)
 
 ```
-awsc = new AndroidWirelessStatsCollector(this, true);
+awsc = new AndroidWirelessStatsCollector(this, false, true);
 awsc.start();
 ```
 
