@@ -2,12 +2,17 @@ package io.rightmesh.awm.loggers;
 
 import android.util.Log;
 
+import com.anadeainc.rxbus.Bus;
+import com.anadeainc.rxbus.BusProvider;
+import com.anadeainc.rxbus.RxBus;
+
 import java.io.DataOutputStream;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 
@@ -20,6 +25,11 @@ public class NetworkLogger implements StatsLogger {
 
     private static final String TAG = NetworkLogger.class.getCanonicalName();
     private static final String DBURL = "https://test.rightmesh.io/awm-lib-server/";
+    private Bus eventBus;
+
+    public NetworkLogger() {
+         eventBus = BusProvider.getInstance();
+    }
 
     /**
      * Logs a single record from the network if internet is available.
@@ -40,7 +50,6 @@ public class NetworkLogger implements StatsLogger {
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                //conn.setRequestProperty("Accept", "application/json");
                 conn.setDoOutput(true);
                 conn.setDoInput(true);
 
@@ -88,30 +97,40 @@ public class NetworkLogger implements StatsLogger {
     /**
      * Logs all saved records from disk
      */
-    public void uploadPendingLogs(String jsondata) {
+    public void uploadPendingLogs(ArrayList<String> jsondata) {
         Runnable sendData = () -> {
             try {
-                URL url = new URL("https://test.rightmesh.io/");
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                conn.setRequestProperty("Accept", "application/json");
-                conn.setDoOutput(true);
-                conn.setDoInput(true);
+                for(String data : jsondata) {
+                    if(data.length() == 0) {
+                        continue;
+                    }
+                    URL url = new URL(DBURL);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
 
-                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                os.writeBytes(jsondata);
-                os.flush();
-                os.close();
-                Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-                Log.i("MSG", conn.getResponseMessage());
-                conn.disconnect();
+                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                    os.writeBytes(data);
+                    os.flush();
+                    os.close();
+                    Log.i("UPLOAD PENINDING DATA", data);
+                    Log.i("UPLOAD PENDING STATUS", String.valueOf(conn.getResponseCode()));
+                    Log.i("UPLOAD PENDING MSG", conn.getResponseMessage());
+                    conn.disconnect();
 
-                //todo rxbus success
+                    if(conn.getResponseCode() == 400) {
+                        eventBus.post(new LogEvent(LogEvent.EventType.MALFORMED));
+                        return;
+                    }
+                }
+                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS));
+
             } catch(Exception ex) {
                 Log.d(TAG, "Error uploading disk to the server: " + ex.toString());
-
-                //todo rxbus fail
+                eventBus.post(new LogEvent(LogEvent.EventType.FAILURE));
             }
         };
         new Thread(sendData).start();
