@@ -155,8 +155,9 @@ public class AndroidWirelessStatsCollector {
                     }
                 }));
         eventBus.register(this);
-        //scheduleTaskExecutor.scheduleAtFixedRate(
-        //        this::uploadDisk, 0, 10, TimeUnit.SECONDS);
+
+        scheduleTaskExecutor.scheduleAtFixedRate(
+                this::uploadDisk, 0, 5, TimeUnit.SECONDS);
     }
 
     /**
