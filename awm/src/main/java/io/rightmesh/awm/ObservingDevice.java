@@ -37,6 +37,7 @@ public class ObservingDevice {
         } catch(UnknownHostException ex) {
             Log.d(TAG, "Unknown host: " + ex.toString());
         }
+        this.position = new GPSStats(0,0);
         this.uuid = uuid;
         this.OS = OS;
     }
