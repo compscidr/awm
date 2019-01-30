@@ -220,7 +220,6 @@ public class AndroidWirelessStatsCollector {
 
     @Subscribe
     public void updateNetworkStats(NetworkStat networkStat) {
-        Log.d(TAG, "UPDATE NETWORK STATS");
         if(networkStat instanceof WiFiStats) {
             thisDevice.setWifiMac(networkStat.getMac());
         } else if(networkStat instanceof BluetoothStats) {
