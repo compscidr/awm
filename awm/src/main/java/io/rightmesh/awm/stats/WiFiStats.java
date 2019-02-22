@@ -12,6 +12,7 @@ public class WiFiStats extends NetworkStat {
         this.mac = mac;
         for(ScanResult scan : wifiDevices) {
             macs.add(scan.BSSID);
+            mac_names.put(scan.BSSID, scan.SSID);
         }
 
     }

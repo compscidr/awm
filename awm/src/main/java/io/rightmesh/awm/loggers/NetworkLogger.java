@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -64,9 +65,10 @@ public class NetworkLogger implements StatsLogger {
 
                 int count = 1;
                 Set<String> macs = stat.getMacs();
-                for(String mac : macs) {
+                Map<String, String> mac_names = stat.getMacNames();
+                for (Map.Entry<String, String> macEntry : mac_names.entrySet()) {
                     deviceJson += "{\n";
-                    deviceJson += "\t\"mac_address\": \"" + mac + "\",\n";
+                    deviceJson += "\t\"mac_address\": \"" + macEntry.getKey() + "\",\n";
                     if(stat instanceof BluetoothStats) {
                         deviceJson += "\t\"mac_type\": " + 0 + ",\n";
                     } else if (stat instanceof WiFiStats) {
@@ -74,7 +76,7 @@ public class NetworkLogger implements StatsLogger {
                     } else {
                         deviceJson += "\t\"mac_type\": " + -1 + ",\n";
                     }
-                    deviceJson += "\t\"network_name\": \"" + stat.getName() + "\"\n";
+                    deviceJson += "\t\"network_name\": \"" + macEntry.getValue() + "\"\n";
                     if(count < macs.size()) {
                         deviceJson += "},\n";
                     } else {
@@ -93,6 +95,8 @@ public class NetworkLogger implements StatsLogger {
                 Log.i("STATUS", String.valueOf(conn.getResponseCode()));
                 Log.i("MSG", conn.getResponseMessage());
                 conn.disconnect();
+
+                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, 1));
             } catch(Exception ex) {
                 Log.d(TAG, "Error sending to network: " + ex.toString());
                 ex.printStackTrace();
@@ -135,7 +139,7 @@ public class NetworkLogger implements StatsLogger {
                         return;
                     }
                 }
-                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, count));
+                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, jsondata.size()));
 
             } catch(Exception ex) {
                 Log.d(TAG, "Error uploading disk to the server: " + ex.toString());

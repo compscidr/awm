@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
+import io.rightmesh.awm.collectors.BatteryStatsCollector;
 import io.rightmesh.awm.collectors.BluetoothStatsCollector;
 import io.rightmesh.awm.collectors.GPSStatsCollector;
 import io.rightmesh.awm.collectors.InternetStatsCollector;
@@ -39,6 +40,7 @@ import io.rightmesh.awm.collectors.WiFiDirectStatsCollector;
 import io.rightmesh.awm.loggers.DiskLogger;
 import io.rightmesh.awm.loggers.NetworkLogger;
 import io.rightmesh.awm.loggers.StatsLogger;
+import io.rightmesh.awm.stats.BatteryStats;
 import io.rightmesh.awm.stats.BluetoothStats;
 import io.rightmesh.awm.stats.GPSStats;
 import io.rightmesh.awm.stats.NetworkStat;
@@ -130,6 +132,9 @@ public class AndroidWirelessStatsCollector {
 
         InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
         statsCollectors.add(itStats);
+
+        BatteryStatsCollector bStats = new BatteryStatsCollector(activity.getApplicationContext());
+        statsCollectors.add(bStats);
 
         networkLogger = new NetworkLogger();
         statsLoggers.add(networkLogger);
@@ -243,6 +248,11 @@ public class AndroidWirelessStatsCollector {
                 ex2.printStackTrace();
             }
         }
+    }
+
+    @Subscribe
+    public void updateBattery(BatteryStats batteryStats) {
+        thisDevice.setBattery(batteryStats.getBatteryPercent());
     }
 
     @Subscribe

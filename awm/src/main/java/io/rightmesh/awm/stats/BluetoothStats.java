@@ -15,6 +15,7 @@ public class BluetoothStats extends NetworkStat implements Serializable {
         this.mac = mac;
         for(BluetoothDevice device : btDevices) {
             macs.add(device.getAddress());
+            mac_names.put(device.getAddress(), device.getName());
         }
     }
 }

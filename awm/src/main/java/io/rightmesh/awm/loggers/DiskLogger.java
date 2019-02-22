@@ -15,6 +15,7 @@ import java.io.OutputStreamWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Logger;
@@ -102,9 +103,10 @@ public class DiskLogger implements StatsLogger {
             String deviceJson = "";
             int count = 1;
             Set<String> macs = stat.getMacs();
-            for (String mac : macs) {
+            Map<String, String> mac_names = stat.getMacNames();
+            for (Map.Entry<String, String> macEntry : mac_names.entrySet()) {
                 deviceJson += "\t\t\t{\n";
-                deviceJson += "\t\t\t\t\"mac_address\": \"" + mac + "\",\n";
+                deviceJson += "\t\t\t\t\"mac_address\": \"" + macEntry.getKey() + "\",\n";
                 if (stat instanceof BluetoothStats) {
                     deviceJson += "\t\t\t\t\"mac_type\": " + 0 + ",\n";
                 } else if (stat instanceof WiFiStats) {
@@ -112,7 +114,7 @@ public class DiskLogger implements StatsLogger {
                 } else {
                     deviceJson += "\t\t\t\t\"mac_type\": " + -1 + ",\n";
                 }
-                deviceJson += "\t\t\t\t\"network_name\": \"" + stat.getName() + "\"\n";
+                deviceJson += "\t\t\t\t\"network_name\": \"" + macEntry.getValue() + "\"\n";
                 if (count < macs.size()) {
                     deviceJson += "\t\t\t},\n";
                 } else {
@@ -132,6 +134,14 @@ public class DiskLogger implements StatsLogger {
     }
 
     public int getLogCount() throws IOException {
+        while (!started) {
+            try {
+                Thread.sleep(10);
+            } catch(InterruptedException ex) {
+                //
+            }
+        }
+
         while(lock.isLocked()) {
             try {
                 Thread.sleep(10);
