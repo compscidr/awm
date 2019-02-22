@@ -17,6 +17,7 @@ import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,6 +26,7 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -157,7 +159,7 @@ public class AndroidWirelessStatsCollector {
         eventBus.register(this);
 
         scheduleTaskExecutor.scheduleAtFixedRate(
-                this::uploadDisk, 0, 5, TimeUnit.SECONDS);
+                this::uploadDisk, 30, 5, TimeUnit.SECONDS);
     }
 
     /**
