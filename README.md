@@ -3,18 +3,19 @@
 
 This project aims to collect and open source wireless statistics and information in a way that does not disrupt the functioning of apps, but provides useful data such as:
 
-* what percentage of the day a user has internet access?
-* how long does the user use Wi-Fi versus Cellular data?
-* how often and for how long are users within Bluetooth range of each other?
-* how often and for how long are users within Wi-Fi or Wi-Fi direct range of each other?
-* how often and for how long are users within NFC range of each other?
-* periodically sample their network performance: throughput, delay, jitter, etc.
+- [ ] what percentage of the day a user has internet access?
+- [ ] how long does the user use Wi-Fi versus Cellular data?
+- [x] how often and for how long are users within Bluetooth range of each other?
+- [x] how often and for how long are users within Wi-Fi or Wi-Fi direct range of each other?
+- [ ] how often and for how long are users within NFC range of each other?
+- [ ] periodically sample their network performance: throughput, delay, jitter, etc.
+- [x] obtain and track battery stats to measure the rate of discharge while scanning bt, wifi and wifi directly continually
 
 ## Using the library
 Add to your `build.gradle` file the following:
 ```
 dependencies {
-  implementation 'io.rightmesh:awm:1.0.5'
+  implementation 'io.rightmesh:awm:1.1.1'
 }
 ```
 This has been tested with gradle 4.9 and Android Studio 3.3.
@@ -46,23 +47,27 @@ and register to receive the events:
 eventBus.register(this);
 ```
 
-To obtain Bluetooth stats:
+To obtain Bluetooth or Wi-Fi hotspot stats:
 ```
-@Subscribe public void updateBTDevices(BluetoothStats btStats) {
+@Subscribe public void updateNetworkDevices(NetworkStat networkStat) {
+  if (networkStat.getType() == BLUETOOTH) {
+    ...
+  } else if (networkStat.getType() == WIFI) {
+    ...
+  }
+}
+```
+
+To obtain GPS stats:
+```
+@Subscribe public void updateGPS(GPSStats gpsStats) {
   ...
 }
 ```
 
-To obtain Wi-Fi hotspots:
+To obtain Battery stats:
 ```
-@Subscribe public void updateWiFiDevices(WiFiStats wifiStats) {
-    ...
-}
-```
-
-And to obtain GPS stats:
-```
-@Subscribe public void updateGPS(GPSStats gpsStats) {
+@Subscribe public void updateBattery(BatteryStats batteryStats) {
   ...
 }
 ```
