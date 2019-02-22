@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Logger;
 
 import io.rightmesh.awm.ObservingDevice;
 import io.rightmesh.awm.stats.BluetoothStats;
@@ -31,6 +32,7 @@ public class DiskLogger implements StatsLogger {
     private ReentrantLock lock;
     private Bus eventBus = BusProvider.getInstance();
     private boolean cleanfile = false;
+    private volatile boolean started;
 
     public DiskLogger(Context context, boolean cleanFile) {
         this.context = context;
@@ -39,6 +41,7 @@ public class DiskLogger implements StatsLogger {
     }
 
     @Override public void start() {
+        started = false;
         try {
             if(cleanfile) {
                 context.deleteFile("data.dat");
@@ -51,11 +54,17 @@ public class DiskLogger implements StatsLogger {
 
             bufferedReader = new BufferedReader(new InputStreamReader(
                     context.openFileInput("data.dat")));
+
             eventBus.register(this);
+            started = true;
         } catch(IOException ex) {
             Log.d(TAG, "Failed to open files for logging: " + ex.toString());
             ex.printStackTrace();
         }
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 
     @Override public void stop() {
@@ -69,6 +78,7 @@ public class DiskLogger implements StatsLogger {
         } catch(IOException ex) {
             ex.printStackTrace();
         }
+        started = false;
     }
 
     /**
@@ -81,6 +91,12 @@ public class DiskLogger implements StatsLogger {
      */
     @Override
     public void log(NetworkStat stat, ObservingDevice thisDevice) throws IOException {
+
+        if(thisDevice.getPosition().latitude == 0 || thisDevice.getPosition().longitude == 0) {
+            Log.d(TAG, "null position. ignoring this measure");
+            return;
+        }
+
         lock.lock();
         try {
             String deviceJson = "";
@@ -108,9 +124,38 @@ public class DiskLogger implements StatsLogger {
             String jsondata = thisDevice.prepareJSON(deviceJson, new Timestamp(new Date().getTime()));
             bufferedWriter.write(jsondata);
             bufferedWriter.flush();
+
+            eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.DISK, 1));
         } finally {
             lock.unlock();
         }
+    }
+
+    public int getLogCount() throws IOException {
+        while(lock.isLocked()) {
+            try {
+                Thread.sleep(10);
+            } catch(InterruptedException ex) {
+                //
+            }
+        }
+        lock.lock();
+        int count = 0;
+        try {
+            String jsondata = "";
+            String line = bufferedReader.readLine();
+            while (line != null) {
+                jsondata = jsondata.concat(line);
+                if (line.equals("}")) {
+                    count++;
+                    jsondata = "";
+                }
+                line = bufferedReader.readLine();
+            }
+        } finally {
+            lock.unlock();
+        }
+        return count;
     }
 
     public ArrayList<String> getPendingLogs() throws IOException {
@@ -150,24 +195,30 @@ public class DiskLogger implements StatsLogger {
 
     @Subscribe
     public void networkUploadStatus(LogEvent logEvent) {
-        if(logEvent.getType() == LogEvent.EventType.SUCCESS ||
-                logEvent.getType() == LogEvent.EventType.MALFORMED) {
-            try {
-                lock.lock();
-                bufferedReader.close();
-                bufferedWriter.close();
-                context.deleteFile("data.dat");
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                        context.openFileOutput("data.dat", Context.MODE_PRIVATE)));
-                bufferedReader = new BufferedReader(new InputStreamReader(
-                        context.openFileInput("data.dat")));
-            } catch(IOException ex) {
-                Log.e(TAG, "Failed recreating the output file on clean: " + ex.toString());
-            } finally {
-                lock.unlock();
+        if(logEvent.getLogType() == LogEvent.LogType.NETWORK) {
+            if(logEvent.getEventType() == LogEvent.EventType.SUCCESS ||
+                    logEvent.getEventType() == LogEvent.EventType.MALFORMED) {
+                try {
+                    lock.lock();
+                    bufferedReader.close();
+                    bufferedWriter.close();
+                    if(context.deleteFile("data.dat")) {
+                        Log.d(TAG, "Successfully cleared the old data file.");
+                    } else {
+                        Log.d(TAG, "Failed to clear the old data file :(");
+                    }
+                    bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                            context.openFileOutput("data.dat", Context.MODE_PRIVATE)));
+                    bufferedReader = new BufferedReader(new InputStreamReader(
+                            context.openFileInput("data.dat")));
+                } catch(IOException ex) {
+                    Log.e(TAG, "Failed recreating the output file on clean: " + ex.toString());
+                } finally {
+                    lock.unlock();
+                }
+            } else {
+                Log.d(TAG, "Failed to upload stats. leaving them in file.");
             }
-        } else {
-            Log.d(TAG, "Failed to upload stats. leaving them in file.");
         }
     }
 }

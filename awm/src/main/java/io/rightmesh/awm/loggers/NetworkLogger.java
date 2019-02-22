@@ -15,6 +15,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import io.rightmesh.awm.ObservingDevice;
 import io.rightmesh.awm.stats.BluetoothStats;
@@ -39,6 +40,12 @@ public class NetworkLogger implements StatsLogger {
      */
     @Override
     public void log(NetworkStat stat, ObservingDevice thisDevice) throws Exception {
+
+        if(thisDevice.getPosition().latitude == 0 || thisDevice.getPosition().longitude == 0) {
+            Log.d(TAG, "null position. ignoring this measure");
+            return;
+        }
+
         DecimalFormat df = new DecimalFormat("#.###");
         df.setRoundingMode(RoundingMode.CEILING);
 
@@ -100,6 +107,7 @@ public class NetworkLogger implements StatsLogger {
     public void uploadPendingLogs(ArrayList<String> jsondata) {
         Runnable sendData = () -> {
             try {
+                int count = 0;
                 for(String data : jsondata) {
                     if(data.length() == 0) {
                         continue;
@@ -120,17 +128,18 @@ public class NetworkLogger implements StatsLogger {
                     Log.i("UPLOAD PENDING STATUS", String.valueOf(conn.getResponseCode()));
                     Log.i("UPLOAD PENDING MSG", conn.getResponseMessage());
                     conn.disconnect();
+                    count++;
 
                     if(conn.getResponseCode() == 400) {
-                        eventBus.post(new LogEvent(LogEvent.EventType.MALFORMED));
+                        eventBus.post(new LogEvent(LogEvent.EventType.MALFORMED, LogEvent.LogType.NETWORK));
                         return;
                     }
                 }
-                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS));
+                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, count));
 
             } catch(Exception ex) {
                 Log.d(TAG, "Error uploading disk to the server: " + ex.toString());
-                eventBus.post(new LogEvent(LogEvent.EventType.FAILURE));
+                eventBus.post(new LogEvent(LogEvent.EventType.FAILURE, LogEvent.LogType.NETWORK));
             }
         };
         new Thread(sendData).start();

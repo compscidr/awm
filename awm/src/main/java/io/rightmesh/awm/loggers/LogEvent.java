@@ -2,19 +2,37 @@ package io.rightmesh.awm.loggers;
 
 public class LogEvent {
 
-    enum EventType {
+    public enum EventType {
         SUCCESS,
         FAILURE,
         MALFORMED
     }
 
-    EventType type;
-
-    public LogEvent(EventType type) {
-        this.type = type;
+    public enum LogType {
+        DISK,
+        NETWORK
     }
 
-    public EventType getType() {
-        return type;
+    EventType etype;
+    LogType ltype;
+    int numRecords;
+
+    public LogEvent(EventType etype, LogType ltype) {
+        this.etype = etype;
+        this.numRecords = 0;
     }
+
+    public LogEvent(EventType etype, LogType ltype, int numRecords) {
+        this.etype = etype;
+        this.ltype = ltype;
+        this.numRecords = numRecords;
+    }
+
+    public EventType getEventType() {
+        return etype;
+    }
+
+    public LogType getLogType() { return ltype; }
+
+    public int getNumRecords() { return numRecords; }
 }
