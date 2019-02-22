@@ -269,4 +269,15 @@ public class AndroidWirelessStatsCollector {
             }
         }
     }
+
+    public int getSavedRecordCount() {
+        try {
+            int count = diskLogger.getLogCount();
+            Log.d(TAG, "GETPENDINGLOGS: " + count);
+            return count;
+        } catch ( IOException ex) {
+            Log.d(TAG, "IOEX: " + ex.toString());
+            return 0;
+        }
+    }
 }
