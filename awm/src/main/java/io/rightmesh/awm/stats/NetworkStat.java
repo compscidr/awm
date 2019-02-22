@@ -1,32 +1,31 @@
 package io.rightmesh.awm.stats;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-public abstract class NetworkStat {
+import lombok.Getter;
+import lombok.Setter;
 
-    String name;
-    String mac;
-    Set<String> macs = new HashSet<>();
-    Map<String, String> mac_names = new HashMap<>();
+public class NetworkStat {
 
-    public int getSize() {
-        return macs.size();
+    public enum DeviceType {
+        BLUETOOTH,
+        WIFI,
+        WIFI_DIRECT
     }
 
-    public String getMac() {
-        return mac;
-    }
+    @Getter @Setter
+    private DeviceType type;
 
-    public String getName() { return name; }
+    @Setter @Getter
+    private Set<NetworkDevice> devices;
 
-    public Set<String> getMacs() {
-        return macs;
-    }
-
-    public Map<String, String> getMacNames() {
-        return mac_names;
+    /**
+     * Construct a new network observation.
+     * @param type the type of device (Bluetooth, Wi-Fi, Wi-Fi direct).
+     * @param devices the list of devices observed
+     */
+    public NetworkStat(DeviceType type, Set<NetworkDevice> devices) {
+        this.type = type;
+        this.devices = devices;
     }
 }

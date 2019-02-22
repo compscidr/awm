@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
-import com.anadeainc.rxbus.RxBus;
 
 import java.io.DataOutputStream;
 import java.math.RoundingMode;
@@ -16,12 +15,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import io.rightmesh.awm.ObservingDevice;
-import io.rightmesh.awm.stats.BluetoothStats;
+import io.rightmesh.awm.stats.NetworkDevice;
 import io.rightmesh.awm.stats.NetworkStat;
-import io.rightmesh.awm.stats.WiFiStats;
 
 public class NetworkLogger implements StatsLogger {
 
@@ -64,20 +61,22 @@ public class NetworkLogger implements StatsLogger {
                 String deviceJson = "";
 
                 int count = 1;
-                Set<String> macs = stat.getMacs();
-                Map<String, String> mac_names = stat.getMacNames();
-                for (Map.Entry<String, String> macEntry : mac_names.entrySet()) {
+                for(NetworkDevice network : stat.getDevices()) {
                     deviceJson += "{\n";
-                    deviceJson += "\t\"mac_address\": \"" + macEntry.getKey() + "\",\n";
-                    if(stat instanceof BluetoothStats) {
+                    deviceJson += "\t\"mac_address\": \"" + network.getMac() + "\",\n";
+                    deviceJson += "\t\"signal_strength\": " + network.getSignalStrength() + ",\n";
+                    deviceJson += "\t\"frequency\": " + network.getFrequency() + ",\n";
+                    deviceJson += "\t\"channel_width\": " + network.getChannelWidth() + ",\n";
+                    deviceJson += "\t\"security\": \"" + network.getSecurity() + "\",\n";
+                    if(stat.getType() == NetworkStat.DeviceType.BLUETOOTH) {
                         deviceJson += "\t\"mac_type\": " + 0 + ",\n";
-                    } else if (stat instanceof WiFiStats) {
+                    } else if (stat.getType() == NetworkStat.DeviceType.WIFI) {
                         deviceJson += "\t\"mac_type\": " + 1 + ",\n";
                     } else {
                         deviceJson += "\t\"mac_type\": " + -1 + ",\n";
                     }
-                    deviceJson += "\t\"network_name\": \"" + macEntry.getValue() + "\"\n";
-                    if(count < macs.size()) {
+                    deviceJson += "\t\"network_name\": \"" + network.getName() + "\"\n";
+                    if(count < stat.getDevices().size()) {
                         deviceJson += "},\n";
                     } else {
                         deviceJson += "}\n";

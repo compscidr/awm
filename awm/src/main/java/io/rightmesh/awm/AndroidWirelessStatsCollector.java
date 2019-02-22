@@ -17,7 +17,6 @@ import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,7 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -41,10 +39,8 @@ import io.rightmesh.awm.loggers.DiskLogger;
 import io.rightmesh.awm.loggers.NetworkLogger;
 import io.rightmesh.awm.loggers.StatsLogger;
 import io.rightmesh.awm.stats.BatteryStats;
-import io.rightmesh.awm.stats.BluetoothStats;
 import io.rightmesh.awm.stats.GPSStats;
 import io.rightmesh.awm.stats.NetworkStat;
-import io.rightmesh.awm.stats.WiFiStats;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
@@ -85,6 +81,9 @@ public class AndroidWirelessStatsCollector {
     private ObservingDevice thisDevice;
     private SharedPreferences sharedPreferences;
 
+    private WiFiAPStatsCollector wifiStats;
+    private BluetoothStatsCollector btStats;
+
     public AndroidWirelessStatsCollector(Activity activity,
                                          boolean uploadImmediately,
                                          boolean cleanFile) {
@@ -121,10 +120,10 @@ public class AndroidWirelessStatsCollector {
         GPSStatsCollector gpsStats = new GPSStatsCollector(activity.getApplicationContext());
         statsCollectors.add(gpsStats);
 
-        BluetoothStatsCollector btStats = new BluetoothStatsCollector(activity.getApplicationContext());
+        btStats = new BluetoothStatsCollector(activity.getApplicationContext());
         statsCollectors.add(btStats);
 
-        WiFiAPStatsCollector wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext());
+        wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext());
         statsCollectors.add(wifiStats);
 
         WiFiDirectStatsCollector wifiDirectStats = new WiFiDirectStatsCollector(activity.getApplicationContext());
@@ -227,10 +226,12 @@ public class AndroidWirelessStatsCollector {
 
     @Subscribe
     public void updateNetworkStats(NetworkStat networkStat) {
-        if(networkStat instanceof WiFiStats) {
-            thisDevice.setWifiMac(networkStat.getMac());
-        } else if(networkStat instanceof BluetoothStats) {
-            thisDevice.setBluetoothMac(networkStat.getMac());
+
+        //todo move this into a one time thing instead of on every update.
+        if(networkStat.getType() == NetworkStat.DeviceType.WIFI) {
+            thisDevice.setWifiMac(wifiStats.getMyAddress());
+        } else if(networkStat.getType() == NetworkStat.DeviceType.BLUETOOTH) {
+            thisDevice.setBluetoothMac(btStats.getMyAddress());
         }
 
         try {

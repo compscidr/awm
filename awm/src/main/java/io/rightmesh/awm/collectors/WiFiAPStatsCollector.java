@@ -8,9 +8,13 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import io.rightmesh.awm.stats.WiFiStats;
+import io.rightmesh.awm.stats.NetworkDevice;
+import io.rightmesh.awm.stats.NetworkStat;
+import lombok.Getter;
 
 public class WiFiAPStatsCollector extends StatsCollector {
 
@@ -20,6 +24,9 @@ public class WiFiAPStatsCollector extends StatsCollector {
     private WifiManager wifiManager;
     private WifiManager.WifiLock wifiLock;
     private WiFiScanReceiver wiFiScanReceiver;
+
+    @Getter
+    private String myAddress;
 
     public WiFiAPStatsCollector(Context context) {
         this.context = context;
@@ -40,6 +47,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
         context.registerReceiver(wiFiScanReceiver,
                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
+        myAddress = wifiManager.getConnectionInfo().getMacAddress();
         wifiManager.startScan();
     }
 
@@ -58,15 +66,24 @@ public class WiFiAPStatsCollector extends StatsCollector {
             //todo on android 8 and 9 we should check if these scans are new or not
 
             List<ScanResult> scans = wifiManager.getScanResults();
+            Set<NetworkDevice> devices = new HashSet<>();
             if(scans.size() == 0) {
                 Log.d(TAG, "Scan empty. Waiting for another OS scan or an app resume");
                 //wifiManager.startScan();
             } else {
                 Log.d(TAG, "GOT SCAN");
                 for(ScanResult scan : scans) {
-                    Log.d(TAG, scan.BSSID + " " + scan.SSID);
+                    Log.d(TAG, scan.BSSID + " " + scan.SSID + "\n  " + scan);
+                    NetworkDevice networkDevice = new NetworkDevice(
+                            scan.BSSID,
+                            scan.SSID,
+                            scan.level,
+                            scan.frequency,
+                            scan.channelWidth,
+                            scan.capabilities);
+                    devices.add(networkDevice);
                 }
-                eventBus.post(new WiFiStats(scans, wifiManager.getConnectionInfo().getMacAddress()));
+                eventBus.post(new NetworkStat(NetworkStat.DeviceType.WIFI, devices));
             }
         }
     }
