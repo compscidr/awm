@@ -1,7 +1,9 @@
 # awm-lib: Android Wireless Measurement Library
-![Android Build Status](https://travis-ci.com/compscidr/awm-lib.svg?branch=master)
+[![Android Build Status](https://travis-ci.com/compscidr/awm-lib.svg?branch=master)](https://travis-ci.com/compscidr/awm-lib?branch=master)
 
-This project aims to collect and open source wireless statistics and information in a way that does not disrupt the functioning of apps, but provides useful data such as:
+This project aims to collect and open source wireless statistics and information
+in a way that does not disrupt the functioning of apps, but provides useful data
+such as:
 
 - [ ] what percentage of the day a user has internet access?
 - [ ] how long does the user use Wi-Fi versus Cellular data?
@@ -21,10 +23,17 @@ dependencies {
 This has been tested with gradle 4.9 and Android Studio 3.3.
 
 
-Simply construct an `AndroidWirelessStatsCollector` and call the `start()` function. You can do this in the `onCreate` call if you like.
+Simply construct an `AndroidWirelessStatsCollector` and call the `start()`
+function. You can do this in the `onCreate` call if you like. The first boolean value
+is used to set whether data should be sent immediately to the network server, or
+if the data should be stored first locally and sent in larger groups, which is
+more efficient, but less "real-time". The second boolean is for whether you'd
+like to start with a fresh data file on each time the app starts (instead of
+using the cached saved data that may not have uploaded if Internet access was
+not available)
 
 ```
-awsc = new AndroidWirelessStatsCollector(this);
+awsc = new AndroidWirelessStatsCollector(this, false, true);
 awsc.start();
 ```
 
@@ -34,8 +43,9 @@ awsc.stop();
 ```
 
 ## Receiving the stats that are being collected
-The library is setup to publish RxJava events to the applications so they can receive the stats as they are being collected.
-Currently, there are only Bluetooth and GPS stats being collected.
+The library is setup to publish RxJava events to the applications so they can
+receive the stats as they are being collected. Currently, there are Bluetooth,
+Wi-Fi hotspots (APs) and GPS stats being collected.
 
 In order to receive the EventBus events you need to initailise the event bus:
 ```
