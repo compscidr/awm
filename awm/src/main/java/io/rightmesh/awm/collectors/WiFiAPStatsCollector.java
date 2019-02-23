@@ -75,8 +75,8 @@ public class WiFiAPStatsCollector extends StatsCollector {
                 for(ScanResult scan : scans) {
                     Log.d(TAG, scan.BSSID + " " + scan.SSID + "\n  " + scan);
                     NetworkDevice networkDevice = new NetworkDevice(
-                            scan.BSSID,
                             scan.SSID,
+                            scan.BSSID,
                             scan.level,
                             scan.frequency,
                             scan.channelWidth,

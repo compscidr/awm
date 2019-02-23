@@ -7,8 +7,10 @@ import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.UUID;
+import java.util.logging.Logger;
 
 import io.rightmesh.awm.stats.GPSStats;
+import lombok.Setter;
 
 public class ObservingDevice {
     private UUID uuid;
@@ -19,8 +21,13 @@ public class ObservingDevice {
     private Inet4Address inet4Address;
     private Inet6Address inet6Address;
     private float battery_life = 100;
+
+    @Setter
     private boolean hasCellularInternet = false;
+
+    @Setter
     private boolean hasWiFiInternet = false;
+
     private float cellularThroughput = 0;
     private float wifiThroughput = 0;
     private int cellularPing = 0;
@@ -43,7 +50,11 @@ public class ObservingDevice {
     }
 
     void updatePosition(GPSStats position) {
-        this.position = position;
+        if(position.longitude != 0 && position.latitude != 0) {
+            this.position = position;
+        } else {
+            Log.d(TAG,"Leave last position since new one is zero");
+        }
     }
 
     void setWifiMac(String wifiMac) {

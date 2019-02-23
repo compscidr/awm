@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
+import android.util.Pair;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
@@ -45,7 +46,7 @@ import io.rightmesh.awm.stats.NetworkStat;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 
 public class AndroidWirelessStatsCollector {
-
+    private boolean firstLaunch = false;
     private boolean uploadImmediately = false;
     private static final String SHARED_PREF_FILE = "uuid.dat";
     private static final String TAG = AndroidWirelessStatsCollector.class.getCanonicalName();
@@ -89,6 +90,7 @@ public class AndroidWirelessStatsCollector {
                                          boolean cleanFile) {
         Log.i(TAG, "Initializing Android Wireless Stats Collector");
 
+        firstLaunch = true;
         this.uploadImmediately = uploadImmediately;
 
         sharedPreferences = activity.getApplicationContext()
@@ -135,7 +137,7 @@ public class AndroidWirelessStatsCollector {
         BatteryStatsCollector bStats = new BatteryStatsCollector(activity.getApplicationContext());
         statsCollectors.add(bStats);
 
-        networkLogger = new NetworkLogger();
+        networkLogger = new NetworkLogger(activity.getApplicationContext());
         statsLoggers.add(networkLogger);
 
         diskLogger = new DiskLogger(activity.getApplicationContext(), cleanFile);
@@ -147,20 +149,26 @@ public class AndroidWirelessStatsCollector {
     }
 
     public void start() {
-        Log.i(TAG, "Checking permissions");
-        permissionResults = new HashMap<>();
-        compositeDisposable.add(rxPermission.requestEach(permissions)
-                .subscribe(permission -> {
-                    Log.i(TAG, permission.name() + " " + permission.state());
-                    permissionResults.put(permission.name(), permission);
+        if(firstLaunch) {
+            Log.i(TAG, "Checking permissions");
+            permissionResults = new HashMap<>();
+            compositeDisposable.add(rxPermission.requestEach(permissions)
+                    .subscribe(permission -> {
+                        Log.i(TAG, permission.name() + " " + permission.state());
+                        permissionResults.put(permission.name(), permission);
 
-                    //see if we've received all the permissions yet
-                    if(permissionResults.size() == permissions.length) {
-                        startLoggers();
-                        startStats();
-                    }
-                }));
-        eventBus.register(this);
+                        //see if we've received all the permissions yet
+                        if(permissionResults.size() == permissions.length) {
+                            startLoggers();
+                            startStats();
+                        }
+                    }));
+            eventBus.register(this);
+        } else {
+            firstLaunch = false;
+            startLoggers();
+            startStats();
+        }
 
         scheduleTaskExecutor.scheduleAtFixedRate(
                 this::uploadDisk, 30, 5, TimeUnit.SECONDS);
@@ -212,6 +220,7 @@ public class AndroidWirelessStatsCollector {
     }
 
     public void stop() {
+        eventBus.unregister(this);
         compositeDisposable.clear();
 
         Log.i(TAG, "Stopping stats collection");
@@ -234,8 +243,12 @@ public class AndroidWirelessStatsCollector {
             thisDevice.setBluetoothMac(btStats.getMyAddress());
         }
 
+        Pair<Boolean, Boolean> isWiFiisMobile = networkLogger.isWifiIsMobileConnected();
+        this.thisDevice.setHasWiFiInternet(isWiFiisMobile.first);
+        this.thisDevice.setHasCellularInternet(isWiFiisMobile.second);
+
         try {
-            if (uploadImmediately) {
+            if (uploadImmediately && isWiFiisMobile.first) {
                 networkLogger.log(networkStat, thisDevice);
             } else {
                 diskLogger.log(networkStat, thisDevice);
@@ -262,6 +275,17 @@ public class AndroidWirelessStatsCollector {
     }
 
     private void uploadDisk() {
+        if(!networkLogger.isWifiConnected()) {
+            Log.d(TAG, "WIFI NOT CONNECTED");
+            return;
+        } else {
+            if(!networkLogger.isOnline()) {
+                Log.d(TAG, "WIFI CONNECTED BUT NOT ONLINE");
+                return;
+            }
+        }
+        Log.d(TAG, "ONLINE, UPLOADING LOGS");
+
         ArrayList<String> jsondata;
         try {
             jsondata = diskLogger.getPendingLogs();

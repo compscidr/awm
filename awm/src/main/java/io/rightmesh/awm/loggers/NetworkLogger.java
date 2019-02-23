@@ -1,6 +1,12 @@
 package io.rightmesh.awm.loggers;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.util.Log;
+import android.util.Pair;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
@@ -25,9 +31,11 @@ public class NetworkLogger implements StatsLogger {
     private static final String TAG = NetworkLogger.class.getCanonicalName();
     private static final String DBURL = "https://test.rightmesh.io/awm-lib-server/";
     private Bus eventBus;
+    private Context context;
 
-    public NetworkLogger() {
+    public NetworkLogger(Context context) {
          eventBus = BusProvider.getInstance();
+         this.context = context;
     }
 
     /**
@@ -146,6 +154,53 @@ public class NetworkLogger implements StatsLogger {
             }
         };
         new Thread(sendData).start();
+    }
+
+    public boolean isWifiConnected() {
+        Pair<Boolean, Boolean> isConnected = isWifiIsMobileConnected();
+        return isConnected.first;
+    }
+
+    public Pair<Boolean, Boolean> isWifiIsMobileConnected() {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        boolean isWifiConn = false;
+        boolean isMobileConn = false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            for (Network network : connMgr.getAllNetworks()) {
+                NetworkInfo networkInfo = connMgr.getNetworkInfo(network);
+                if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                    isWifiConn |= networkInfo.isConnected();
+                }
+                if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                    isMobileConn |= networkInfo.isConnected();
+                }
+            }
+        } else {
+            NetworkInfo[] networkInfos = connMgr.getAllNetworkInfo();
+            if(networkInfos != null) {
+                for (NetworkInfo networkInfo : networkInfos) {
+                    if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+                        isWifiConn |= networkInfo.isConnected();
+                    }
+                    if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
+                        isMobileConn |= networkInfo.isConnected();
+                    }
+                }
+            }
+        }
+
+        Log.d(TAG, "Wifi connected: " + isWifiConn);
+        Log.d(TAG, "Mobile connected: " + isMobileConn);
+
+        return new Pair<Boolean, Boolean>(isWifiConn, isMobileConn);
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager connMgr = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
     }
 
     @Override
