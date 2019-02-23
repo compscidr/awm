@@ -74,13 +74,26 @@ public class WiFiAPStatsCollector extends StatsCollector {
                 Log.d(TAG, "GOT SCAN");
                 for(ScanResult scan : scans) {
                     Log.d(TAG, scan.BSSID + " " + scan.SSID + "\n  " + scan);
-                    NetworkDevice networkDevice = new NetworkDevice(
-                            scan.SSID,
-                            scan.BSSID,
-                            scan.level,
-                            scan.frequency,
-                            scan.channelWidth,
-                            scan.capabilities);
+
+
+                    NetworkDevice networkDevice = null;
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        networkDevice = new NetworkDevice(
+                                scan.SSID,
+                                scan.BSSID,
+                                scan.level,
+                                scan.frequency,
+                                scan.channelWidth,
+                                scan.capabilities);
+                    } else {
+                        networkDevice = new NetworkDevice(
+                                scan.SSID,
+                                scan.BSSID,
+                                scan.level,
+                                scan.frequency,
+                                0,
+                                scan.capabilities);
+                    }
                     devices.add(networkDevice);
                 }
                 eventBus.post(new NetworkStat(NetworkStat.DeviceType.WIFI, devices));

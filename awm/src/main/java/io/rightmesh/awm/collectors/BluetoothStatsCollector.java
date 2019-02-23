@@ -3,6 +3,7 @@ package io.rightmesh.awm.collectors;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -38,7 +39,16 @@ public class BluetoothStatsCollector extends StatsCollector {
 
     public BluetoothStatsCollector(Context context) {
         this.context = context;
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        BluetoothManager bluetoothManager = (BluetoothManager)context
+                .getSystemService(Context.BLUETOOTH_SERVICE);
+
+        if(bluetoothManager == null) {
+            Log.d(TAG, "BTMANAGER null");
+            return;
+        }
+
+        mBluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothBroadcastReceiver = new BluetoothBroadcastReceiver();
         btDevices = new HashSet<>();
         IntentFilter filter = new IntentFilter();
