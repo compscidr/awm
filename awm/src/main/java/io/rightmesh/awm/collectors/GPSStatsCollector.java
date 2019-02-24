@@ -31,7 +31,6 @@ public class GPSStatsCollector extends StatsCollector {
 
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
-    private LocationSettingsRequest locationSettingsRequest;
     private LocationCallback locationCallback;
 
     public GPSStatsCollector(Context context) {
@@ -45,7 +44,6 @@ public class GPSStatsCollector extends StatsCollector {
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
         builder.addLocationRequest(this.locationRequest);
-        locationSettingsRequest = builder.build();
 
         locationCallback = new LocationCallback() {
             @Override
@@ -56,7 +54,7 @@ public class GPSStatsCollector extends StatsCollector {
                 Log.i(TAG, "Location Callback results: " + currentLocation.getLatitude()
                         + " " + currentLocation.getLongitude());
 
-                eventBus.post(new GPSStats(currentLocation.getLongitude(), currentLocation.getLatitude()));
+                eventBus.post(new GPSStats(currentLocation.getLatitude(), currentLocation.getLongitude()));
             }
         };
     }

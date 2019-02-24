@@ -31,6 +31,7 @@ public class DiskLogger implements StatsLogger {
     private Bus eventBus = BusProvider.getInstance();
     private boolean cleanFile;
     private boolean cleanFileAfterUpload;
+    private volatile  boolean started;
 
     /* settable for tests */
     @Setter private BufferedWriter bufferedWriter;
@@ -40,6 +41,7 @@ public class DiskLogger implements StatsLogger {
         this.context = context;
         this.cleanFile = cleanFile;
         this.cleanFileAfterUpload = cleanFileAfterUpload;
+        started = false;
         lock  = new ReentrantLock();
     }
 
@@ -60,6 +62,7 @@ public class DiskLogger implements StatsLogger {
         }
 
         eventBus.register(this);
+        started = true;
     }
 
     @Override public void stop() {
@@ -74,6 +77,7 @@ public class DiskLogger implements StatsLogger {
             ex.printStackTrace();
         }
         eventBus.unregister(this);
+        started = false;
     }
 
     /**
@@ -130,6 +134,14 @@ public class DiskLogger implements StatsLogger {
     }
 
     public int getLogCount() throws IOException {
+        while (!started) {
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException ex) {
+                //
+            }
+        }
+
         while(lock.isLocked()) {
             try {
                 Thread.sleep(10);
