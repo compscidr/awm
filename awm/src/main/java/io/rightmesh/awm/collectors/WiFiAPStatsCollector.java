@@ -8,10 +8,15 @@ import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
 import android.util.Log;
 
+import com.anadeainc.rxbus.Bus;
+import com.anadeainc.rxbus.BusProvider;
+import com.anadeainc.rxbus.Subscribe;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import io.rightmesh.awm.loggers.WiFiScan;
 import io.rightmesh.awm.stats.NetworkDevice;
 import io.rightmesh.awm.stats.NetworkStat;
 import lombok.Getter;
@@ -24,6 +29,8 @@ public class WiFiAPStatsCollector extends StatsCollector {
     private WifiManager wifiManager;
     private WifiManager.WifiLock wifiLock;
     private WiFiScanReceiver wiFiScanReceiver;
+    private Set<NetworkDevice> devices;
+    private Bus eventBus = BusProvider.getInstance();
 
     @Getter
     private String myAddress;
@@ -37,10 +44,12 @@ public class WiFiAPStatsCollector extends StatsCollector {
         wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AWM-LIB");
         wiFiScanReceiver = new WiFiScanReceiver();
 
+        devices = new HashSet<>();
     }
 
     @Override
     public void start() throws Exception {
+        eventBus.register(this);
         if(wifiLock != null) {
             wifiLock.acquire();
         }
@@ -53,10 +62,16 @@ public class WiFiAPStatsCollector extends StatsCollector {
 
     @Override
     public void stop() {
+        eventBus.unregister(this);
         if(wifiLock != null) {
             wifiLock.release();
         }
         context.unregisterReceiver(wiFiScanReceiver);
+    }
+
+    @Subscribe public void startScan(WiFiScan wiFiScan) {
+        devices.clear();
+        wifiManager.startScan();
     }
 
     public class WiFiScanReceiver extends BroadcastReceiver {
@@ -66,13 +81,11 @@ public class WiFiAPStatsCollector extends StatsCollector {
             //todo on android 8 and 9 we should check if these scans are new or not
 
             List<ScanResult> scans = wifiManager.getScanResults();
-            Set<NetworkDevice> devices = new HashSet<>();
             if(scans.size() == 0) {
-                Log.d(TAG, "Scan empty. Waiting for another OS scan or an app resume");
-                //wifiManager.startScan();
+                wifiManager.startScan();
             } else {
                 Log.d(TAG, "GOT SCAN");
-                for(ScanResult scan : scans) {
+                for (ScanResult scan : scans) {
                     Log.d(TAG, scan.BSSID + " " + scan.SSID + "\n  " + scan);
 
 
@@ -96,6 +109,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
                     }
                     devices.add(networkDevice);
                 }
+                Log.d(TAG, "POSTING WIFI EVENT on thread: " + Thread.currentThread().getName());
                 eventBus.post(new NetworkStat(NetworkStat.DeviceType.WIFI, devices));
             }
         }
