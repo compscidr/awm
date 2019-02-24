@@ -117,43 +117,50 @@ public class NetworkLogger implements StatsLogger {
      */
     public void uploadPendingLogs(ArrayList<String> jsondata) {
         Runnable sendData = () -> {
-            try {
-                int count = 0;
-                for(String data : jsondata) {
-                    if(data.length() == 0) {
-                        continue;
-                    }
-                    URL url = new URL(DBURL);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-
-                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    os.writeBytes(data);
-                    os.flush();
-                    os.close();
-                    Log.i("UPLOAD PENINDING DATA", data);
-                    Log.i("UPLOAD PENDING STATUS", String.valueOf(conn.getResponseCode()));
-                    Log.i("UPLOAD PENDING MSG", conn.getResponseMessage());
-                    conn.disconnect();
-                    count++;
-
-                    if(conn.getResponseCode() == 400) {
-                        eventBus.post(new LogEvent(LogEvent.EventType.MALFORMED, LogEvent.LogType.NETWORK));
-                        return;
-                    }
-                }
-                eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, jsondata.size()));
-
-            } catch(Exception ex) {
-                Log.d(TAG, "Error uploading disk to the server: " + ex.toString());
-                eventBus.post(new LogEvent(LogEvent.EventType.FAILURE, LogEvent.LogType.NETWORK));
-            }
+            uploadPendingLogsThread(jsondata);
         };
         new Thread(sendData).start();
+    }
+
+    public void uploadPendingLogsThread(ArrayList<String> jsondata) {
+        try {
+            int count = 0;
+            Log.i(TAG, "UPLOADING: " + jsondata.size() + " records");
+            for(String data : jsondata) {
+                if(data.length() == 0) {
+                    continue;
+                }
+                URL url = new URL(DBURL);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                conn.setRequestProperty("Accept", "application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(data);
+                os.flush();
+                os.close();
+                Log.i("UPLOAD PENDING DATA", data);
+                Log.i("UPLOAD PENDING STATUS", String.valueOf(conn.getResponseCode()));
+                Log.i("UPLOAD PENDING MSG", conn.getResponseMessage());
+                conn.disconnect();
+                count++;
+
+                if (conn.getResponseCode() == 400) {
+                    //eventBus.post(new LogEvent(LogEvent.EventType.MALFORMED, LogEvent.LogType.NETWORK));
+                    //skip this record
+                    continue;
+                }
+            }
+            Log.d(TAG, "SUCCESFULLY UPLOADED " + jsondata.size() + " events");
+            eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, jsondata.size()));
+
+        } catch(Exception ex) {
+            Log.d(TAG, "Error uploading disk to the server: " + ex.toString());
+            eventBus.post(new LogEvent(LogEvent.EventType.FAILURE, LogEvent.LogType.NETWORK));
+        }
     }
 
     public boolean isWifiConnected() {
