@@ -15,55 +15,51 @@ import java.io.OutputStreamWriter;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
 
 import io.rightmesh.awm.ObservingDevice;
 import io.rightmesh.awm.stats.NetworkDevice;
 import io.rightmesh.awm.stats.NetworkStat;
+import lombok.Setter;
 
 public class DiskLogger implements StatsLogger {
+
     private static final String TAG = DiskLogger.class.getCanonicalName();
+    private static final String FILENAME = "data.dat";
     private Context context;
-    private BufferedWriter bufferedWriter;
-    private BufferedReader bufferedReader;
     private ReentrantLock lock;
     private Bus eventBus = BusProvider.getInstance();
-    private boolean cleanfile = false;
-    private volatile boolean started;
+    private boolean cleanFile;
+    private boolean cleanFileAfterUpload;
 
-    public DiskLogger(Context context, boolean cleanFile) {
+    /* settable for tests */
+    @Setter private BufferedWriter bufferedWriter;
+    @Setter private BufferedReader bufferedReader;
+
+    public DiskLogger(Context context, boolean cleanFile, boolean cleanFileAfterUpload) {
         this.context = context;
-        this.cleanfile = cleanFile;
+        this.cleanFile = cleanFile;
+        this.cleanFileAfterUpload = cleanFileAfterUpload;
         lock  = new ReentrantLock();
     }
 
     @Override public void start() {
-        started = false;
         try {
-            if(cleanfile) {
-                context.deleteFile("data.dat");
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                        context.openFileOutput("data.dat", Context.MODE_PRIVATE)));
-            } else {
-                bufferedWriter = new BufferedWriter(new OutputStreamWriter(
-                        context.openFileOutput("data.dat", Context.MODE_APPEND)));
+            if (cleanFile) {
+                context.deleteFile(FILENAME);
             }
+            bufferedWriter = new BufferedWriter(new OutputStreamWriter(
+                    context.openFileOutput(FILENAME, Context.MODE_PRIVATE)));
 
             bufferedReader = new BufferedReader(new InputStreamReader(
-                    context.openFileInput("data.dat")));
+                    context.openFileInput(FILENAME)));
 
-            eventBus.register(this);
-            started = true;
         } catch(IOException ex) {
             Log.d(TAG, "Failed to open files for logging: " + ex.toString());
             ex.printStackTrace();
         }
-    }
 
-    public boolean isStarted() {
-        return started;
+        eventBus.register(this);
     }
 
     @Override public void stop() {
@@ -77,7 +73,7 @@ public class DiskLogger implements StatsLogger {
         } catch(IOException ex) {
             ex.printStackTrace();
         }
-        started = false;
+        eventBus.unregister(this);
     }
 
     /**
@@ -134,14 +130,6 @@ public class DiskLogger implements StatsLogger {
     }
 
     public int getLogCount() throws IOException {
-        while (!started) {
-            try {
-                Thread.sleep(10);
-            } catch(InterruptedException ex) {
-                //
-            }
-        }
-
         while(lock.isLocked()) {
             try {
                 Thread.sleep(10);
@@ -205,6 +193,10 @@ public class DiskLogger implements StatsLogger {
 
     @Subscribe
     public void networkUploadStatus(LogEvent logEvent) {
+        if(!cleanFileAfterUpload) {
+            return;
+        }
+
         if(logEvent.getLogType() == LogEvent.LogType.NETWORK) {
             if(logEvent.getEventType() == LogEvent.EventType.SUCCESS ||
                     logEvent.getEventType() == LogEvent.EventType.MALFORMED) {

@@ -52,8 +52,8 @@ public class NetworkLogger implements StatsLogger {
             return;
         }
 
-        DecimalFormat df = new DecimalFormat("#.###");
-        df.setRoundingMode(RoundingMode.CEILING);
+        //DecimalFormat df = new DecimalFormat("#.####");
+        //df.setRoundingMode(RoundingMode.CEILING);
 
         Log.d(TAG, "LOGGING TO NETWORK!");
 
