@@ -97,7 +97,8 @@ public class AndroidWirelessStatsCollector {
 
     public AndroidWirelessStatsCollector(Activity activity,
                                          boolean uploadImmediately,
-                                         boolean cleanFile) {
+                                         boolean cleanFile,
+                                         boolean cleanFileOnUpload) {
         Log.i(TAG, "Initializing Android Wireless Stats Collector");
 
         firstLaunch = true;
@@ -150,7 +151,7 @@ public class AndroidWirelessStatsCollector {
         networkLogger = new NetworkLogger(activity.getApplicationContext());
         statsLoggers.add(networkLogger);
 
-        diskLogger = new DiskLogger(activity.getApplicationContext(), cleanFile);
+        diskLogger = new DiskLogger(activity.getApplicationContext(), cleanFile, cleanFileOnUpload);
         statsLoggers.add(diskLogger);
 
         if (!checkPlayServices(activity)) {
