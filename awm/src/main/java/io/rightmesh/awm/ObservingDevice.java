@@ -49,7 +49,7 @@ public class ObservingDevice {
         this.OS = OS;
     }
 
-    void updatePosition(GPSStats position) {
+    public void updatePosition(GPSStats position) {
         if(position.longitude != 0 && position.latitude != 0) {
             this.position = position;
         } else {
@@ -86,14 +86,17 @@ public class ObservingDevice {
     public String prepareJSON(String deviceJSON, Timestamp timestamp) {
         String json = "{\n";
 
+        String longitude = String.format("%f", position.longitude);
+        String latitude = String.format("%f", position.latitude);
+
         json += "\t\"awm_measure\": {\n";
         json += "\t\t\"reporting_device\": {\n";
         json += "\t\t\t\"uuid\": \"" + uuid.toString() + "\",\n";
         json += "\t\t\t\"ipv4_address\": \"" + inet4Address.getHostAddress() + "\",\n";
         json += "\t\t\t\"ipv6_address\": \"" + inet6Address.getHostAddress() + "\",\n";
         json += "\t\t\t\"timestamp\": \"" + timestamp.toString() + "\",\n";
-        json += "\t\t\t\"longitude\": \"" + position.longitude + "\",\n";
-        json += "\t\t\t\"latitude\": \"" + position.latitude + "\",\n";
+        json += "\t\t\t\"longitude\": \"" + longitude + "\",\n";
+        json += "\t\t\t\"latitude\": \"" + latitude + "\",\n";
         json += "\t\t\t\"bt_mac_address\": \"" + bluetoothMac + "\",\n";
         json += "\t\t\t\"wifi_mac_address\": \"" + wifiMac + "\",\n";
         json += "\t\t\t\"OS\": \"" + OS + "\",\n";
