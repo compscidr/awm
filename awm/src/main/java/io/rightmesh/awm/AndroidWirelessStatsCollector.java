@@ -44,6 +44,16 @@ import io.rightmesh.awm.stats.GPSStats;
 import io.rightmesh.awm.stats.NetworkStat;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
+import static android.Manifest.permission.ACCESS_NETWORK_STATE;
+import static android.Manifest.permission.ACCESS_WIFI_STATE;
+import static android.Manifest.permission.BLUETOOTH;
+import static android.Manifest.permission.BLUETOOTH_ADMIN;
+import static android.Manifest.permission.CHANGE_NETWORK_STATE;
+import static android.Manifest.permission.CHANGE_WIFI_MULTICAST_STATE;
+import static android.Manifest.permission.CHANGE_WIFI_STATE;
+import static android.Manifest.permission.INTERNET;
+import static android.Manifest.permission.WAKE_LOCK;
 
 public class AndroidWirelessStatsCollector {
     private boolean firstLaunch = false;
@@ -61,18 +71,18 @@ public class AndroidWirelessStatsCollector {
     private HashMap<String, Permission> permissionResults;
 
     //all of the permissions that the library needs
-    private String[] permissions = { Manifest.permission.BLUETOOTH,
-            Manifest.permission.BLUETOOTH_ADMIN,
+    private String[] permissions = {
+            BLUETOOTH,
+            BLUETOOTH_ADMIN,
             ACCESS_COARSE_LOCATION,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_WIFI_STATE,
-            Manifest.permission.CHANGE_WIFI_STATE,
-            Manifest.permission.CHANGE_WIFI_MULTICAST_STATE,
-            Manifest.permission.ACCESS_NETWORK_STATE,
-            Manifest.permission.CHANGE_NETWORK_STATE,
-            Manifest.permission.INTERNET,
-            Manifest.permission.WAKE_LOCK,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ACCESS_FINE_LOCATION,
+            ACCESS_WIFI_STATE,
+            CHANGE_WIFI_STATE,
+            CHANGE_WIFI_MULTICAST_STATE,
+            ACCESS_NETWORK_STATE,
+            CHANGE_NETWORK_STATE,
+            INTERNET,
+            WAKE_LOCK,
     };
 
     private NetworkLogger networkLogger;
