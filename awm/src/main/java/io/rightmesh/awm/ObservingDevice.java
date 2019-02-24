@@ -37,10 +37,10 @@ public class ObservingDevice {
 
     private static final String TAG = ObservingDevice.class.getCanonicalName();
 
-    ObservingDevice(UUID uuid, String OS) {
+    public ObservingDevice(UUID uuid, String OS) {
         try {
             inet4Address = (Inet4Address)Inet4Address.getByName("0.0.0.0");
-            inet6Address = (Inet6Address)Inet6Address.getByName("");
+            inet6Address = (Inet6Address)Inet6Address.getByName("::");
         } catch(UnknownHostException ex) {
             Log.d(TAG, "Unknown host: " + ex.toString());
         }
