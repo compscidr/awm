@@ -48,4 +48,13 @@ public class NetworkDevice {
         this.security = security;
     }
 
+
+    public NetworkDevice(NetworkDevice other) {
+        this.name = other.getName();
+        this.mac = other.getMac();
+        this.signalStrength = other.getSignalStrength();
+        this.frequency = other.getFrequency();
+        this.channelWidth = other.getChannelWidth();
+        this.security = other.getSecurity();
+    }
 }
