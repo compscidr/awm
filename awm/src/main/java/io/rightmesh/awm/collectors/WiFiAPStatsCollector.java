@@ -31,6 +31,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
     private WiFiScanReceiver wiFiScanReceiver;
     private Set<NetworkDevice> devices;
     private Bus eventBus = BusProvider.getInstance();
+    private volatile boolean started = false;
 
     @Getter
     private String myAddress;
@@ -58,15 +59,19 @@ public class WiFiAPStatsCollector extends StatsCollector {
 
         myAddress = wifiManager.getConnectionInfo().getMacAddress();
         wifiManager.startScan();
+        started = true;
     }
 
     @Override
     public void stop() {
-        eventBus.unregister(this);
-        if(wifiLock != null) {
-            wifiLock.release();
+        if(started) {
+            context.unregisterReceiver(wiFiScanReceiver);
+            eventBus.unregister(this);
+            if(wifiLock != null) {
+                wifiLock.release();
+            }
         }
-        context.unregisterReceiver(wiFiScanReceiver);
+        started = false;
     }
 
     @Subscribe public void startScan(WiFiScan wiFiScan) {

@@ -10,7 +10,8 @@ public class LogEvent {
 
     public enum LogType {
         DISK,
-        NETWORK
+        NETWORK,
+        DB
     }
 
     EventType etype;

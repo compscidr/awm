@@ -1,12 +1,10 @@
 package io.rightmesh.awm;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.util.Log;
-import android.util.Pair;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
@@ -36,7 +34,7 @@ import io.rightmesh.awm.collectors.InternetStatsCollector;
 import io.rightmesh.awm.collectors.StatsCollector;
 import io.rightmesh.awm.collectors.WiFiAPStatsCollector;
 import io.rightmesh.awm.collectors.WiFiDirectStatsCollector;
-import io.rightmesh.awm.loggers.DiskLogger;
+import io.rightmesh.awm.loggers.DatabaseLogger;
 import io.rightmesh.awm.loggers.NetworkLogger;
 import io.rightmesh.awm.loggers.StatsLogger;
 import io.rightmesh.awm.stats.BatteryStats;
@@ -86,7 +84,7 @@ public class AndroidWirelessStatsCollector {
     };
 
     private NetworkLogger networkLogger;
-    private DiskLogger diskLogger;
+    private DatabaseLogger databaseLogger;
 
     private ScheduledExecutorService scheduleTaskExecutor;
     private ObservingDevice thisDevice;
@@ -151,8 +149,8 @@ public class AndroidWirelessStatsCollector {
         networkLogger = new NetworkLogger(activity.getApplicationContext());
         statsLoggers.add(networkLogger);
 
-        diskLogger = new DiskLogger(activity.getApplicationContext(), cleanFile, cleanFileOnUpload);
-        statsLoggers.add(diskLogger);
+        databaseLogger = new DatabaseLogger(activity.getApplicationContext(), networkLogger);
+        statsLoggers.add(databaseLogger);
 
         if (!checkPlayServices(activity)) {
             Log.d(TAG, "Missing Google Play Services - GPS likely won't work.");
@@ -180,9 +178,6 @@ public class AndroidWirelessStatsCollector {
             startLoggers();
             startStats();
         }
-
-        scheduleTaskExecutor.scheduleAtFixedRate(
-                this::uploadDisk, 30, 5, TimeUnit.SECONDS);
     }
 
     /**
@@ -230,49 +225,57 @@ public class AndroidWirelessStatsCollector {
         }
     }
 
-    public void stop() {
-        eventBus.unregister(this);
-        compositeDisposable.clear();
-
+    /**
+     * Stops collecting records but allows to continue to upload
+     */
+    public void pause() {
         Log.i(TAG, "Stopping stats collection");
         for(StatsCollector statsInterface : statsCollectors) {
             statsInterface.stop();
         }
+    }
 
-        for(StatsLogger statsLogger: statsLoggers) {
-            statsLogger.stop();
+    public void unpause() {
+        Log.i(TAG, "Stopping stats collection");
+        for(StatsCollector statsInterface : statsCollectors) {
+            try {
+                statsInterface.start();
+            } catch(Exception ex) {
+                Log.d(TAG, "Exception starting the stats collection: " + ex.toString());
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Stops collecting and uploading
+     */
+    public void stop() {
+        try {
+            eventBus.unregister(this);
+            compositeDisposable.clear();
+
+            Log.i(TAG, "Stopping stats collection");
+            for (StatsCollector statsInterface : statsCollectors) {
+                statsInterface.stop();
+            }
+
+            for (StatsLogger statsLogger : statsLoggers) {
+                statsLogger.stop();
+            }
+        } catch(Exception ex) {
+            //eat any exception that happens because we might have already stopped
         }
     }
 
     @Subscribe
     public void updateNetworkStats(NetworkStat networkStat) {
-
-        //todo move this into a one time thing instead of on every update.
-        if(networkStat.getType() == NetworkStat.DeviceType.WIFI) {
-            thisDevice.setWifiMac(wifiStats.getMyAddress());
-        } else if(networkStat.getType() == NetworkStat.DeviceType.BLUETOOTH) {
-            thisDevice.setBluetoothMac(btStats.getMyAddress());
-        }
-
-        Pair<Boolean, Boolean> isWiFiisMobile = networkLogger.isWifiIsMobileConnected();
-        this.thisDevice.setHasWiFiInternet(isWiFiisMobile.first);
-        this.thisDevice.setHasCellularInternet(isWiFiisMobile.second);
-
-        try {
-            if (uploadImmediately && isWiFiisMobile.first) {
-                networkLogger.log(networkStat, thisDevice);
-            } else {
-                diskLogger.log(networkStat, thisDevice);
-            }
-        } catch(Exception ex) {
-            try {
-                diskLogger.log(networkStat, thisDevice);
-            } catch(Exception ex2) {
-                Log.e(TAG, "Failed to log to network and disk. Results lost: "
-                        + ex2.toString());
-                ex2.printStackTrace();
-            }
-        }
+        new Thread(() -> {
+            databaseLogger.log(networkStat, thisDevice);
+            Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");
+            Log.d(TAG, "UPLOADED: " + databaseLogger.getCountUploaded());
+            Log.d(TAG, "NON-UPLOADED: " + databaseLogger.getCountUploaded());
+        }).start();
     }
 
     @Subscribe
@@ -285,45 +288,9 @@ public class AndroidWirelessStatsCollector {
         thisDevice.updatePosition(gpsStats);
     }
 
-    private void uploadDisk() {
-        if(!networkLogger.isWifiConnected()) {
-            Log.d(TAG, "WIFI NOT CONNECTED");
-            return;
-        } else {
-            if(!networkLogger.isOnline()) {
-                Log.d(TAG, "WIFI CONNECTED BUT NOT ONLINE");
-                return;
-            }
-        }
-        Log.d(TAG, "ONLINE, UPLOADING LOGS");
-
-        ArrayList<String> jsondata;
-        try {
-            jsondata = diskLogger.getPendingLogs();
-        } catch(Exception ex) {
-            Log.d(TAG, "Error reading disk logs: " + ex.toString());
-            ex.printStackTrace();
-            return;
-        }
-
-        if(jsondata.size() > 0) {
-            try {
-                networkLogger.uploadPendingLogs(jsondata);
-            } catch (Exception ex) {
-                Log.d(TAG, "Unable to upload presently: " + ex.toString());
-                ex.printStackTrace();
-            }
-        }
-    }
-
     public int getSavedRecordCount() {
-        try {
-            int count = diskLogger.getLogCount();
-            Log.d(TAG, "GETPENDINGLOGS: " + count);
-            return count;
-        } catch ( IOException ex) {
-            Log.d(TAG, "IOEX: " + ex.toString());
-            return 0;
-        }
+        return databaseLogger.getCountNonUploaded();
     }
+
+    public int getUploadedRecordCount() { return databaseLogger.getCountUploaded(); }
 }

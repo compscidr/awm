@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
-import io.rightmesh.awm.ObservingDevice;
+
 import io.rightmesh.awm.stats.GPSStats;
 import io.rightmesh.awm.stats.NetworkDevice;
 import io.rightmesh.awm.stats.NetworkStat;

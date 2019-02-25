@@ -14,6 +14,7 @@ public class BatteryStatsCollector extends StatsCollector {
     private static final String TAG = BatteryStatsCollector.class.getCanonicalName();
     private PowerConnectionReceiver powerConnectionReceiver;
     private Context context;
+    private volatile boolean started = false;
 
     public BatteryStatsCollector(Context context) {
         this.context = context;
@@ -24,13 +25,15 @@ public class BatteryStatsCollector extends StatsCollector {
     public void start() throws Exception {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         context.registerReceiver(powerConnectionReceiver, ifilter);
+        started = true;
     }
 
     @Override
     public void stop() {
-        if(powerConnectionReceiver != null) {
+        if(powerConnectionReceiver != null && started) {
             context.unregisterReceiver(powerConnectionReceiver);
         }
+        started = false;
     }
 
     public class PowerConnectionReceiver extends BroadcastReceiver {

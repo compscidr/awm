@@ -15,6 +15,7 @@ public class WiFiDirectStatsCollector extends StatsCollector {
     private Context context;
     private WiFiDirectScanReceiver wiFiDirectScanReceiver;
     private WiFiDirectChannelDisconnectListener wiFiDirectChannelDisconnectListener;
+    private volatile boolean started;
 
     public WiFiDirectStatsCollector(Context context) {
         this.context = context;
@@ -41,11 +42,12 @@ public class WiFiDirectStatsCollector extends StatsCollector {
         //wifiDirectManager.addLocalService(wifiDirectChannel, "awm-lib", "awm-lib._udp", );
         wifiDirectManager.addServiceRequest(wifiDirectChannel, WifiP2pDnsSdServiceRequest.newInstance(), null);
         wifiDirectManager.setDnsSdResponseListeners(wifiDirectChannel, wiFiDirectScanReceiver, null);
+        started = true;
     }
 
     @Override
     public void stop() {
-
+        started = false;
     }
 
     public class WiFiDirectChannelDisconnectListener implements WifiP2pManager.ChannelListener {

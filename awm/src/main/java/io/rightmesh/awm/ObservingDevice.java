@@ -7,12 +7,11 @@ import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.UUID;
-import java.util.logging.Logger;
-
 import io.rightmesh.awm.stats.GPSStats;
 import lombok.Setter;
 
 public class ObservingDevice {
+
     private UUID uuid;
     private GPSStats position;
     private String wifiMac;

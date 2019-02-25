@@ -29,6 +29,7 @@ public class BluetoothStatsCollector extends StatsCollector {
     private static volatile BluetoothStates btState;
     private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
     private HashSet<NetworkDevice> btDevices;
+    private volatile boolean started = false;
 
     @Getter
     private String myAddress;
@@ -76,6 +77,8 @@ public class BluetoothStatsCollector extends StatsCollector {
             mBluetoothAdapter.startDiscovery();
             myAddress = mBluetoothAdapter.getAddress();
         }
+
+        started = true;
     }
 
     @Override
@@ -83,10 +86,11 @@ public class BluetoothStatsCollector extends StatsCollector {
         //we may want to consider restoring the initial state of the bt device from before
         //the library started, ie if it was on, leave it on, if it was off, turn it back off.
 
-        if(bluetoothBroadcastReceiver != null) {
+        if(bluetoothBroadcastReceiver != null && started) {
             context.unregisterReceiver(bluetoothBroadcastReceiver);
             bluetoothBroadcastReceiver = null;
         }
+        started = false;
     }
 
     public class BluetoothBroadcastReceiver extends BroadcastReceiver {

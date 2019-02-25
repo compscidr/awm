@@ -32,6 +32,7 @@ public class GPSStatsCollector extends StatsCollector {
     private FusedLocationProviderClient mFusedLocationClient;
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
+    private volatile boolean started = false;
 
     public GPSStatsCollector(Context context) {
 
@@ -70,10 +71,15 @@ public class GPSStatsCollector extends StatsCollector {
 
         mFusedLocationClient.requestLocationUpdates(this.locationRequest,
                 this.locationCallback, Looper.myLooper());
+
+        started = true;
     }
 
     @Override
     public void stop() {
-        mFusedLocationClient.removeLocationUpdates(locationCallback);
+        if(started) {
+            mFusedLocationClient.removeLocationUpdates(locationCallback);
+        }
+        started = false;
     }
 }
