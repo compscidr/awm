@@ -8,12 +8,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Network;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import com.google.common.collect.Sets;
+
+import java.util.Set;
 
 import io.rightmesh.awm.stats.NetworkDevice;
 import io.rightmesh.awm.stats.NetworkStat;
@@ -28,7 +28,7 @@ public class BluetoothStatsCollector extends StatsCollector {
     private static BluetoothAdapter mBluetoothAdapter;
     private static volatile BluetoothStates btState;
     private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
-    private HashSet<NetworkDevice> btDevices;
+    private Set<NetworkDevice> btDevices;
     private volatile boolean started = false;
 
     @Getter
@@ -51,7 +51,7 @@ public class BluetoothStatsCollector extends StatsCollector {
 
         mBluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothBroadcastReceiver = new BluetoothBroadcastReceiver();
-        btDevices = new HashSet<>();
+        btDevices = Sets.newConcurrentHashSet();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
@@ -125,7 +125,7 @@ public class BluetoothStatsCollector extends StatsCollector {
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                 if(btDevices.size() > 0) {
                     Log.d(TAG, "After scan found a total of " + btDevices.size() + " devices");
-                    HashSet<NetworkDevice> devices = new HashSet<>();
+                    Set<NetworkDevice> devices = Sets.newConcurrentHashSet();
                     devices.addAll(btDevices);
                     eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, devices));
                     btDevices.clear();

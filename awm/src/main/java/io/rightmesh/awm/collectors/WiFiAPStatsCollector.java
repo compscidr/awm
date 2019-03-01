@@ -11,6 +11,7 @@ import android.util.Log;
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
+import com.google.common.collect.Sets;
 
 import java.util.HashSet;
 import java.util.List;
@@ -45,7 +46,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
         wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AWM-LIB");
         wiFiScanReceiver = new WiFiScanReceiver();
 
-        devices = new HashSet<>();
+        devices = Sets.newConcurrentHashSet();
     }
 
     @Override
