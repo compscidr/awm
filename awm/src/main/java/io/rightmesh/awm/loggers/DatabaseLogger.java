@@ -122,8 +122,13 @@ public class DatabaseLogger implements StatsLogger {
         databaseObservation.setUploaded(false);
         databaseObservation.setUploadedSucessfully(false);
 
-        db.databaseObservationDao().insert(databaseObservation);
-        eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.DB, 1));
+        try {
+            db.databaseObservationDao().insert(databaseObservation);
+            eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.DB, 1));
+        } catch( Exception ex ) {
+            //this occurs if the storage space is full
+            eventBus.post(new LogEvent(LogEvent.EventType.FAILURE, LogEvent.LogType.DB, 1));
+        }
     }
 
     public int getCountUploaded() {
