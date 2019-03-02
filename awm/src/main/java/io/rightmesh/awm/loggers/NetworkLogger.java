@@ -48,7 +48,7 @@ public class NetworkLogger implements StatsLogger {
      */
     public void uploadJsonEntry(String jsonData) throws IOException {
         //if the length is zero say we uploaded it
-        if(jsonData.length() == 0) {
+        if(jsonData == null || jsonData.length() == 0) {
             Log.d(TAG, "Zero sized entry");
             throw new IOException("Zero sized db entry");
         }
