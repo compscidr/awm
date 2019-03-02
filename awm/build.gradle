@@ -21,7 +21,7 @@ plugins {
 }
 
 group 'io.rightmesh'
-System.setProperty("snapshot","yes")
+System.setProperty("snapshot","no")
 version '1.1.11' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
 android {
@@ -60,7 +60,7 @@ dependencies {
     implementation 'com.github.anadea:rxbus:1.0.1'
 
     //concurrent set
-    api 'com.google.guava:guava:27.0.1-android'
+    implementation 'com.google.guava:guava:27.0.1-android'
 
     //play services for location
     implementation ('com.google.android.gms:play-services-location:15.0.1') {
@@ -75,11 +75,6 @@ dependencies {
     //unit and integration tests
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.0"
     testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.0"
-    testImplementation "org.mockito:mockito-core:2.23.0"
-    //testImplementation "org.robolectric:robolectric:3.3.2"
-    //testImplementation 'androidx.test:core:1.1.0'
-    //testImplementation 'junit:junit:4.12'
-
     testImplementation "org.mockito:mockito-core:2.23.0"
 
     //persistence

@@ -7,6 +7,8 @@ import android.util.Log;
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 
+import org.json.JSONException;
+
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -24,10 +26,14 @@ public class DatabaseLogger implements StatsLogger {
     private ObservationDatabase db;
     private volatile boolean running;
     private Thread networkThread;
+    private boolean clearBoot;
+    private boolean clearUpload;
 
-    public DatabaseLogger(Context context, NetworkLogger networkLogger) {
+    public DatabaseLogger(Context context, NetworkLogger networkLogger, boolean clearBoot, boolean clearUpload) {
         this.running = false;
         this.networkLogger = networkLogger;
+        this.clearBoot = clearBoot;
+        this.clearUpload = clearUpload;
         this.db = Room.databaseBuilder(context,
                 ObservationDatabase.class, "observation-database").build();
     }
@@ -35,6 +41,12 @@ public class DatabaseLogger implements StatsLogger {
     @Override
     public void start() throws Exception {
         running = true;
+
+        //clobber the dB
+        if (clearBoot) {
+            db.clearAllTables();
+        }
+
         networkThread = new Thread(this::uploadLogs);
         networkThread.start();
     }
@@ -61,12 +73,15 @@ public class DatabaseLogger implements StatsLogger {
                     try {
                         Log.d(TAG, "Trying to upload");
                         observation.setUploaded(true);
-                        networkLogger.uploadLoad(observation.getObservationJson());
-                        observation.setUploaded(false);
-                        observation.setUploadedSucessfully(true);
-                        db.databaseObservationDao().updateObservation(observation);
+                        networkLogger.uploadJsonEntry(observation.getObservationJson());
+                        if (clearUpload) {
+                            db.databaseObservationDao().delete(observation);
+                        } else {
+                            observation.setUploaded(false);
+                            observation.setUploadedSucessfully(true);
+                            db.databaseObservationDao().updateObservation(observation);
+                        }
                         Log.d(TAG, "Uploaded record");
-                        eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, 1));
                     } catch (IOException ex) {
                         Log.d(TAG, "Failed uploading.");
                     }
@@ -84,40 +99,13 @@ public class DatabaseLogger implements StatsLogger {
 
     @Override
     public void log(NetworkStat stat, ObservingDevice thisDevice) {
-        if(thisDevice.getPosition().latitude == 0 || thisDevice.getPosition().longitude == 0) {
-            Log.d(TAG, "null position. ignoring this measure");
-            return;
-        }
-
-        String deviceJson = "";
-        int count = 1;
-        for(NetworkDevice network : stat.getDevices()) {
-            deviceJson += "\t\t\t{\n";
-            deviceJson += "\t\t\t\t\"mac_address\": \"" + network.getMac() + "\",\n";
-            deviceJson += "\t\t\t\t\"signal_strength\": " + network.getSignalStrength() + ",\n";
-            deviceJson += "\t\t\t\t\"frequency\": " + network.getFrequency() + ",\n";
-            deviceJson += "\t\t\t\t\"channel_width\": " + network.getChannelWidth() + ",\n";
-            deviceJson += "\t\t\t\t\"security\": \"" + network.getSecurity() + "\",\n";
-            if (stat.getType() == NetworkStat.DeviceType.BLUETOOTH) {
-                deviceJson += "\t\t\t\t\"mac_type\": " + 0 + ",\n";
-            } else if (stat.getType() == NetworkStat.DeviceType.WIFI) {
-                deviceJson += "\t\t\t\t\"mac_type\": " + 1 + ",\n";
-            } else {
-                deviceJson += "\t\t\t\t\"mac_type\": " + -1 + ",\n";
-            }
-            deviceJson += "\t\t\t\t\"network_name\": \"" + network.getName() + "\"\n";
-            if (count < stat.getDevices().size()) {
-                deviceJson += "\t\t\t},\n";
-            } else {
-                deviceJson += "\t\t\t}\n";
-            }
-            count++;
-        }
-
-        String jsondata = thisDevice.prepareJSON(deviceJson, new Timestamp(new Date().getTime()));
 
         DatabaseObservation databaseObservation = new DatabaseObservation();
-        databaseObservation.setObservationJson(jsondata);
+        try {
+            databaseObservation.setObservationJson(stat.toJSON(thisDevice));
+        } catch (JSONException e) {
+            Log.d(TAG, e.toString());
+        }
 
         databaseObservation.setUploaded(false);
         databaseObservation.setUploadedSucessfully(false);

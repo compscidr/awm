@@ -15,15 +15,12 @@ import com.vanniktech.rxpermission.Permission;
 import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
@@ -40,6 +37,8 @@ import io.rightmesh.awm.loggers.StatsLogger;
 import io.rightmesh.awm.stats.BatteryStats;
 import io.rightmesh.awm.stats.GPSStats;
 import io.rightmesh.awm.stats.NetworkStat;
+import lombok.Getter;
+import lombok.Setter;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
@@ -54,8 +53,21 @@ import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.WAKE_LOCK;
 
 public class AndroidWirelessStatsCollector {
-    private boolean firstLaunch = false;
-    private boolean uploadImmediately = false;
+
+    @Setter @Getter
+    private boolean caching;
+    @Getter @Setter
+    private boolean wifiUploads;
+    @Getter @Setter
+    private boolean clearBoot;
+    @Getter @Setter
+    private boolean clearUpload;
+    @Getter @Setter
+    private boolean privacy;
+    @Getter @Setter
+    private String url;
+
+    private boolean firstLaunch;
     private static final String SHARED_PREF_FILE = "uuid.dat";
     private static final String TAG = AndroidWirelessStatsCollector.class.getCanonicalName();
     private Set<StatsCollector> statsCollectors;
@@ -94,13 +106,20 @@ public class AndroidWirelessStatsCollector {
     private BluetoothStatsCollector btStats;
 
     public AndroidWirelessStatsCollector(Activity activity,
-                                         boolean uploadImmediately,
-                                         boolean cleanFile,
-                                         boolean cleanFileOnUpload) {
+                                         boolean caching,
+                                         boolean wifiUploads,
+                                         boolean clearBoot,
+                                         boolean clearUpload,
+                                         boolean privacy,
+                                         String url) {
         Log.i(TAG, "Initializing Android Wireless Stats Collector");
-
         firstLaunch = true;
-        this.uploadImmediately = uploadImmediately;
+        this.wifiUploads = wifiUploads;
+        this.caching = caching;
+        this.clearBoot = clearBoot;
+        this.clearUpload = clearUpload;
+        this.privacy = privacy;
+        this.url = url;
 
         sharedPreferences = activity.getApplicationContext()
                 .getSharedPreferences(SHARED_PREF_FILE, Context.MODE_PRIVATE);
@@ -146,10 +165,10 @@ public class AndroidWirelessStatsCollector {
         BatteryStatsCollector bStats = new BatteryStatsCollector(activity.getApplicationContext());
         statsCollectors.add(bStats);
 
-        networkLogger = new NetworkLogger(activity.getApplicationContext());
+        networkLogger = new NetworkLogger(activity.getApplicationContext(), privacy, url);
         statsLoggers.add(networkLogger);
 
-        databaseLogger = new DatabaseLogger(activity.getApplicationContext(), networkLogger);
+        databaseLogger = new DatabaseLogger(activity.getApplicationContext(), networkLogger, clearBoot, clearUpload);
         statsLoggers.add(databaseLogger);
 
         if (!checkPlayServices(activity)) {
@@ -168,13 +187,13 @@ public class AndroidWirelessStatsCollector {
 
                         //see if we've received all the permissions yet
                         if(permissionResults.size() == permissions.length) {
+                            firstLaunch = false;
                             startLoggers();
                             startStats();
                         }
                     }));
             eventBus.register(this);
         } else {
-            firstLaunch = false;
             startLoggers();
             startStats();
         }
@@ -270,12 +289,30 @@ public class AndroidWirelessStatsCollector {
 
     @Subscribe
     public void updateNetworkStats(NetworkStat networkStat) {
-        new Thread(() -> {
-            databaseLogger.log(networkStat, thisDevice);
-            Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");
-            Log.d(TAG, "UPLOADED: " + databaseLogger.getCountUploaded());
-            Log.d(TAG, "NON-UPLOADED: " + databaseLogger.getCountUploaded());
-        }).start();
+
+        //if we aren't caching, lets send it straight to the network
+        if (!caching) {
+            //if we are only doing Wi-Fi uploads let's check if we're online
+            if (wifiUploads && networkLogger.isWifiConnected() && networkLogger.isOnline()) {
+                new Thread(() -> {
+                    networkLogger.log(networkStat, thisDevice);
+                }).start();
+
+            } else if(!wifiUploads && networkLogger.isOnline()) {
+                new Thread(() -> {
+                    networkLogger.log(networkStat, thisDevice);
+                }).start();
+            } else {
+                //offline - TODO: memory caching?
+            }
+        } else {
+            new Thread(() -> {
+                databaseLogger.log(networkStat, thisDevice);
+                Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");
+                Log.d(TAG, "UPLOADED: " + databaseLogger.getCountUploaded());
+                Log.d(TAG, "NON-UPLOADED: " + databaseLogger.getCountUploaded());
+            }).start();
+        }
     }
 
     @Subscribe

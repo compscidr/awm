@@ -11,6 +11,8 @@ import android.util.Pair;
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 
+import org.json.JSONException;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -27,12 +29,16 @@ public class NetworkLogger implements StatsLogger {
 
     private static final String TAG = NetworkLogger.class.getCanonicalName();
     private static final String DBURL = "https://test.rightmesh.io/awm-lib-server/";
+    private boolean privacy;
+    private String urlString;
     private Bus eventBus;
     private Context context;
 
-    public NetworkLogger(Context context) {
+    public NetworkLogger(Context context, boolean privacy, String url) {
          eventBus = BusProvider.getInstance();
          this.context = context;
+         this.privacy = privacy;
+         this.urlString = url;
     }
 
     /**
@@ -40,14 +46,14 @@ public class NetworkLogger implements StatsLogger {
      * @param jsonData the json encoded entry ready to rock
      * @throws IOException is something went shitty.
      */
-    public void uploadLoad(String jsonData) throws IOException {
+    public void uploadJsonEntry(String jsonData) throws IOException {
         //if the length is zero say we uploaded it
         if(jsonData.length() == 0) {
             Log.d(TAG, "Zero sized entry");
             throw new IOException("Zero sized db entry");
         }
 
-        URL url = new URL(DBURL);
+        URL url = new URL(urlString);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
@@ -64,7 +70,7 @@ public class NetworkLogger implements StatsLogger {
         Log.i("UPLOAD PENDING MSG", conn.getResponseMessage());
         conn.disconnect();
 
-        //eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, 1));
+        eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, 1));
     }
 
     public boolean isWifiConnected() {
@@ -121,8 +127,20 @@ public class NetworkLogger implements StatsLogger {
 
     }
 
+    /**
+     * Should only be used when direct network logging is performed. When the dB wishes to upload
+     * it should use the uploadJsonEntry function
+     * @param stat the NetworkStat to log
+     * @param thisDevice the state of the observing device.
+     */
     @Override
     public void log(NetworkStat stat, ObservingDevice thisDevice) {
-        //do nothing because its handled by the db logger now.
+        try {
+            uploadJsonEntry(stat.toJSON(thisDevice));
+        } catch (JSONException ex) {
+            //ignore this entry if this gets thrown
+        } catch(IOException ex) {
+            //we don't keep track of fails atm so just do nothing
+        }
     }
 }
