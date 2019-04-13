@@ -34,9 +34,6 @@ public class WiFiAPStatsCollector extends StatsCollector {
     private Bus eventBus = BusProvider.getInstance();
     private volatile boolean started = false;
 
-    @Getter
-    private String myAddress;
-
     public WiFiAPStatsCollector(Context context) {
         this.context = context;
 
@@ -50,7 +47,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
     }
 
     @Override
-    public void start() throws Exception {
+    public void start() {
         eventBus.register(this);
         if(wifiLock != null) {
             wifiLock.acquire();
@@ -58,7 +55,6 @@ public class WiFiAPStatsCollector extends StatsCollector {
         context.registerReceiver(wiFiScanReceiver,
                 new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
 
-        myAddress = wifiManager.getConnectionInfo().getMacAddress();
         wifiManager.startScan();
         started = true;
     }
