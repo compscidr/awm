@@ -14,7 +14,7 @@ android:
     - platform-tools
     - tools
     - extra-google-google_play_services
-    
+
   licenses:
     - 'android-sdk-preview-license-52d11cd2'
     - 'android-sdk-license-.+'
@@ -34,7 +34,7 @@ jobs:
     - stage: snapshot
       script: ./gradlew artifactoryPublish -Dsnapshot=true -Dbintrayuser=$bintrayuser -Dbintraykey=$bintraykey -Dbuild.number=$TRAVIS_BUILD_NUMBER
     - stage: release
-      script: ./gradlew bintrayUpload -Dbintrayuser=$bintrayuser -Dbintraykey=$bintraykey -Dgpgpassphrass=$gpgpassphrase -Dbuild.number=$TRAVIS_BUILD_NUMBER
+      script: ./gradlew bintrayUpload -Dbintrayuser=$bintrayuser -Dbintraykey=$bintraykey -Dbuild.number=$TRAVIS_BUILD_NUMBER
 
 before_install:
   # Install SDK license so Android Gradle plugin can install deps.
