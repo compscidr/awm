@@ -21,7 +21,6 @@ plugins {
 }
 
 group 'io.rightmesh'
-System.setProperty("snapshot","no")
 version '1.1.13' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
 android {
@@ -112,18 +111,47 @@ task sourceJar(type: Jar) {
     classifier "sources"
 }
 
+task androidJavadocs(type: Javadoc) {
+    // execute only if I'm publishing on maven
+    onlyIf { gradle.taskGraph.hasTask(uploadArchives) }
 
-/*
-task javadoc(type: Javadoc) {
+    // all the sources of the current module
     source = android.sourceSets.main.java.srcDirs
-    ext.androidJar = "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
-    classpath += files(ext.androidJar)
+    // the Android SDK classpath
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    // all the dependencies classpaths
+    classpath += configurations.compile
+
+    // Honestly I do not remember why it's a good idea to exclude these
+    exclude '**/BuildConfig.class'
+    exclude '**/R.class'
+    exclude '**/R$*.class'
+
+    options {
+        // Java reference
+        links("http://docs.oracle.com/javase/8/docs/api/");
+
+        // dependencies API references (I should probably move these in the project or something)
+        links("http://reactivex.io/RxJava/javadoc/");
+        links("https://google.github.io/gson/apidocs/");
+
+        // Android reference is not standard javadoc so I need to use offline directory
+        linksOffline("http://d.android.com/reference/", "${android.sdkDirectory}/docs/reference")
+
+        // Java 8 javadoc is more strict, This disable that strictness
+        if (JavaVersion.current().isJava8Compatible()) {
+            addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+
+    //uncomment to avoid failing the build if javadoc fails
+    //failOnError false
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
     classifier = 'javadoc'
-    from javadoc.destinationDir
-}*/
+    from androidJavadocs.destinationDir
+}
 
 publishing.publications {
     publicLib(MavenPublication) {
@@ -134,7 +162,7 @@ publishing.publications {
             version this.version
 
             artifact(sourceJar)
-            //artifact(javadocJar)
+            artifact(androidJavadocsJar)
 
             pom.withXml {
                 def root = asNode()
@@ -204,4 +232,8 @@ artifactory {
         repoKey = 'oss-snapshot-local'
     }
     clientConfig.info.setBuildNumber(System.getProperty('build.number'))
+}
+
+task getVersion() {
+    print version
 }
