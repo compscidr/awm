@@ -10,6 +10,7 @@ import com.anadeainc.rxbus.BusProvider;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.security.InvalidParameterException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -82,6 +83,9 @@ public class DatabaseLogger implements StatsLogger {
                             db.databaseObservationDao().updateObservation(observation);
                         }
                         Log.d(TAG, "Uploaded record");
+                    } catch(InvalidParameterException ex) {
+                        Log.d(TAG, "Invalid entry - removing");
+                        db.databaseObservationDao().delete(observation);
                     } catch (IOException ex) {
                         Log.d(TAG, "Failed uploading.");
                     }
