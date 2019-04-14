@@ -13,10 +13,13 @@ import com.anadeainc.rxbus.BusProvider;
 
 import org.json.JSONException;
 
+import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.InvalidParameterException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +31,6 @@ import io.rightmesh.awm.stats.NetworkStat;
 public class NetworkLogger implements StatsLogger {
 
     private static final String TAG = NetworkLogger.class.getCanonicalName();
-    private static final String DBURL = "https://test.rightmesh.io/awm-lib-server/";
     private boolean privacy;
     private String urlString;
     private Bus eventBus;
@@ -50,7 +52,7 @@ public class NetworkLogger implements StatsLogger {
         //if the length is zero say we uploaded it
         if(jsonData == null || jsonData.length() == 0) {
             Log.d(TAG, "Zero sized entry");
-            throw new IOException("Zero sized db entry");
+            throw new InvalidParameterException("Zero sized db entry");
         }
 
         URL url = new URL(urlString);
@@ -66,9 +68,14 @@ public class NetworkLogger implements StatsLogger {
         os.flush();
         os.close();
         Log.i("UPLOAD PENDING DATA", jsonData);
-        Log.i("UPLOAD PENDING STATUS", String.valueOf(conn.getResponseCode()));
+        int status = conn.getResponseCode();
+        Log.i("UPLOAD PENDING STATUS", String.valueOf(status));
         Log.i("UPLOAD PENDING MSG", conn.getResponseMessage());
         conn.disconnect();
+
+        if (status != 200) {
+           throw new InvalidParameterException(conn.getResponseMessage());
+        }
 
         eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.NETWORK, 1));
     }

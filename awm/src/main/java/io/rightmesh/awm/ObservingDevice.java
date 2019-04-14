@@ -14,8 +14,6 @@ public class ObservingDevice {
 
     private UUID uuid;
     private GPSStats position;
-    private String wifiMac;
-    private String bluetoothMac;
     private String OS;
     private Inet4Address inet4Address;
     private Inet6Address inet6Address;
@@ -56,14 +54,6 @@ public class ObservingDevice {
         }
     }
 
-    void setWifiMac(String wifiMac) {
-        this.wifiMac = wifiMac;
-    }
-
-    void setBluetoothMac(String bluetoothMac) {
-        this.bluetoothMac = bluetoothMac;
-    }
-
     void setInet4Address(Inet4Address inet4Address) { this.inet4Address = inet4Address; }
 
     void setInet6Address(Inet6Address inet6Address) { this.inet6Address = inet6Address; }
@@ -96,8 +86,8 @@ public class ObservingDevice {
         json += "\t\t\t\"timestamp\": \"" + timestamp.toString() + "\",\n";
         json += "\t\t\t\"longitude\": \"" + longitude + "\",\n";
         json += "\t\t\t\"latitude\": \"" + latitude + "\",\n";
-        json += "\t\t\t\"bt_mac_address\": \"" + bluetoothMac + "\",\n";
-        json += "\t\t\t\"wifi_mac_address\": \"" + wifiMac + "\",\n";
+        json += "\t\t\t\"bt_mac_address\": \"00:00:00:00:00\",\n";
+        json += "\t\t\t\"wifi_mac_address\": \"00:00:00:00:00\",\n";
         json += "\t\t\t\"OS\": \"" + OS + "\",\n";
         json += "\t\t\t\"battery_life\": \"" + battery_life + "\",\n";
         json += "\t\t\t\"has_cellular_internet\": \"" + hasCellularInternet + "\",\n";
