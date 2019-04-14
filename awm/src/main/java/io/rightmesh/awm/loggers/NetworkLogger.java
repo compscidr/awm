@@ -32,14 +32,16 @@ public class NetworkLogger implements StatsLogger {
 
     private static final String TAG = NetworkLogger.class.getCanonicalName();
     private boolean privacy;
+    private boolean wifiUploads;
     private String urlString;
     private Bus eventBus;
     private Context context;
 
-    public NetworkLogger(Context context, boolean privacy, String url) {
+    public NetworkLogger(Context context, boolean privacy, boolean wifiUploads, String url) {
          eventBus = BusProvider.getInstance();
          this.context = context;
          this.privacy = privacy;
+         this.wifiUploads = wifiUploads;
          this.urlString = url;
     }
 
@@ -85,6 +87,11 @@ public class NetworkLogger implements StatsLogger {
         return isConnected.first;
     }
 
+    public boolean isMobileConnected() {
+        Pair<Boolean, Boolean> isConnected = isWifiIsMobileConnected();
+        return isConnected.second;
+    }
+
     public Pair<Boolean, Boolean> isWifiIsMobileConnected() {
         ConnectivityManager connMgr =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -114,13 +121,25 @@ public class NetworkLogger implements StatsLogger {
             }
         }
 
-        return new Pair<Boolean, Boolean>(isWifiConn, isMobileConn);
+        return new Pair<>(isWifiConn, isMobileConn);
     }
 
     public boolean isOnline() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+
+        if(networkInfo == null) {
+            Log.d(TAG, "NETWORK INFO NULL, Can't determine connectivity");
+        } else {
+            Log.d(TAG, "CONNECTED? " + networkInfo.isConnected());
+        }
+
+        if (wifiUploads && !isWifiConnected()) {
+            Log.d(TAG, "Wi-Fi uploads only and NOT on Wi-Fi");
+            return false;
+        }
+
         return (networkInfo != null && networkInfo.isConnected());
     }
 

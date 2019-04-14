@@ -62,8 +62,7 @@ public class DatabaseLogger implements StatsLogger {
         Log.d(TAG, "UPLOAD LOGS STARTED IN DBLOGGER");
         while (running && !networkThread.isInterrupted()) {
             Log.d(TAG, "INSIDE DBLOGGER UPLOAD LOOP");
-            if (networkLogger.isOnline() && networkLogger.isWifiConnected()
-                    && db.databaseObservationDao().getCountNonUploaded() > 0) {
+            if (networkLogger.isOnline() && db.databaseObservationDao().getCountNonUploaded() > 0) {
                 Log.d(TAG, "ONLINE and HAVE NON-UPLOADED");
                 List<DatabaseObservation> observations = db.databaseObservationDao().getNonUploaded();
                 Log.d(TAG, "OBSERVATIONS: " + observations.size());

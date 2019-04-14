@@ -165,7 +165,7 @@ public class AndroidWirelessStatsCollector {
         BatteryStatsCollector bStats = new BatteryStatsCollector(activity.getApplicationContext());
         statsCollectors.add(bStats);
 
-        networkLogger = new NetworkLogger(activity.getApplicationContext(), privacy, url);
+        networkLogger = new NetworkLogger(activity.getApplicationContext(), privacy, wifiUploads, url);
         statsLoggers.add(networkLogger);
 
         databaseLogger = new DatabaseLogger(activity.getApplicationContext(), networkLogger, clearBoot, clearUpload);
