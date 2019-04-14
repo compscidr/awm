@@ -21,7 +21,7 @@ plugins {
 }
 
 group 'io.rightmesh'
-version '1.1.20' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version '1.1.21' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
 android {
     buildToolsVersion "28.0.3"
