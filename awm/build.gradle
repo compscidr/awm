@@ -21,7 +21,7 @@ plugins {
 }
 
 group 'io.rightmesh'
-version '1.1.21' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
+version '1.1.23' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
 android {
     buildToolsVersion "28.0.3"
@@ -30,7 +30,7 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
+        versionCode 23
         versionName this.version
     }
 
@@ -56,7 +56,7 @@ android {
 dependencies {
     //permissions
     implementation 'com.vanniktech:rxpermission:0.4.0'
-    implementation 'com.github.anadea:rxbus:1.0.1'
+    api 'com.github.anadea:rxbus:1.0.1'
 
     //concurrent set
     implementation 'com.google.guava:guava:27.0.1-android'
