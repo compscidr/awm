@@ -17,7 +17,7 @@ such as:
 Add to your `build.gradle` file the following:
 ```
 dependencies {
-  implementation 'io.rightmesh:awm:1.1.1'
+  implementation 'io.rightmesh:awm:1.1.23'
 }
 ```
 This has been tested with gradle 4.9 and Android Studio 3.3.
