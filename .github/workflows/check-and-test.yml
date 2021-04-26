@@ -1,0 +1,35 @@
+name: awm-lib test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  awm_checks:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11.0.4'
+#      - name: lint
+#          run: ./gradlew awm:lint
+#      - name: lint results
+#          uses: yutailang0119/action-android-lint@v1.1.0
+#          with:
+#            xml_path: awm/build/reports/lint/report.xml
+#        - name: checkstyle
+#            run: ./gradlew awm:checkstyle
+#        - name: junit5 units tests (with jacoco covarege reports)
+#            run: ./gradlew awm:jacocoTestReport
+#        - uses: actions/upload-artifact@v2
+#            with:
+#              name: awm-reports
+#              path: awm/build/reports
+
+# todo: take out the build check and move to linter, checkstyle, unit and integration tests
+        - name: build check
+          run: ./gradlew awm:build
