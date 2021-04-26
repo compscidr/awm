@@ -16,7 +16,7 @@ jobs:
           distribution: 'adopt'
           java-version: '11.0.4'
       - name: build check
-        run: ./gradlew awm:build
+        run: ./gradlew awm:compileReleaseSources
 # todo: take out the build check and move to linter, checkstyle, unit and integration tests
 #      - name: lint
 #          run: ./gradlew awm:lint

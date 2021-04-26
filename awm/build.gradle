@@ -5,12 +5,11 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 android {
-    buildToolsVersion "28.0.3"
-    compileSdkVersion 28
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 23
         versionName this.version
     }
@@ -51,9 +50,8 @@ dependencies {
         exclude group: "com.android.support"
     }
 
-    //lombok annotations
+    //noinspection AnnotationProcessorOnCompilePath
     compileOnly 'org.projectlombok:lombok:1.18.20'
-    compileOnly 'javax.annotation:javax.annotation-api:1.3.2'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     //unit and integration tests
@@ -67,7 +65,7 @@ dependencies {
 
     //logging
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+    testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
 }
 
 repositories {
