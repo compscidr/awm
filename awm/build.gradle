@@ -238,3 +238,10 @@ artifactory {
 task getVersion() {
     print version
 }
+
+task updatePom(type: Copy) {
+    from "$buildDir/publications/publicLib/pom-default.xml"
+    into "."
+    rename ("pom-default.xml", "pom.xml")
+    dependsOn(generatePomFileForPublicLibPublication)
+}
