@@ -1,41 +1,25 @@
-// bintray howto: https://reflectoring.io/guide-publishing-to-bintray-with-gradle/#create-a-repository
-// snapshots howto on oss.jfrog.org: https://reflectoring.io/publish-snapshots-with-gradle/
-// releases with jcenter and maven central: https://reflectoring.io/bintray-jcenter-maven-central/
-
-// more info on snapshots
-// https://stackoverflow.com/questions/47872069/confused-about-process-to-publish-snapshots-to-bintray
-
-// open source release chain: https://reflectoring.io/fully-automated-open-source-release-chain/
-// ci build stages: https://docs.travis-ci.com/user/build-stages/
-
-plugins {
-    id 'com.android.library'
-
-    //including this lib didn't work in gradle 4.6, and updating to 4.9 caused a
-    //"configuration on demand is not supported" error. Fix is to do this:
-    //https://stackoverflow.com/questions/49990933/configuration-on-demand-is-not-supported-by-the-current-version-of-the-android-g/49996317
-    id 'digital.wup.android-maven-publish' version '3.6.2'
-
-    id "com.jfrog.bintray" version "1.8.4"
-    id "com.jfrog.artifactory" version "4.7.3"
-}
-
 group 'io.rightmesh'
 version '1.1.23' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
 android {
-    buildToolsVersion "28.0.3"
-    compileSdkVersion 28
+    compileSdkVersion 30
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 23
         versionName this.version
     }
 
     buildTypes {
         release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -62,19 +46,18 @@ dependencies {
     implementation 'com.google.guava:guava:27.0.1-android'
 
     //play services for location
-    implementation ('com.google.android.gms:play-services-location:15.0.1') {
+    implementation ('com.google.android.gms:play-services-location:18.0.0') {
         exclude group: "com.android.support"
     }
 
-    //lombok annotations
-    compileOnly 'org.projectlombok:lombok:1.18.4'
-    compileOnly 'javax.annotation:javax.annotation-api:1.3.1'
-    annotationProcessor 'org.projectlombok:lombok:1.18.4'
+    //noinspection AnnotationProcessorOnCompilePath
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
     //unit and integration tests
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.3.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.3.0"
-    testImplementation "org.mockito:mockito-core:2.23.0"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.1"
+    testImplementation "org.mockito:mockito-core:3.9.0"
 
     //persistence
     implementation 'android.arch.persistence.room:runtime:1.1.1'
@@ -82,99 +65,7 @@ dependencies {
 
     //logging
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
-}
-
-def pomConfig = {
-    licenses {
-        license {
-            name "The GNU General Public License, Version 3.0"
-            url "https://www.gnu.org/licenses/gpl-3.0.en.html"
-            distribution "repo"
-        }
-    }
-    developers {
-        developer {
-            id "compscidr"
-            name "Jason Ernst"
-            email "ernstjason1@gmail.com"
-        }
-    }
-
-    scm {
-        url "https://github.com/compscidr/awm-lib"
-    }
-}
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "sources"
-}
-
-//android javadoc: https://gist.github.com/danielesegato/3ea6f99c968ce0b795c5390844ad4ff7
-task androidJavadocs(type: Javadoc) {
-    // execute only if I'm publishing on maven
-    onlyIf { gradle.taskGraph.hasTask(uploadArchives) }
-
-    // all the sources of the current module
-    source = android.sourceSets.main.java.srcDirs
-    // the Android SDK classpath
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    // all the dependencies classpaths
-    classpath += configurations.compile
-
-    // Honestly I do not remember why it's a good idea to exclude these
-    exclude '**/BuildConfig.class'
-    exclude '**/R.class'
-    exclude '**/R$*.class'
-
-    options {
-        // Java reference
-        links("http://docs.oracle.com/javase/8/docs/api/");
-
-        // dependencies API references (I should probably move these in the project or something)
-        links("http://reactivex.io/RxJava/javadoc/");
-        links("https://google.github.io/gson/apidocs/");
-
-        // Android reference is not standard javadoc so I need to use offline directory
-        linksOffline("http://d.android.com/reference/", "${android.sdkDirectory}/docs/reference")
-
-        // Java 8 javadoc is more strict, This disable that strictness
-        if (JavaVersion.current().isJava8Compatible()) {
-            addStringOption('Xdoclint:none', '-quiet')
-        }
-    }
-
-    //uncomment to avoid failing the build if javadoc fails
-    //failOnError false
-}
-
-task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
-    classifier = 'javadoc'
-    from androidJavadocs.destinationDir
-}
-
-publishing.publications {
-    publicLib(MavenPublication) {
-        from components.android
-        afterEvaluate {
-            groupId this.group
-            artifactId project.name
-            version this.version
-
-            artifact(sourceJar)
-            artifact(androidJavadocsJar)
-
-            pom.withXml {
-                def root = asNode()
-                root.appendNode('description', '\t\n' +
-                        'Android Wireless Measurement Library aims to collect and open source wireless statistics and information in a way that does not disrupt the functioning of apps.')
-                root.appendNode('name', 'Android Wireless Measurement Library')
-                root.appendNode('url', 'https://github.com/compscidr/awm-lib')
-                root.children().last() + pomConfig
-            }
-        }
-    }
+    testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
 }
 
 repositories {
@@ -184,57 +75,33 @@ repositories {
     jcenter()
 }
 
-bintray {
-    user = System.getProperty('bintrayuser')
-    key = System.getProperty('bintraykey')
-    def pphrase = System.getProperty('gpgpassphrase')
-    publications = ['publicLib']
-
-    pkg {
-        repo = 'maven'
-        name = 'awm'
-        userOrg = 'compscidr'
-        licenses = ['GPL-3.0']
-        websiteUrl = 'https://github.com/compscidr/awm-lib'
-        issueTrackerUrl = 'https://github.com/compscidr/awm-lib/issues'
-        vcsUrl = 'https://github.com/compscidr/awm-lib.git'
-        githubRepo = 'compscidr/awm-lib'
-
-        version {
-            name = this.version
-            vcsTag = this.version
-            desc = this.version
-            released  = new Date()
-            gpg {
-                sign = true
-                passphrase = pphrase
-            }
-        }
-    }
-
-    publish = true
-}
-
-artifactory {
-    contextUrl = 'http://oss.jfrog.org'
-    publish {
-        repository {
-            repoKey = 'oss-snapshot-local'
-            username = System.getProperty('bintrayuser')
-            password = System.getProperty('bintraykey')
-        }
-        defaults {
-            publications('publicLib')
-            publishArtifacts = true
-            publishPom = true
-        }
-    }
-    resolve {
-        repoKey = 'oss-snapshot-local'
-    }
-    clientConfig.info.setBuildNumber(System.getProperty('build.number'))
-}
 
 task getVersion() {
     print version
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = group
+                artifactId = 'awm'
+                version = version
+            }
+            debug(MavenPublication) {
+                from components.debug
+                groupId = group
+                artifactId = 'awm-debug'
+                version = version
+            }
+        }
+    }
+    task updatePom(type: Copy) {
+        from "$buildDir/publications/release/pom-default.xml"
+        into "."
+        rename ("pom-default.xml", "pom.xml")
+        dependsOn(generatePomFileForReleasePublication)
+    }
+    build.dependsOn(updatePom)
 }
