@@ -1,4 +1,4 @@
-package io.rightmesh.awm.stats;
+package com.jasonernst.awm.stats;
 
 import lombok.Getter;
 import lombok.Setter;

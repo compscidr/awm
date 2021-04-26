@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.content.IntentFilter;
 import android.os.BatteryManager;
 import android.util.Log;
 
-import io.rightmesh.awm.stats.BatteryStats;
+import com.jasonernst.awm.stats.BatteryStats;
 
 public class BatteryStatsCollector extends StatsCollector {
 

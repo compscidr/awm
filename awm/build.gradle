@@ -1,4 +1,4 @@
-group 'io.rightmesh'
+group 'com.jasonernst'
 version '1.1.23' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
 apply plugin: 'com.android.library'
@@ -39,11 +39,11 @@ android {
 
 dependencies {
     //permissions
-    implementation 'com.vanniktech:rxpermission:0.4.0'
+    implementation 'com.vanniktech:rxpermission:0.7.0'
     api 'com.github.anadea:rxbus:1.0.1'
 
     //concurrent set
-    implementation 'com.google.guava:guava:27.0.1-android'
+    implementation 'com.google.guava:guava:30.1.1-jre'
 
     //play services for location
     implementation ('com.google.android.gms:play-services-location:18.0.0') {
@@ -64,8 +64,8 @@ dependencies {
     annotationProcessor 'android.arch.persistence.room:compiler:1.1.1'
 
     //logging
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.2'
-    testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.2'
+    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }
 
 repositories {

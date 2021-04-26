@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import android.content.Context;
 

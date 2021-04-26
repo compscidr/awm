@@ -1,4 +1,4 @@
-package io.rightmesh.awm.stats;
+package com.jasonernst.awm.stats;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

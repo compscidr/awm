@@ -1,4 +1,4 @@
-package io.rightmesh.awm.stats;
+package com.jasonernst.awm.stats;
 
 public class BatteryStats {
     private float battery_percent;

@@ -1,4 +1,4 @@
-package io.rightmesh.awm.loggers;
+package com.jasonernst.awm.loggers;
 
 public class LogEvent {
 

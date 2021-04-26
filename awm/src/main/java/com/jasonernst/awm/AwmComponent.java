@@ -1,4 +1,4 @@
-package io.rightmesh.awm;
+package com.jasonernst.awm;
 
 public interface AwmComponent {
     void start() throws Exception;

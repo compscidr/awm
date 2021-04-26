@@ -7,7 +7,7 @@
   <!-- that they should prefer consuming it instead. -->
   <!-- do_not_remove: published-with-gradle-metadata -->
   <modelVersion>4.0.0</modelVersion>
-  <groupId>io.rightmesh</groupId>
+  <groupId>com.jasonernst</groupId>
   <artifactId>awm</artifactId>
   <version>1.1.23</version>
   <packaging>aar</packaging>

@@ -1,4 +1,4 @@
-package io.rightmesh.awm;
+package com.jasonernst.awm;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,19 +24,19 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
-import io.rightmesh.awm.collectors.BatteryStatsCollector;
-import io.rightmesh.awm.collectors.BluetoothStatsCollector;
-import io.rightmesh.awm.collectors.GPSStatsCollector;
-import io.rightmesh.awm.collectors.InternetStatsCollector;
-import io.rightmesh.awm.collectors.StatsCollector;
-import io.rightmesh.awm.collectors.WiFiAPStatsCollector;
-import io.rightmesh.awm.collectors.WiFiDirectStatsCollector;
-import io.rightmesh.awm.loggers.DatabaseLogger;
-import io.rightmesh.awm.loggers.NetworkLogger;
-import io.rightmesh.awm.loggers.StatsLogger;
-import io.rightmesh.awm.stats.BatteryStats;
-import io.rightmesh.awm.stats.GPSStats;
-import io.rightmesh.awm.stats.NetworkStat;
+import com.jasonernst.awm.collectors.BatteryStatsCollector;
+import com.jasonernst.awm.collectors.BluetoothStatsCollector;
+import com.jasonernst.awm.collectors.GPSStatsCollector;
+import com.jasonernst.awm.collectors.InternetStatsCollector;
+import com.jasonernst.awm.collectors.StatsCollector;
+import com.jasonernst.awm.collectors.WiFiAPStatsCollector;
+import com.jasonernst.awm.collectors.WiFiDirectStatsCollector;
+import com.jasonernst.awm.loggers.DatabaseLogger;
+import com.jasonernst.awm.loggers.NetworkLogger;
+import com.jasonernst.awm.loggers.StatsLogger;
+import com.jasonernst.awm.stats.BatteryStats;
+import com.jasonernst.awm.stats.GPSStats;
+import com.jasonernst.awm.stats.NetworkStat;
 import lombok.Getter;
 import lombok.Setter;
 

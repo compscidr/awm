@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
@@ -6,7 +6,7 @@ import com.vanniktech.rxpermission.Permission;
 
 import java.util.Map;
 
-import io.rightmesh.awm.AwmComponent;
+import com.jasonernst.awm.AwmComponent;
 
 public abstract class StatsCollector implements AwmComponent {
 

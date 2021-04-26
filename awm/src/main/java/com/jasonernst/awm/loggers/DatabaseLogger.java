@@ -1,4 +1,4 @@
-package io.rightmesh.awm.loggers;
+package com.jasonernst.awm.loggers;
 
 import android.arch.persistence.room.Room;
 import android.content.Context;
@@ -11,13 +11,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
-import io.rightmesh.awm.ObservingDevice;
-import io.rightmesh.awm.stats.NetworkDevice;
-import io.rightmesh.awm.stats.NetworkStat;
+import com.jasonernst.awm.ObservingDevice;
+import com.jasonernst.awm.stats.NetworkStat;
 
 public class DatabaseLogger implements StatsLogger {
 

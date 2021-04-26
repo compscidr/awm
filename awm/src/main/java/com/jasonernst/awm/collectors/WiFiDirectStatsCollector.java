@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import android.content.Context;
 import android.net.wifi.p2p.WifiP2pDevice;

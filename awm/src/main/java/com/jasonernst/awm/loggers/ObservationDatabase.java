@@ -1,4 +1,4 @@
-package io.rightmesh.awm.loggers;
+package com.jasonernst.awm.loggers;
 
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.RoomDatabase;

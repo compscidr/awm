@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import android.Manifest;
 import android.content.Context;
@@ -15,8 +15,8 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 
-import io.rightmesh.awm.AndroidWirelessStatsCollector;
-import io.rightmesh.awm.stats.GPSStats;
+import com.jasonernst.awm.AndroidWirelessStatsCollector;
+import com.jasonernst.awm.stats.GPSStats;
 
 /**
  * https://stackoverflow.com/questions/28535703/best-way-to-get-user-gps-location-in-background-in-android

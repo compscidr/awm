@@ -1,6 +1,4 @@
-package io.rightmesh.awm.stats;
-
-import android.util.Log;
+package com.jasonernst.awm.stats;
 
 import org.json.JSONException;
 
@@ -8,8 +6,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
 
-import io.rightmesh.awm.ObservingDevice;
-import io.rightmesh.awm.loggers.ObservationDatabase;
+import com.jasonernst.awm.ObservingDevice;
+
 import lombok.Getter;
 import lombok.Setter;
 

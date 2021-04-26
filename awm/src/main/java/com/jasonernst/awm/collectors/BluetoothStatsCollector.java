@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -15,8 +15,8 @@ import com.google.common.collect.Sets;
 
 import java.util.Set;
 
-import io.rightmesh.awm.stats.NetworkDevice;
-import io.rightmesh.awm.stats.NetworkStat;
+import com.jasonernst.awm.stats.NetworkDevice;
+import com.jasonernst.awm.stats.NetworkStat;
 import lombok.Getter;
 
 public class BluetoothStatsCollector extends StatsCollector {

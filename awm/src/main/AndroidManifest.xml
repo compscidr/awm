@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.rightmesh.awm">
+    package="com.jasonernst.awm">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -15,7 +15,7 @@
 
     <application>
         <activity
-            android:name="io.rightmesh.awm.collectors.BluetoothStatsCollector$BluetoothEnableActivity"
+            android:name="com.jasonernst.awm.collectors.BluetoothStatsCollector$BluetoothEnableActivity"
             android:label="Enable Bluetooth"/>
         <meta-data
             android:name="com.google.android.gms.version"

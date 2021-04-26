@@ -1,4 +1,4 @@
-package io.rightmesh.awm.loggers;
+package com.jasonernst.awm.loggers;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -13,20 +13,14 @@ import com.anadeainc.rxbus.BusProvider;
 
 import org.json.JSONException;
 
-import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.InvalidParameterException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
 
-import io.rightmesh.awm.ObservingDevice;
-import io.rightmesh.awm.stats.NetworkDevice;
-import io.rightmesh.awm.stats.NetworkStat;
+import com.jasonernst.awm.ObservingDevice;
+import com.jasonernst.awm.stats.NetworkStat;
 
 public class NetworkLogger implements StatsLogger {
 

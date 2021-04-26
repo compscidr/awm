@@ -1,11 +1,9 @@
-package io.rightmesh.awm.loggers;
+package com.jasonernst.awm.loggers;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import io.rightmesh.awm.ObservingDevice;
-import io.rightmesh.awm.stats.NetworkStat;
 import lombok.Getter;
 import lombok.Setter;
 

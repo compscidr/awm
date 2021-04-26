@@ -1,4 +1,4 @@
-package io.rightmesh.awm.collectors;
+package com.jasonernst.awm.collectors;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,14 +13,12 @@ import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
 import com.google.common.collect.Sets;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import io.rightmesh.awm.loggers.WiFiScan;
-import io.rightmesh.awm.stats.NetworkDevice;
-import io.rightmesh.awm.stats.NetworkStat;
-import lombok.Getter;
+import com.jasonernst.awm.loggers.WiFiScan;
+import com.jasonernst.awm.stats.NetworkDevice;
+import com.jasonernst.awm.stats.NetworkStat;
 
 public class WiFiAPStatsCollector extends StatsCollector {
 

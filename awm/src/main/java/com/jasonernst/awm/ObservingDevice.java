@@ -1,4 +1,4 @@
-package io.rightmesh.awm;
+package com.jasonernst.awm;
 
 import android.util.Log;
 
@@ -7,7 +7,7 @@ import java.net.Inet6Address;
 import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.UUID;
-import io.rightmesh.awm.stats.GPSStats;
+import com.jasonernst.awm.stats.GPSStats;
 import lombok.Setter;
 
 public class ObservingDevice {
