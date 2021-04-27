@@ -1,5 +1,5 @@
 # awm-lib: Android Wireless Measurement Library
-[![awm-lib test](https://github.com/compscidr/awm-lib/actions/workflows/check-and-test.yml/badge.svg)](https://github.com/compscidr/awm-lib/actions/workflows/check-and-test.yml)
+[![awm-lib test](https://github.com/compscidr/awm-lib/actions/workflows/check-and-test.yml/badge.svg)](https://github.com/compscidr/awm-lib/actions/workflows/check-and-test.yml) [![codecov](https://codecov.io/gh/compscidr/awm/branch/master/graph/badge.svg?token=84hTr5IfVQ)](https://codecov.io/gh/compscidr/awm)
 
 This project aims to collect and open source wireless statistics and information
 in a way that does not disrupt the functioning of apps, but provides useful data
