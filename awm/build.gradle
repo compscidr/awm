@@ -46,9 +46,9 @@ dependencies {
     implementation 'com.google.guava:guava:30.1.1-jre'
 
     //play services for location
-    implementation ('com.google.android.gms:play-services-location:18.0.0') {
-        exclude group: "com.android.support"
-    }
+//    implementation ('com.google.android.gms:play-services-location:18.0.0') {
+//        exclude group: "com.android.support"
+//    }
 
     //noinspection AnnotationProcessorOnCompilePath
     compileOnly 'org.projectlombok:lombok:1.18.20'
