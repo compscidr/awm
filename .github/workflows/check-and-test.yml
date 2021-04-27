@@ -16,13 +16,13 @@ jobs:
           distribution: 'adopt'
           java-version: '11.0.4'
       - name: lint
-          run: ./gradlew awm:lint
+        run: ./gradlew awm:lint
       - name: lint results
-          uses: yutailang0119/action-android-lint@v1.1.0
-          with:
-            xml_path: awm/build/reports/lint/report.xml
-        - name: checkstyle
-            run: ./gradlew awm:checkstyle
+        uses: yutailang0119/action-android-lint@v1.1.0
+        with:
+          xml_path: awm/build/reports/lint/report.xml
+      - name: checkstyle
+        run: ./gradlew awm:checkstyle
 #        - name: junit5 units tests (with jacoco covarege reports)
 #            run: ./gradlew awm:jacocoTestReport
 #        - uses: actions/upload-artifact@v2
