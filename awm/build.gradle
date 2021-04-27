@@ -105,3 +105,5 @@ afterEvaluate {
     }
     build.dependsOn(updatePom)
 }
+
+apply from: '../checkstyle.gradle'
