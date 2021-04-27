@@ -1,8 +1,30 @@
 group 'com.jasonernst'
 version '1.1.23' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
 
+buildscript {
+    ext {
+
+    }
+    repositories {
+        google()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "com.android.tools.build:gradle:7.0.0-alpha14"
+        classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1"
+        classpath "com.vanniktech:gradle-android-junit-jacoco-plugin:0.16.0"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.35"
+        classpath "com.hiya:jacoco-android:0.2"
+        classpath "com.vanniktech:gradle-android-junit-jacoco-plugin:0.17.0-SNAPSHOT"
+    }
+}
+
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'jacoco'
+apply plugin: 'com.hiya.jacoco-android'
 
 android {
     compileSdkVersion 30
@@ -14,14 +36,27 @@ android {
         versionName this.version
     }
 
+    lintOptions {
+        abortOnError false
+        warningsAsErrors false
+        showAll true
+        explainIssues true
+        xmlOutput file("build/reports/lint/report.xml")
+        htmlOutput file("build/reports/lint/report.html")
+        disable "UnsafeExperimentalUsageError",
+                "UnsafeExperimentalUsageWarning"
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled true
         }
         debug {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            testCoverageEnabled true
         }
     }
 
@@ -31,9 +66,8 @@ android {
     }
 
     testOptions {
-        unitTests.all {
-
-        }
+        unitTests.returnDefaultValues = true
+        unitTests.includeAndroidResources = true
     }
 }
 
@@ -57,6 +91,7 @@ dependencies {
     //unit and integration tests
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
     testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.1"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.1"
     testImplementation "org.mockito:mockito-core:3.9.0"
 
     //persistence
@@ -67,6 +102,7 @@ dependencies {
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
     testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }
+
 
 repositories {
     google()
@@ -107,3 +143,4 @@ afterEvaluate {
 }
 
 apply from: '../checkstyle.gradle'
+apply from: '../jacocoAndroid.gradle'
