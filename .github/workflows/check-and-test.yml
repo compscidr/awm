@@ -29,3 +29,18 @@ jobs:
         with:
           name: awm-reports
           path: awm/build/reports
+
+
+  upload-coverage-reports:
+    needs: [awm_checks]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: codecov upload
+        uses: codecov/codecov-action@v1
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: awm-reports/coverage/debug/report.xml
