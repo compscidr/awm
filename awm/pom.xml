@@ -21,26 +21,14 @@
     <dependency>
       <groupId>com.vanniktech</groupId>
       <artifactId>rxpermission</artifactId>
-      <version>0.4.0</version>
+      <version>0.7.0</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>27.0.1-android</version>
+      <version>30.1.1-jre</version>
       <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.google.android.gms</groupId>
-      <artifactId>play-services-location</artifactId>
-      <version>18.0.0</version>
-      <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>*</artifactId>
-          <groupId>com.android.support</groupId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>android.arch.persistence.room</groupId>
