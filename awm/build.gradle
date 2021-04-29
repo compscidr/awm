@@ -37,6 +37,7 @@ android {
         versionName this.version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
+        multiDexEnabled true
     }
 
     lintOptions {
@@ -75,6 +76,9 @@ android {
 }
 
 dependencies {
+    def multidex_version = "2.0.1"
+    implementation "androidx.multidex:multidex:$multidex_version"
+
     //permissions
     implementation 'com.vanniktech:rxpermission:0.7.0'
     api 'com.github.anadea:rxbus:1.0.1'
