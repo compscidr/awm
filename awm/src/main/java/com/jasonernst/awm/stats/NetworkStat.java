@@ -4,7 +4,9 @@ import org.json.JSONException;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.jasonernst.awm.ObservingDevice;
 
@@ -24,7 +26,7 @@ public class NetworkStat {
     }
 
     private DeviceType type;
-    private Set<NetworkDevice> devices;
+    private ConcurrentHashMap<String, NetworkDevice> devices;
 
     public String toJSON(ObservingDevice thisDevice) throws JSONException {
 
@@ -34,7 +36,7 @@ public class NetworkStat {
 
         String deviceJson = "";
         int count = 1;
-        for(NetworkDevice network : devices) {
+        for(NetworkDevice network : devices.values()) {
             deviceJson += "\t\t\t{\n";
             deviceJson += "\t\t\t\t\"mac_address\": \"" + network.getMac() + "\",\n";
             deviceJson += "\t\t\t\t\"signal_strength\": " + network.getSignalStrength() + ",\n";

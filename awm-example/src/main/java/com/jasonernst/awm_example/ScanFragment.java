@@ -99,7 +99,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             Log.d("MA", "GOT BT NETWORK STAT TYPE");
             String status = "btDevices: ";
             status = status + networkStat.getDevices().size();
-            for(NetworkDevice device : networkStat.getDevices()) {
+            for(NetworkDevice device : networkStat.getDevices().values()) {
                 status = status + "\n" + device.getMac() + " " + device.getName() + " "
                         + device.getSignalStrength() + "dB";
             }
@@ -108,7 +108,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
             Log.d("MA", "GOT WIFI NETWORK STAT TYPE: " + networkStat.getDevices().size());
             String status = "wifiDevices: ";
             status = status + networkStat.getDevices().size();
-            for(NetworkDevice device : networkStat.getDevices()) {
+            for(NetworkDevice device : networkStat.getDevices().values()) {
                 status = status + "\n" + device.getMac() + " " + device.getName() + " "
                         + device.getFrequency() + "Mhz " + device.getSignalStrength() + "dB";
             }

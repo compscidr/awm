@@ -11,9 +11,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.google.common.collect.Sets;
-
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.jasonernst.awm.stats.NetworkDevice;
 import com.jasonernst.awm.stats.NetworkStat;
@@ -28,7 +27,7 @@ public class BluetoothStatsCollector extends StatsCollector {
     private static BluetoothAdapter mBluetoothAdapter;
     private static volatile BluetoothStates btState;
     private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
-    private Set<NetworkDevice> btDevices;
+    private ConcurrentHashMap<String, NetworkDevice> btDevices;
     private volatile boolean started = false;
 
     @Getter
@@ -51,7 +50,7 @@ public class BluetoothStatsCollector extends StatsCollector {
 
         mBluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothBroadcastReceiver = new BluetoothBroadcastReceiver();
-        btDevices = Sets.newConcurrentHashSet();
+        btDevices = new ConcurrentHashMap<>();
         IntentFilter filter = new IntentFilter();
         filter.addAction(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
@@ -120,14 +119,12 @@ public class BluetoothStatsCollector extends StatsCollector {
                             0,
                             ""
                             );
-                    btDevices.add(networkDevice);
+                    btDevices.put(networkDevice.getMac(), networkDevice);
                 }
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                 if(btDevices.size() > 0) {
                     Log.d(TAG, "After scan found a total of " + btDevices.size() + " devices");
-                    Set<NetworkDevice> devices = Sets.newConcurrentHashSet();
-                    devices.addAll(btDevices);
-                    eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, devices));
+                    eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, btDevices));
                     btDevices.clear();
                 } else {
                     Log.d(TAG, "Found zero BT devices after scan. starting again.");

@@ -11,10 +11,10 @@ import android.util.Log;
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
-import com.google.common.collect.Sets;
 
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.jasonernst.awm.loggers.WiFiScan;
 import com.jasonernst.awm.stats.NetworkDevice;
@@ -28,7 +28,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
     private WifiManager wifiManager;
     private WifiManager.WifiLock wifiLock;
     private WiFiScanReceiver wiFiScanReceiver;
-    private Set<NetworkDevice> devices;
+    private ConcurrentHashMap<String, NetworkDevice> devices;
     private Bus eventBus = BusProvider.getInstance();
     private volatile boolean started = false;
 
@@ -41,7 +41,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
         wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "AWM-LIB");
         wiFiScanReceiver = new WiFiScanReceiver();
 
-        devices = Sets.newConcurrentHashSet();
+        devices = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
                                 0,
                                 scan.capabilities);
                     }
-                    devices.add(networkDevice);
+                    devices.put(networkDevice.getMac(), networkDevice);
                 }
                 Log.d(TAG, "POSTING WIFI EVENT on thread: " + Thread.currentThread().getName());
                 eventBus.post(new NetworkStat(NetworkStat.DeviceType.WIFI, devices));
