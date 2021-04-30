@@ -1,8 +1,9 @@
 package com.jasonernst.awm.loggers;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.util.Log;
+
+import androidx.room.Room;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
