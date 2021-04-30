@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import android.content.SharedPreferences;
 import android.preference.Preference;

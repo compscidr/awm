@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -7,6 +7,8 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import androidx.fragment.app.Fragment;
+
+import io.rightmesh.awm_lib_example.R;
 
 public class PrivacyFragment extends Fragment {
 

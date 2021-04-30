@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:clipChildren="false"
     android:orientation="vertical"
-    tools:context=".MainActivity"
+    tools:context="com.jasonernst.awm_example.MainActivity"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <TextView

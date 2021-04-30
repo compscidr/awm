@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -13,6 +13,8 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.jasonernst.awm.AndroidWirelessStatsCollector;
+
+import io.rightmesh.awm_lib_example.R;
 
 public class MainActivity extends AppCompatActivity {
 

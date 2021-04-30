@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -26,6 +26,8 @@ import com.jasonernst.awm.stats.GPSStats;
 import com.jasonernst.awm.stats.NetworkStat;
 
 import java.util.ArrayList;
+
+import io.rightmesh.awm_lib_example.R;
 
 public class MapFragment extends Fragment {
     private static final String TAG = MapFragment.class.getCanonicalName();

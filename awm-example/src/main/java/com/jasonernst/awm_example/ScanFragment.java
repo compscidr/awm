@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -25,6 +25,8 @@ import com.jasonernst.awm.stats.NetworkStat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import io.rightmesh.awm_lib_example.R;
 
 import static com.jasonernst.awm.stats.NetworkStat.DeviceType.BLUETOOTH;
 import static com.jasonernst.awm.stats.NetworkStat.DeviceType.WIFI;

@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;

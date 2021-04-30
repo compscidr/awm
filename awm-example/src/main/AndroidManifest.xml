@@ -14,7 +14,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:name="android.support.multidex.MultiDexApplication">
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.jasonernst.awm_example.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".PrivacyPolicyActivity"/>
+        <activity android:name="com.jasonernst.awm_example.PrivacyPolicyActivity"/>
 
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyB7P1DOEMd-7IyoD-Ng8YtAQCe2KmN6lRg"/>
     </application>

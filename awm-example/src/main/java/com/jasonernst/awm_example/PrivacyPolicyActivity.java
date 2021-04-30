@@ -1,4 +1,4 @@
-package io.rightmesh.awm_lib_example;
+package com.jasonernst.awm_example;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.webkit.WebView;
+
+import io.rightmesh.awm_lib_example.R;
 
 public class PrivacyPolicyActivity extends Activity {
     WebView web;
