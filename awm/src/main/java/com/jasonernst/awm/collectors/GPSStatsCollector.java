@@ -8,19 +8,19 @@ import android.os.Build;
 import android.os.Looper;
 import android.util.Log;
 
-//import com.google.android.gms.location.FusedLocationProviderClient;
-//import com.google.android.gms.location.LocationCallback;
-//import com.google.android.gms.location.LocationRequest;
-//import com.google.android.gms.location.LocationResult;
-//import com.google.android.gms.location.LocationServices;
-//import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
 
 import com.jasonernst.awm.AndroidWirelessStatsCollector;
 import com.jasonernst.awm.stats.GPSStats;
 
 /**
  * https://stackoverflow.com/questions/28535703/best-way-to-get-user-gps-location-in-background-in-android
- *
+ */
 public class GPSStatsCollector extends StatsCollector {
 
     private Context context;
@@ -82,4 +82,4 @@ public class GPSStatsCollector extends StatsCollector {
         }
         started = false;
     }
-} */
+}
