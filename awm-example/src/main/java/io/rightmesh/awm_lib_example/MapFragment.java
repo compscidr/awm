@@ -1,11 +1,12 @@
 package io.rightmesh.awm_lib_example;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
@@ -21,15 +22,10 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
+import com.jasonernst.awm.stats.GPSStats;
+import com.jasonernst.awm.stats.NetworkStat;
 
 import java.util.ArrayList;
-
-import io.rightmesh.awm.stats.GPSStats;
-import io.rightmesh.awm.stats.NetworkStat;
-
-import static io.rightmesh.awm.stats.NetworkStat.DeviceType.BLUETOOTH;
-import static io.rightmesh.awm.stats.NetworkStat.DeviceType.WIFI;
-
 
 public class MapFragment extends Fragment {
     private static final String TAG = MapFragment.class.getCanonicalName();

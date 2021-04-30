@@ -2,9 +2,6 @@ package io.rightmesh.awm_lib_example;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,22 +9,25 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
+import com.jasonernst.awm.loggers.LogEvent;
+import com.jasonernst.awm.loggers.WiFiScan;
+import com.jasonernst.awm.stats.GPSStats;
+import com.jasonernst.awm.stats.NetworkDevice;
+import com.jasonernst.awm.stats.NetworkStat;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import io.rightmesh.awm.loggers.LogEvent;
-import io.rightmesh.awm.loggers.WiFiScan;
-import io.rightmesh.awm.stats.GPSStats;
-import io.rightmesh.awm.stats.NetworkDevice;
-import io.rightmesh.awm.stats.NetworkStat;
-
-import static io.rightmesh.awm.stats.NetworkStat.DeviceType.BLUETOOTH;
-import static io.rightmesh.awm.stats.NetworkStat.DeviceType.WIFI;
+import static com.jasonernst.awm.stats.NetworkStat.DeviceType.BLUETOOTH;
+import static com.jasonernst.awm.stats.NetworkStat.DeviceType.WIFI;
 
 public class ScanFragment extends Fragment implements View.OnClickListener {
 

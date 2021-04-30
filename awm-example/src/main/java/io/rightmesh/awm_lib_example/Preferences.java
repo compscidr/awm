@@ -1,26 +1,26 @@
 package io.rightmesh.awm_lib_example;
 
-import android.app.Activity;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
 import android.util.Log;
 
-public class Preferences extends PreferenceFragmentCompat implements
+public class Preferences extends PreferenceFragment implements
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     private static final String TAG = Preferences.class.getCanonicalName();
     private MainActivity mainActivity;
 
+    /*
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
         Activity activity = getActivity();
         if(activity != null) {
             mainActivity = (MainActivity) activity;
         }
-        setPreferencesFromResource(R.xml.preferences, rootKey);
-    }
+        // todo: fix
+        //setPreferencesFromResource(R.xml.preferences, rootKey);
+    }*/
 
     @Override
     public void onResume() {

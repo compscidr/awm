@@ -3,7 +3,7 @@ package io.rightmesh.awm_lib_example;
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.preference.PreferenceManager;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.webkit.WebView;
 

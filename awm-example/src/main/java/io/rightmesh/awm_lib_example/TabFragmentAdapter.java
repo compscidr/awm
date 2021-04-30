@@ -1,8 +1,8 @@
 package io.rightmesh.awm_lib_example;
 
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
 
 public class TabFragmentAdapter extends FragmentPagerAdapter {
 
@@ -19,10 +19,11 @@ public class TabFragmentAdapter extends FragmentPagerAdapter {
         } else if (i == 1) {
             return new MapFragment();
         } else if (i == 2) {
-            return new Preferences();
+            //return new Preferences();
         } else {
             return new PrivacyFragment();
         }
+        return null;
     }
 
     @Override
