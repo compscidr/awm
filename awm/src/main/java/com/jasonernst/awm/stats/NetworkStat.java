@@ -8,9 +8,13 @@ import java.util.Set;
 
 import com.jasonernst.awm.ObservingDevice;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+@Data
+@AllArgsConstructor
 public class NetworkStat {
 
     public enum DeviceType {
@@ -19,21 +23,8 @@ public class NetworkStat {
         WIFI_DIRECT
     }
 
-    @Getter @Setter
     private DeviceType type;
-
-    @Setter @Getter
     private Set<NetworkDevice> devices;
-
-    /**
-     * Construct a new network observation.
-     * @param type the type of device (Bluetooth, Wi-Fi, Wi-Fi direct).
-     * @param devices the list of devices observed
-     */
-    public NetworkStat(DeviceType type, Set<NetworkDevice> devices) {
-        this.type = type;
-        this.devices = devices;
-    }
 
     public String toJSON(ObservingDevice thisDevice) throws JSONException {
 

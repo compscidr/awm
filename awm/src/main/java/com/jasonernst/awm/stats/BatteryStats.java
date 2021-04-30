@@ -1,13 +1,9 @@
 package com.jasonernst.awm.stats;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data @AllArgsConstructor
 public class BatteryStats {
-    private float battery_percent;
-
-    public BatteryStats(float battery_percent) {
-        this.battery_percent = battery_percent;
-    }
-
-    public float getBatteryPercent() {
-        return battery_percent;
-    }
+    private float batteryPercent;
 }
