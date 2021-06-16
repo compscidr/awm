@@ -95,6 +95,9 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
 
+    // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
+    implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.30'
+
     //unit and integration tests
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.1"
     testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.1"
