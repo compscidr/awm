@@ -24,7 +24,7 @@ jobs:
       - name: checkstyle
         run: ./gradlew awm:checkstyle
       - name: junit5 units tests (with jacoco covarege reports)
-        run: ./gradlew awm:connectedCheck && ./gradlew awm:jacocoTestDebugUnitTestReport
+        run: ./gradlew awm:connectedCheck && ./gradlew awm:jacocoTestReport
       - uses: actions/upload-artifact@v2
         with:
           name: awm-reports
@@ -43,4 +43,4 @@ jobs:
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: awm-reports/coverage/debug/report.xml
+          files: awm-reports/jacoco/jacocoTestReport/jacocoTestReport.xml
