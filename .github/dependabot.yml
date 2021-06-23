@@ -9,6 +9,6 @@ updates:
     schedule:
       interval: "daily"
   - package-ecosystem: "gradle" # See documentation for possible values
-      directory: "/awm-example  " # Location of package manifests
-      schedule:
-        interval: "daily"
+    directory: "/awm-example  " # Location of package manifests
+    schedule:
+      interval: "daily"
