@@ -95,15 +95,18 @@ public class AndroidWirelessStatsCollector {
             WAKE_LOCK,
     };
 
-    private NetworkLogger networkLogger;
+    @Setter private NetworkLogger networkLogger;
     private DatabaseLogger databaseLogger;
 
     private ScheduledExecutorService scheduleTaskExecutor;
-    private ObservingDevice thisDevice;
+
+    @Setter private ObservingDevice thisDevice;
     private SharedPreferences sharedPreferences;
 
     private WiFiAPStatsCollector wifiStats;
     private BluetoothStatsCollector btStats;
+
+    public AndroidWirelessStatsCollector() {}
 
     public AndroidWirelessStatsCollector(Activity activity,
                                          boolean caching,
@@ -287,6 +290,21 @@ public class AndroidWirelessStatsCollector {
         }
     }
 
+    private void logNetwork(NetworkStat networkStat, ObservingDevice device) {
+        new Thread(() -> {
+            networkLogger.log(networkStat, device);
+        }).start();
+    }
+
+    private void logDatabase(NetworkStat networkStat, ObservingDevice device) {
+        new Thread(() -> {
+            databaseLogger.log(networkStat, thisDevice);
+            Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");
+            Log.d(TAG, "UPLOADED: " + databaseLogger.getCountUploaded());
+            Log.d(TAG, "NON-UPLOADED: " + databaseLogger.getCountUploaded());
+        }).start();
+    }
+
     @Subscribe
     public void updateNetworkStats(NetworkStat networkStat) {
 
@@ -294,24 +312,14 @@ public class AndroidWirelessStatsCollector {
         if (!caching) {
             //if we are only doing Wi-Fi uploads let's check if we're online
             if (wifiUploads && networkLogger.isWifiConnected() && networkLogger.isOnline()) {
-                new Thread(() -> {
-                    networkLogger.log(networkStat, thisDevice);
-                }).start();
-
+                logNetwork(networkStat, thisDevice);
             } else if(!wifiUploads && networkLogger.isOnline()) {
-                new Thread(() -> {
-                    networkLogger.log(networkStat, thisDevice);
-                }).start();
+                logNetwork(networkStat, thisDevice);
             } else {
                 //offline - TODO: memory caching?
             }
         } else {
-            new Thread(() -> {
-                databaseLogger.log(networkStat, thisDevice);
-                Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");
-                Log.d(TAG, "UPLOADED: " + databaseLogger.getCountUploaded());
-                Log.d(TAG, "NON-UPLOADED: " + databaseLogger.getCountUploaded());
-            }).start();
+            logDatabase(networkStat, thisDevice);
         }
     }
 
