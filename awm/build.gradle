@@ -12,7 +12,7 @@ buildscript {
         maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.2.1'
+        classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1"
         classpath "com.google.dagger:hilt-android-gradle-plugin:2.35"
     }
@@ -58,10 +58,9 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
+        testInstrumentationRunnerArguments
         minSdkVersion 19
         targetSdkVersion 30
-        versionCode 23
-        versionName this.version
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         testInstrumentationRunnerArgument "runnerBuilder", "de.mannodermaus.junit5.AndroidJUnit5Builder"
         multiDexEnabled true
