@@ -70,9 +70,11 @@ public class AndroidWirelessStatsCollector {
     private boolean firstLaunch;
     private static final String SHARED_PREF_FILE = "uuid.dat";
     private static final String TAG = AndroidWirelessStatsCollector.class.getCanonicalName();
-    private Set<StatsCollector> statsCollectors;
-    private Set<StatsLogger> statsLoggers;
-    private Bus eventBus = BusProvider.getInstance();
+
+    @Setter private Set<StatsCollector> statsCollectors;
+    @Setter private Set<StatsLogger> statsLoggers;
+
+    @Setter private Bus eventBus;
 
     //permission checking code
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 101;
@@ -96,7 +98,7 @@ public class AndroidWirelessStatsCollector {
     };
 
     @Setter private NetworkLogger networkLogger;
-    private DatabaseLogger databaseLogger;
+    @Setter private DatabaseLogger databaseLogger;
 
     private ScheduledExecutorService scheduleTaskExecutor;
 
@@ -116,6 +118,7 @@ public class AndroidWirelessStatsCollector {
                                          boolean privacy,
                                          String url) {
         Log.i(TAG, "Initializing Android Wireless Stats Collector");
+        eventBus = BusProvider.getInstance();
         firstLaunch = true;
         this.wifiUploads = wifiUploads;
         this.caching = caching;
@@ -222,7 +225,7 @@ public class AndroidWirelessStatsCollector {
         return true;
     }*/
 
-    private void startLoggers() {
+    protected void startLoggers() {
         Log.i(TAG, "Starting stats loggers");
         for(StatsLogger statsLogger : statsLoggers) {
             try {
@@ -234,7 +237,7 @@ public class AndroidWirelessStatsCollector {
         }
     }
 
-    private void startStats() {
+    protected void startStats() {
         Log.i(TAG, "Starting stats collection");
         for(StatsCollector statsInterface : statsCollectors) {
             statsInterface.setPermissions(permissionResults);
@@ -290,13 +293,13 @@ public class AndroidWirelessStatsCollector {
         }
     }
 
-    private void logNetwork(NetworkStat networkStat, ObservingDevice device) {
+    protected void logNetwork(NetworkStat networkStat, ObservingDevice device) {
         new Thread(() -> {
             networkLogger.log(networkStat, device);
         }).start();
     }
 
-    private void logDatabase(NetworkStat networkStat, ObservingDevice device) {
+    protected void logDatabase(NetworkStat networkStat, ObservingDevice device) {
         new Thread(() -> {
             databaseLogger.log(networkStat, thisDevice);
             Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");
