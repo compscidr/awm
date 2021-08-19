@@ -3,12 +3,18 @@ package com.jasonernst.awm;
 import com.anadeainc.rxbus.Bus;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.StatsLog;
 
 import com.jasonernst.awm.collectors.StatsCollector;
@@ -20,6 +26,7 @@ import com.jasonernst.awm.stats.GPSStats;
 import com.jasonernst.awm.stats.NetworkStat;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -36,6 +43,21 @@ public class AndroidWirelessStatsCollectorTest {
         androidWirelessStatsCollector = Mockito.spy(new AndroidWirelessStatsCollector());
         observingDevice = Mockito.mock(ObservingDevice.class);
         androidWirelessStatsCollector.setThisDevice(observingDevice);
+    }
+
+    // todo: fix - still needs some work
+    @Disabled
+    @Test public void constructorTest() {
+        Activity activity = mock(Activity.class);
+        Context context = mock(Context.class);
+        SharedPreferences prefs = mock(SharedPreferences.class);
+        SharedPreferences.Editor editor = mock(SharedPreferences.Editor.class);
+        doReturn(context).when(activity).getApplicationContext();
+        doReturn(prefs).when(context).getSharedPreferences(anyString(), anyInt());
+        doReturn(editor).when(prefs).edit();
+        doReturn(context).when(context).getApplicationContext();
+        AndroidWirelessStatsCollector awc = new AndroidWirelessStatsCollector(activity,
+                false, false, false, false, false, "google.com");
     }
 
     @Test public void updateNetworkStatsTest() {
