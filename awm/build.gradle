@@ -14,7 +14,8 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.0.0'
         classpath "de.mannodermaus.gradle.plugins:android-junit5:1.7.1.1"
-        classpath "com.google.dagger:hilt-android-gradle-plugin:2.35"
+        classpath "com.google.dagger:hilt-android-gradle-plugin:2.38.1"
+        classpath "com.hiya:jacoco-android:0.2"
     }
 }
 
@@ -22,6 +23,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'de.mannodermaus.android-junit5'
 apply plugin: 'maven-publish'
 apply plugin: 'jacoco'
+apply plugin: 'com.hiya.jacoco-android'
 
 jacoco {
     toolVersion = "$jacocoVersion"
@@ -33,26 +35,6 @@ tasks.withType(Test) {
         excludes = ['jdk.internal.*'] // Allows it to run on Java 11
     }
 }
-
-task jacocoTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest', 'createDebugCoverageReport']) {
-
-    reports {
-        xml.enabled = true
-        html.enabled = true
-    }
-
-    def fileFilter = ['**/R.class', '**/R$*.class', '**/BuildConfig.*', '**/Manifest*.*', '**/*Test*.*', 'android/**/*.*']
-    def debugTree = fileTree(dir: "$project.buildDir/intermediates/javac/debug", excludes: fileFilter)
-    def mainSrc = "$project.projectDir/src/main/java"
-
-    sourceDirectories.setFrom(files([mainSrc]))
-    classDirectories.setFrom(files([debugTree]))
-    executionData.setFrom(fileTree(dir: project.buildDir, includes: [
-            'jacoco/testDebugUnitTest.exec', 'outputs/code_coverage/debugAndroidTest/connected/**/*.ec',
-            'outputs/code_coverage/debugAndroidTest/connected/*.ec'
-    ]))
-}
-
 
 android {
     compileSdkVersion 30
