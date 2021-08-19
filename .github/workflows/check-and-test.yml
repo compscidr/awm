@@ -8,7 +8,7 @@ on:
 
 jobs:
   awm_checks:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v2
@@ -24,7 +24,7 @@ jobs:
       - name: checkstyle
         run: ./gradlew awm:checkstyle
       - name: junit5 units tests (with jacoco covarege reports)
-        run: adb connect android-emulator:5555 && adb wait-for-device ./gradlew awm:connectedCheck && ./gradlew awm:jacocoTestReport
+        run: ./gradlew awm:jacocoTestReport
       - uses: actions/upload-artifact@v2
         with:
           name: awm-reports
