@@ -67,6 +67,7 @@ public class AndroidWirelessStatsCollector {
     @Getter @Setter
     private String url;
 
+    @Setter
     private boolean firstLaunch;
     private static final String SHARED_PREF_FILE = "uuid.dat";
     private static final String TAG = AndroidWirelessStatsCollector.class.getCanonicalName();
@@ -328,12 +329,12 @@ public class AndroidWirelessStatsCollector {
 
     @Subscribe
     public void updateBattery(BatteryStats batteryStats) {
-        thisDevice.setBattery(batteryStats.getBatteryPercent());
+        thisDevice.setBattery_life(batteryStats.getBatteryPercent());
     }
 
     @Subscribe
     public void updateGPS(GPSStats gpsStats) {
-        thisDevice.updatePosition(gpsStats);
+        thisDevice.setPosition(gpsStats);
     }
 
     public int getSavedRecordCount() {

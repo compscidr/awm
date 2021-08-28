@@ -1,5 +1,10 @@
 package com.jasonernst.awm.loggers;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class LogEvent {
 
     public enum EventType {
@@ -14,26 +19,7 @@ public class LogEvent {
         DB
     }
 
-    EventType etype;
-    LogType ltype;
-    int numRecords;
-
-    public LogEvent(EventType etype, LogType ltype) {
-        this.etype = etype;
-        this.numRecords = 0;
-    }
-
-    public LogEvent(EventType etype, LogType ltype, int numRecords) {
-        this.etype = etype;
-        this.ltype = ltype;
-        this.numRecords = numRecords;
-    }
-
-    public EventType getEventType() {
-        return etype;
-    }
-
-    public LogType getLogType() { return ltype; }
-
-    public int getNumRecords() { return numRecords; }
+    private EventType eventType;
+    private LogType logType;
+    private int numRecords;
 }

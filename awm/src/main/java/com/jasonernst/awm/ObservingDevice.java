@@ -8,8 +8,11 @@ import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.util.UUID;
 import com.jasonernst.awm.stats.GPSStats;
+
+import lombok.Data;
 import lombok.Setter;
 
+@Data
 public class ObservingDevice {
 
     private UUID uuid;
@@ -18,13 +21,8 @@ public class ObservingDevice {
     private Inet4Address inet4Address;
     private Inet6Address inet6Address;
     private float battery_life = 100;
-
-    @Setter
     private boolean hasCellularInternet = false;
-
-    @Setter
     private boolean hasWiFiInternet = false;
-
     private float cellularThroughput = 0;
     private float wifiThroughput = 0;
     private int cellularPing = 0;
@@ -46,28 +44,10 @@ public class ObservingDevice {
         this.OS = OS;
     }
 
-    public void updatePosition(GPSStats position) {
-        if(position.longitude != 0 && position.latitude != 0) {
-            this.position = position;
-        } else {
-            Log.d(TAG,"Leave last position since new one is zero");
-        }
-    }
-
-    void setInet4Address(Inet4Address inet4Address) { this.inet4Address = inet4Address; }
-
-    void setInet6Address(Inet6Address inet6Address) { this.inet6Address = inet6Address; }
-
-    void setBattery(float battery) { this.battery_life = battery; }
-
-    public GPSStats getPosition() {
-        return position;
-    }
-
     /**
      * Given the observing device position data, UUID, and mac addresses, this method will take
      * the device list which should be pre-prepared in JSON and create a fully JSON request
-     * ready to be transmitted to the
+     * ready to be transmitted to the server
      * @param deviceJSON
      * @param timestamp
      * @return

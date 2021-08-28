@@ -12,6 +12,8 @@ import com.jasonernst.awm.stats.BatteryStats;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
@@ -19,7 +21,7 @@ public class BatteryStatsCollector extends StatsCollector {
 
     private final Logger logger = LoggerFactory.getLogger(BatteryStatsCollector.class);
     private static final String TAG = BatteryStatsCollector.class.getCanonicalName();
-    private PowerConnectionReceiver powerConnectionReceiver;
+    @Setter @Getter private PowerConnectionReceiver powerConnectionReceiver;
     private Context context;
     private volatile boolean started = false;
 
