@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.jasonernst.awm.stats.NetworkDevice;
 import com.jasonernst.awm.stats.NetworkStat;
 import lombok.Getter;
+import lombok.Setter;
 
 public class BluetoothStatsCollector extends StatsCollector {
 
@@ -26,8 +27,9 @@ public class BluetoothStatsCollector extends StatsCollector {
 
     private static BluetoothAdapter mBluetoothAdapter;
     private static volatile BluetoothStates btState;
-    private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
+    @Setter @Getter private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
     private ConcurrentHashMap<String, NetworkDevice> btDevices;
+    @Setter
     private volatile boolean started = false;
 
     @Getter
