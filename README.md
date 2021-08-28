@@ -14,10 +14,15 @@ such as:
 - [x] obtain and track battery stats to measure the rate of discharge while scanning bt, wifi and wifi directly continually
 
 ## Using the library
-Add to your `build.gradle` file the following:
+Add to your repositories in `build.gradle`:
+```
+maven { url 'https://jitpack.io' }
+```
+
+Add to your dependencies in `build.gradle`:
 ```
 dependencies {
-  implementation 'com.jasonernst:awm:1.1.23'
+  implementation 'com.github.compscidr:awm:master-SNAPSHOT
 }
 ```
 This has been tested with gradle 4.9 and Android Studio 3.3.
