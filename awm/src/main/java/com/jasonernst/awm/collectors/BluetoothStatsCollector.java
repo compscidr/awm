@@ -145,7 +145,7 @@ public class BluetoothStatsCollector extends StatsCollector {
     public static class BluetoothEnableActivity extends Activity {
 
         private final String TAG = BluetoothEnableActivity.class.getCanonicalName();
-        private static final int REQUEST_ENABLE_BT = 109;
+        public static final int REQUEST_ENABLE_BT = 109;
 
         @Override
         protected void onCreate(Bundle savedInstanceState) {

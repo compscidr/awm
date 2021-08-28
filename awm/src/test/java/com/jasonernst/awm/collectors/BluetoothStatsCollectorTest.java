@@ -1,5 +1,6 @@
 package com.jasonernst.awm.collectors;
 
+import static com.jasonernst.awm.collectors.BluetoothStatsCollector.BluetoothEnableActivity.REQUEST_ENABLE_BT;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -10,6 +11,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -111,5 +113,22 @@ public class BluetoothStatsCollectorTest {
 
         doReturn(BluetoothAdapter.ACTION_DISCOVERY_STARTED).when(intent).getAction();
         collector.getBluetoothBroadcastReceiver().onReceive(context, intent);
+    }
+
+    @Test public void BTEnableTest() {
+        BluetoothStatsCollector.BluetoothEnableActivity btActivity = Mockito.spy(new BluetoothStatsCollector.BluetoothEnableActivity());
+        Bundle bundle = Mockito.mock(Bundle.class);
+        btActivity.onCreate(bundle);
+
+        // not bluetooth enabled
+        Intent intent = Mockito.mock(Intent.class);
+        btActivity.onActivityResult(0, 0, intent);
+
+        // bt adapter is enabled
+        doReturn(true).when(bluetoothAdapter).isEnabled();
+        btActivity.onActivityResult(REQUEST_ENABLE_BT, 0, intent);
+
+        doReturn(false).when(bluetoothAdapter).isEnabled();
+        btActivity.onActivityResult(REQUEST_ENABLE_BT, 0, intent);
     }
 }
