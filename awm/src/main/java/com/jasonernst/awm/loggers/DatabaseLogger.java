@@ -17,24 +17,25 @@ import java.util.List;
 import com.jasonernst.awm.ObservingDevice;
 import com.jasonernst.awm.stats.NetworkStat;
 
+import lombok.Setter;
+
 public class DatabaseLogger implements StatsLogger {
 
     private final String TAG = DatabaseLogger.class.getCanonicalName();
     private Bus eventBus = BusProvider.getInstance();
     private NetworkLogger networkLogger;
     private ObservationDatabase db;
-    private volatile boolean running;
-    private Thread networkThread;
-    private boolean clearBoot;
-    private boolean clearUpload;
+    @Setter private volatile boolean running;
+    @Setter private Thread networkThread;
+    @Setter private boolean clearBoot;
+    @Setter private boolean clearUpload;
 
-    public DatabaseLogger(Context context, NetworkLogger networkLogger, boolean clearBoot, boolean clearUpload) {
+    public DatabaseLogger(NetworkLogger networkLogger, ObservationDatabase db, boolean clearBoot, boolean clearUpload) {
         this.running = false;
         this.networkLogger = networkLogger;
         this.clearBoot = clearBoot;
         this.clearUpload = clearUpload;
-        this.db = Room.databaseBuilder(context,
-                ObservationDatabase.class, "observation-database").build();
+        this.db = db;
     }
 
     @Override
@@ -91,11 +92,15 @@ public class DatabaseLogger implements StatsLogger {
 
             //time between uploads
             try {
-                Thread.sleep(5000);
+                wait(5000);
             } catch(InterruptedException ex) {
                 return;
             }
         }
+    }
+
+    public void wait(int sleep_ms) throws InterruptedException {
+        Thread.sleep(sleep_ms);
     }
 
     @Override
@@ -111,11 +116,11 @@ public class DatabaseLogger implements StatsLogger {
         databaseObservation.setUploaded(false);
         databaseObservation.setUploadedSucessfully(false);
 
-        try {
-            db.databaseObservationDao().insert(databaseObservation);
+        db.databaseObservationDao().insert(databaseObservation);
+
+        if (db.databaseObservationDao().insert(databaseObservation) > 0) {
             eventBus.post(new LogEvent(LogEvent.EventType.SUCCESS, LogEvent.LogType.DB, 1));
-        } catch( Exception ex ) {
-            //this occurs if the storage space is full
+        } else {
             eventBus.post(new LogEvent(LogEvent.EventType.FAILURE, LogEvent.LogType.DB, 1));
         }
     }

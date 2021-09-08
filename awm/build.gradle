@@ -125,6 +125,7 @@ dependencies {
     //persistence
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
+    testImplementation "androidx.room:room-testing:$room_version"
 
     //logging
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'

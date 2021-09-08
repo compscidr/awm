@@ -11,6 +11,7 @@ import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
 //import com.google.android.gms.common.ConnectionResult;
 //import com.google.android.gms.common.GoogleApiAvailability;
+import com.jasonernst.awm.loggers.ObservationDatabase;
 import com.vanniktech.rxpermission.Permission;
 import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
@@ -51,6 +52,8 @@ import static android.Manifest.permission.CHANGE_WIFI_MULTICAST_STATE;
 import static android.Manifest.permission.CHANGE_WIFI_STATE;
 import static android.Manifest.permission.INTERNET;
 import static android.Manifest.permission.WAKE_LOCK;
+
+import androidx.room.Room;
 
 public class AndroidWirelessStatsCollector {
 
@@ -175,7 +178,10 @@ public class AndroidWirelessStatsCollector {
         networkLogger = new NetworkLogger(activity.getApplicationContext(), privacy, wifiUploads, url);
         statsLoggers.add(networkLogger);
 
-        databaseLogger = new DatabaseLogger(activity.getApplicationContext(), networkLogger, clearBoot, clearUpload);
+        ObservationDatabase db = Room.databaseBuilder(activity.getApplicationContext(),
+                ObservationDatabase.class, "observation-database").build();
+
+        databaseLogger = new DatabaseLogger(networkLogger, db, clearBoot, clearUpload);
         statsLoggers.add(databaseLogger);
 
 //        if (!checkPlayServices(activity)) {
