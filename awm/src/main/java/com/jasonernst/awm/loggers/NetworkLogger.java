@@ -6,7 +6,7 @@ import android.net.Network;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.util.Log;
-import android.util.Pair;
+import androidx.core.util.Pair;     // https://stackoverflow.com/a/59462618/5166430
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
@@ -112,10 +112,13 @@ public class NetworkLogger implements StatsLogger {
                         isMobileConn |= networkInfo.isConnected();
                     }
                 }
+            } else {
+                isWifiConn = false;
+                isMobileConn = false;
             }
         }
 
-        return new Pair<>(isWifiConn, isMobileConn);
+        return Pair.create(isWifiConn, isMobileConn);
     }
 
     public boolean isOnline() {
