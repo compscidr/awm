@@ -103,8 +103,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-location:18.0.0"
 
     //noinspection AnnotationProcessorOnCompilePath
-    compileOnly 'org.projectlombok:lombok:1.18.20'
-    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
     // https://mvnrepository.com/artifact/org.slf4j/slf4j-android
     implementation group: 'org.slf4j', name: 'slf4j-android', version: '1.7.32'
