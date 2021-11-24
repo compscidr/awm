@@ -88,6 +88,7 @@ public class MapFragment extends Fragment {
         //in case it hasn't init'd yet
         if (googleMap != null && !positionSet) {
             LatLng pos = new LatLng(gpsStats.latitude, gpsStats.longitude);
+            Log.d(TAG, "SETTING MAP POSITION TO : " + pos.toString());
             CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(pos, DEFAULT_ZOOM);
             googleMap.animateCamera(cameraUpdate);
             positionSet = true;
@@ -96,8 +97,18 @@ public class MapFragment extends Fragment {
 
     @Subscribe
     public void updateNetworkDevices(NetworkStat networkStat) {
+        if (currentPosition == null) {
+            Log.d(TAG, "Skipping adding this networkStat because currentPosition isn't defined yet");
+            return;
+        }
 
-        if (currentPosition == null || networkStat == null || networkStat.getDevices() == null) {
+        if (networkStat == null) {
+            Log.d(TAG, "This networkStat is null, can't add it to the map");
+            return;
+        }
+
+        if (networkStat.getDevices() == null) {
+            Log.d(TAG, "This networkStat devices is null, can't add it to the map");
             return;
         }
 
@@ -111,16 +122,22 @@ public class MapFragment extends Fragment {
             WeightedLatLng point = new WeightedLatLng(new LatLng(currentPosition.latitude, currentPosition.longitude), networkStat.getDevices().size());
             data.add(point);
 
-            mProvider.setWeightedData(data);
-            mOverlay.clearTileCache();
+            if (mProvider == null) {
+                addHeatMap();
+            } else {
+                mProvider.setWeightedData(data);
+                mOverlay.clearTileCache();
+                Log.d(TAG, "Added to map: " + point.toString());
+            }
         } catch(Exception ex) {
             Log.d(TAG, "EX: "+ ex.toString());
         }
     }
 
     private void addHeatMap() {
-        // Create a heat map tile provider, passing it the latlngs of the police stations.
-        data.add(new WeightedLatLng(new LatLng(0,0),0));
+        if (data.isEmpty()) {
+            return;
+        }
         mProvider = new HeatmapTileProvider.Builder()
                 .radius(DEFAULT_RADIUS)
                 .weightedData(data)

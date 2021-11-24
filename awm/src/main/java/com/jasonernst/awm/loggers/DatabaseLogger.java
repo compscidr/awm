@@ -70,7 +70,7 @@ public class DatabaseLogger implements StatsLogger {
                         return;
                     }
                     try {
-                        Log.d(TAG, "Trying to upload");
+                        //Log.d(TAG, "Trying to upload");
                         observation.setUploaded(true);
                         networkLogger.uploadJsonEntry(observation.getObservationJson());
                         if (clearUpload) {
@@ -80,12 +80,12 @@ public class DatabaseLogger implements StatsLogger {
                             observation.setUploadedSucessfully(true);
                             db.databaseObservationDao().updateObservation(observation);
                         }
-                        Log.d(TAG, "Uploaded record");
+                        //Log.d(TAG, "Uploaded record");
                     } catch(InvalidParameterException ex) {
                         Log.d(TAG, "Invalid entry - removing");
                         db.databaseObservationDao().delete(observation);
                     } catch (IOException ex) {
-                        Log.d(TAG, "Failed uploading.");
+                        //Log.d(TAG, "Failed uploading.");
                     }
                 }
             }

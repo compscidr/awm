@@ -55,7 +55,7 @@ public class GPSStatsCollector extends StatsCollector {
                 Log.i(TAG, "Location Callback results: " + currentLocation.getLatitude()
                         + " " + currentLocation.getLongitude());
 
-                eventBus.post(new GPSStats(currentLocation.getLatitude(), currentLocation.getLongitude()));
+                eventBus.post(new GPSStats(currentLocation.getLongitude(), currentLocation.getLatitude()));
             }
         };
     }
