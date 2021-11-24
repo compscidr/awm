@@ -14,7 +14,7 @@
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         android:name="android.support.multidex.MultiDexApplication">
 
-        <activity android:name="com.jasonernst.awm_example.MainActivity">
+        <activity android:name="com.jasonernst.awm_example.MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
