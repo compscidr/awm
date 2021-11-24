@@ -19,11 +19,10 @@ public class TabFragmentAdapter extends FragmentPagerAdapter {
         } else if (i == 1) {
             return new MapFragment();
         } else if (i == 2) {
-            //return new Preferences();
+            return new Preferences();
         } else {
             return new PrivacyFragment();
         }
-        return null;
     }
 
     @Override
