@@ -12,7 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-        android:name="android.support.multidex.MultiDexApplication">
+        android:name="androidx.multidex.MultiDexApplication">
 
         <activity android:name="com.jasonernst.awm_example.MainActivity" android:exported="true">
             <intent-filter>
