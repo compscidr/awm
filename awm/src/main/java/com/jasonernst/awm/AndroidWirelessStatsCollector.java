@@ -11,6 +11,9 @@ import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
 //import com.google.android.gms.common.ConnectionResult;
 //import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.jasonernst.awm.collectors.GPSStatsCollector;
 import com.jasonernst.awm.loggers.ObservationDatabase;
 import com.vanniktech.rxpermission.Permission;
 import com.vanniktech.rxpermission.RealRxPermission;
@@ -157,8 +160,8 @@ public class AndroidWirelessStatsCollector {
 
         rxPermission = RealRxPermission.getInstance(activity.getApplicationContext());
 
-//        GPSStatsCollector gpsStats = new GPSStatsCollector(activity.getApplicationContext());
-//        statsCollectors.add(gpsStats);
+        GPSStatsCollector gpsStats = new GPSStatsCollector(activity.getApplicationContext());
+        statsCollectors.add(gpsStats);
 
         btStats = new BluetoothStatsCollector(activity.getApplicationContext());
         statsCollectors.add(btStats);
@@ -184,9 +187,9 @@ public class AndroidWirelessStatsCollector {
         databaseLogger = new DatabaseLogger(networkLogger, db, clearBoot, clearUpload);
         statsLoggers.add(databaseLogger);
 
-//        if (!checkPlayServices(activity)) {
-//            Log.d(TAG, "Missing Google Play Services - GPS likely won't work.");
-//        }
+        if (!checkPlayServices(activity)) {
+            Log.d(TAG, "Missing Google Play Services - GPS likely won't work.");
+        }
     }
 
     public void start() {
@@ -216,7 +219,7 @@ public class AndroidWirelessStatsCollector {
      * Check the device to make sure it has the Google Play Services APK. If
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
-     *
+     */
     private boolean checkPlayServices(Activity activity) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(activity);
@@ -230,7 +233,7 @@ public class AndroidWirelessStatsCollector {
             return false;
         }
         return true;
-    }*/
+    }
 
     protected void startLoggers() {
         Log.i(TAG, "Starting stats loggers");
