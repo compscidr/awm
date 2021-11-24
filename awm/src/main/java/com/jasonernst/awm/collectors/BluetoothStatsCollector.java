@@ -29,11 +29,7 @@ public class BluetoothStatsCollector extends StatsCollector {
     private static volatile BluetoothStates btState;
     @Setter @Getter private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
     private ConcurrentHashMap<String, NetworkDevice> btDevices;
-    @Setter
-    private volatile boolean started = false;
-
-    @Getter
-    private String myAddress;
+    @Setter private volatile boolean started = false;
 
     enum BluetoothStates {
         ON, OFF, REJECTED
@@ -76,7 +72,6 @@ public class BluetoothStatsCollector extends StatsCollector {
             btState = BluetoothStates.ON;
             Log.i(TAG, "Bluetooth already on. Starting discovery");
             mBluetoothAdapter.startDiscovery();
-            myAddress = mBluetoothAdapter.getAddress();
         }
 
         started = true;
@@ -126,7 +121,7 @@ public class BluetoothStatsCollector extends StatsCollector {
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                 if(btDevices.size() > 0) {
                     Log.d(TAG, "After scan found a total of " + btDevices.size() + " devices");
-                    eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, btDevices));
+                    eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, new ConcurrentHashMap<>(btDevices)));
                     btDevices.clear();
                 } else {
                     Log.d(TAG, "Found zero BT devices after scan. starting again.");

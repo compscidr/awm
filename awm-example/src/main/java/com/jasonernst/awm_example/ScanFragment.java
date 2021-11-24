@@ -96,7 +96,7 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
     @Subscribe
     public void updateNetworkDevices(NetworkStat networkStat) {
         if (networkStat.getType() == BLUETOOTH) {
-            Log.d("MA", "GOT BT NETWORK STAT TYPE");
+            Log.d("MA", "GOT BT NETWORK STAT TYPE. Devices found: " + networkStat.getDevices().size());
             String status = "btDevices: ";
             status = status + networkStat.getDevices().size();
             for(NetworkDevice device : networkStat.getDevices().values()) {
@@ -112,7 +112,6 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
                 status = status + "\n" + device.getMac() + " " + device.getName() + " "
                         + device.getFrequency() + "Mhz " + device.getSignalStrength() + "dB";
             }
-
             txtWifiDevices.setText(status);
 
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
