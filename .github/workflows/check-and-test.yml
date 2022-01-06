@@ -20,7 +20,7 @@ jobs:
       - name: lint results
         uses: yutailang0119/action-android-lint@v2.0.0
         with:
-          xml_path: awm/build/reports/lint/report.xml
+          report-path: awm/build/reports/lint/report.xml
       - name: checkstyle
         run: ./gradlew awm:checkstyle
       - name: junit5 units tests (with jacoco covarege reports)
