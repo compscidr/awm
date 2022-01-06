@@ -129,7 +129,7 @@ dependencies {
     testImplementation "androidx.room:room-testing:$room_version"
 
     //logging
-    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.14.1'
+    testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
     testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.14.1'
 }
 
