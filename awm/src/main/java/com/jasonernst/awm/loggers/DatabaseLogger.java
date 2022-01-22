@@ -71,8 +71,8 @@ public class DatabaseLogger implements StatsLogger {
                     }
                     try {
                         //Log.d(TAG, "Trying to upload");
-                        observation.setUploaded(true);
                         networkLogger.uploadJsonEntry(observation.getObservationJson());
+                        observation.setUploaded(true);
                         if (clearUpload) {
                             db.databaseObservationDao().delete(observation);
                         } else {
