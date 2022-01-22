@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `observed_device` (
   `signal_strength` int(11) NOT NULL,
   `frequency` int(11) NOT NULL,
   `channel_width` int(11) NOT NULL,
-  `security` varchar(254) NOT NULL
+  `security` varchar(254) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `reporting_device_id` (`reporting_device_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
