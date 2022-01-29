@@ -22,8 +22,8 @@ import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.maps.android.heatmaps.HeatmapTileProvider;
 import com.google.maps.android.heatmaps.WeightedLatLng;
-import com.jasonernst.awm.stats.GPSStats;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.GPSStats;
+import com.jasonernst.awm_common.stats.NetworkStat;
 
 import java.util.ArrayList;
 

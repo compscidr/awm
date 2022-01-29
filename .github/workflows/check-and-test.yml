@@ -30,7 +30,6 @@ jobs:
           name: awm-reports
           path: awm/build/reports
 
-
   upload-coverage-reports:
     needs: [awm_checks]
     runs-on: ubuntu-latest

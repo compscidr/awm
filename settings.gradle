@@ -1,2 +1,4 @@
-include ':awm-example'
+include ':awm-jasonernst'
 include ':awm'
+include ':awm-server'
+include ':awm-common'

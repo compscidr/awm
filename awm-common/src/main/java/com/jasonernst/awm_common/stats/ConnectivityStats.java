@@ -1,4 +1,4 @@
-package com.jasonernst.awm.stats;
+package com.jasonernst.awm_common.stats;
 
 import java.net.Inet4Address;
 import java.net.Inet6Address;

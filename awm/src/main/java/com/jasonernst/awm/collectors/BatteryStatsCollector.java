@@ -8,7 +8,8 @@ import android.os.BatteryManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.jasonernst.awm.stats.BatteryStats;
+import com.jasonernst.awm_common.stats.ReportingDevice;
+import com.jasonernst.awm_common.stats.BatteryStats;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,8 +26,9 @@ public class BatteryStatsCollector extends StatsCollector {
     private Context context;
     private volatile boolean started = false;
 
-    public BatteryStatsCollector(Context context) {
+    public BatteryStatsCollector(Context context, ReportingDevice thisDevice) {
         this.context = context;
+        this.thisDevice = thisDevice;
         powerConnectionReceiver = new PowerConnectionReceiver();
     }
 

@@ -9,8 +9,8 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-import com.jasonernst.awm.ObservingDevice;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.ReportingDevice;
+import com.jasonernst.awm_common.stats.NetworkStat;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,11 +53,11 @@ public class DatabaseLoggerTest {
         // good path
         DatabaseLogger logger = Mockito.spy(new DatabaseLogger(networkLogger, db,false, false));
         NetworkStat networkStat = Mockito.mock(NetworkStat.class);
-        ObservingDevice device = Mockito.mock(ObservingDevice.class);
+        ReportingDevice device = Mockito.mock(ReportingDevice.class);
         logger.log(networkStat, device);
 
-        // json ex on toJSON
-        doThrow(JSONException.class).when(networkStat).toJSON(device);
+        // illegal arg ex on toJSON
+        doThrow(IllegalArgumentException.class).when(networkStat).toJSON();
         logger.log(networkStat, device);
 
         // record saved correctly

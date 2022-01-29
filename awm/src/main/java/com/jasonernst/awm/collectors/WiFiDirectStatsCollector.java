@@ -8,6 +8,8 @@ import android.util.Log;
 
 import static android.os.Looper.getMainLooper;
 
+import com.jasonernst.awm_common.stats.ReportingDevice;
+
 public class WiFiDirectStatsCollector extends StatsCollector {
 
     private WifiP2pManager wifiDirectManager;
@@ -17,8 +19,9 @@ public class WiFiDirectStatsCollector extends StatsCollector {
     private WiFiDirectChannelDisconnectListener wiFiDirectChannelDisconnectListener;
     private volatile boolean started;
 
-    public WiFiDirectStatsCollector(Context context) {
+    public WiFiDirectStatsCollector(Context context, ReportingDevice thisDevice) {
         this.context = context;
+        this.thisDevice = thisDevice;
         wifiDirectManager = (WifiP2pManager) context.getApplicationContext()
                 .getSystemService(Context.WIFI_P2P_SERVICE);
 

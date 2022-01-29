@@ -18,9 +18,9 @@ import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
 import com.jasonernst.awm.loggers.LogEvent;
 import com.jasonernst.awm.loggers.WiFiScan;
-import com.jasonernst.awm.stats.GPSStats;
-import com.jasonernst.awm.stats.NetworkDevice;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.GPSStats;
+import com.jasonernst.awm_common.stats.NetworkDevice;
+import com.jasonernst.awm_common.stats.NetworkStat;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.rightmesh.awm_lib_example.R;
 
-import static com.jasonernst.awm.stats.NetworkStat.DeviceType.BLUETOOTH;
-import static com.jasonernst.awm.stats.NetworkStat.DeviceType.WIFI;
+import static com.jasonernst.awm_common.stats.NetworkStat.DeviceType.BLUETOOTH;
+import static com.jasonernst.awm_common.stats.NetworkStat.DeviceType.WIFI;
 
 public class ScanFragment extends Fragment implements View.OnClickListener {
 

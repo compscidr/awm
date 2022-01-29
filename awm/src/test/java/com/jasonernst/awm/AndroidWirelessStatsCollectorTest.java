@@ -15,15 +15,15 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.StatsLog;
 
 import com.jasonernst.awm.collectors.StatsCollector;
 import com.jasonernst.awm.loggers.DatabaseLogger;
 import com.jasonernst.awm.loggers.NetworkLogger;
 import com.jasonernst.awm.loggers.StatsLogger;
-import com.jasonernst.awm.stats.BatteryStats;
-import com.jasonernst.awm.stats.GPSStats;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.ReportingDevice;
+import com.jasonernst.awm_common.stats.BatteryStats;
+import com.jasonernst.awm_common.stats.GPSStats;
+import com.jasonernst.awm_common.stats.NetworkStat;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
@@ -36,12 +36,12 @@ import java.util.Set;
 public class AndroidWirelessStatsCollectorTest {
 
     private static AndroidWirelessStatsCollector androidWirelessStatsCollector;
-    private static ObservingDevice observingDevice;
+    private static ReportingDevice observingDevice;
 
     @BeforeAll
     public static void init() {
         androidWirelessStatsCollector = Mockito.spy(new AndroidWirelessStatsCollector());
-        observingDevice = Mockito.mock(ObservingDevice.class);
+        observingDevice = Mockito.mock(ReportingDevice.class);
         androidWirelessStatsCollector.setThisDevice(observingDevice);
     }
 

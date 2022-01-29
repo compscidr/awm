@@ -21,6 +21,4 @@ echo "$longitude_bottom_right)";
 $observers = getObservers($longitude_top_left, $latitude_top_left,
   $longitude_bottom_right, $latitude_bottom_right);
 
-
-
 ?>

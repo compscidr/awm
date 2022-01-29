@@ -11,7 +11,7 @@ to a server running this software. The server stores the data in a mysql db and
 also provides some limited visualisation of this data. The raw data is also
 available for analysis and is open source, along with this software.
 
-An example visualisaiton of the data is provided, which is running the code from this repo:
+An example visualisation of the data is provided, which is running the code from this repo:
 https://test.rightmesh.io/awm-lib-server/map.php
 
 ![Screenshot of data in South America](/screenshots/1.png?raw=true "Screenshot of data in South America")

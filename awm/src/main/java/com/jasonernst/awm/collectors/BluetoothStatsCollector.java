@@ -11,11 +11,10 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.jasonernst.awm.stats.NetworkDevice;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.ObservedDevice;
+import com.jasonernst.awm_common.stats.NetworkStat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,7 +27,7 @@ public class BluetoothStatsCollector extends StatsCollector {
     private static BluetoothAdapter mBluetoothAdapter;
     private static volatile BluetoothStates btState;
     @Setter @Getter private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
-    private ConcurrentHashMap<String, NetworkDevice> btDevices;
+    private ConcurrentHashMap<String, ObservedDevice> btDevices;
     @Setter
     private volatile boolean started = false;
 
@@ -76,7 +75,9 @@ public class BluetoothStatsCollector extends StatsCollector {
             btState = BluetoothStates.ON;
             Log.i(TAG, "Bluetooth already on. Starting discovery");
             mBluetoothAdapter.startDiscovery();
-            myAddress = mBluetoothAdapter.getAddress();
+
+            // can't do this anymore unless we're a "system" app
+            // myAddress = mBluetoothAdapter.getAddress();
         }
 
         started = true;
@@ -113,20 +114,21 @@ public class BluetoothStatsCollector extends StatsCollector {
                 } else {
                     int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,Short.MIN_VALUE);
                     Log.d(TAG, "Found: " + device.getName() + " " + device.getAddress() + " RSSI: " + rssi);
-                    NetworkDevice networkDevice = new NetworkDevice(
+                    ObservedDevice networkDevice = new ObservedDevice(
                             device.getName(),
                             device.getAddress(),
                             rssi,
                             0,
                             0,
-                            ""
+                            "",
+                             ObservedDevice.DeviceType.BLUETOOTH
                             );
                     btDevices.put(networkDevice.getMac(), networkDevice);
                 }
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
                 if(btDevices.size() > 0) {
                     Log.d(TAG, "After scan found a total of " + btDevices.size() + " devices");
-                    eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, btDevices));
+                    eventBus.post(new NetworkStat(thisDevice, btDevices));
                     btDevices.clear();
                 } else {
                     Log.d(TAG, "Found zero BT devices after scan. starting again.");

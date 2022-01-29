@@ -15,6 +15,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.jasonernst.awm.collectors.GPSStatsCollector;
 import com.jasonernst.awm.loggers.ObservationDatabase;
+import com.jasonernst.awm_common.stats.ReportingDevice;
 import com.vanniktech.rxpermission.Permission;
 import com.vanniktech.rxpermission.RealRxPermission;
 import com.vanniktech.rxpermission.RxPermission;
@@ -38,9 +39,9 @@ import com.jasonernst.awm.collectors.WiFiDirectStatsCollector;
 import com.jasonernst.awm.loggers.DatabaseLogger;
 import com.jasonernst.awm.loggers.NetworkLogger;
 import com.jasonernst.awm.loggers.StatsLogger;
-import com.jasonernst.awm.stats.BatteryStats;
-import com.jasonernst.awm.stats.GPSStats;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.BatteryStats;
+import com.jasonernst.awm_common.stats.GPSStats;
+import com.jasonernst.awm_common.stats.NetworkStat;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -109,7 +110,7 @@ public class AndroidWirelessStatsCollector {
 
     private ScheduledExecutorService scheduleTaskExecutor;
 
-    @Setter private ObservingDevice thisDevice;
+    @Setter private ReportingDevice thisDevice;
     private SharedPreferences sharedPreferences;
 
     private WiFiAPStatsCollector wifiStats;
@@ -153,7 +154,7 @@ public class AndroidWirelessStatsCollector {
         //detect Android OS version
         String OS = Build.MANUFACTURER + " " + Build.MODEL + " " + Build.VERSION.SDK_INT + " "
                 + Build.VERSION.RELEASE;
-        thisDevice = new ObservingDevice(uuid, OS);
+        thisDevice = new ReportingDevice(uuid, OS);
 
         statsCollectors = new HashSet<>();
         statsLoggers = new HashSet<>();
@@ -166,16 +167,16 @@ public class AndroidWirelessStatsCollector {
         btStats = new BluetoothStatsCollector(activity.getApplicationContext());
         statsCollectors.add(btStats);
 
-        wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext());
+        wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext(), thisDevice);
         statsCollectors.add(wifiStats);
 
-        WiFiDirectStatsCollector wifiDirectStats = new WiFiDirectStatsCollector(activity.getApplicationContext());
+        WiFiDirectStatsCollector wifiDirectStats = new WiFiDirectStatsCollector(activity.getApplicationContext(), thisDevice);
         statsCollectors.add(wifiDirectStats);
 
-        InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
+        InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext(), thisDevice);
         statsCollectors.add(itStats);
 
-        BatteryStatsCollector bStats = new BatteryStatsCollector(activity.getApplicationContext());
+        BatteryStatsCollector bStats = new BatteryStatsCollector(activity.getApplicationContext(), thisDevice);
         statsCollectors.add(bStats);
 
         networkLogger = new NetworkLogger(activity.getApplicationContext(), privacy, wifiUploads, url);
@@ -303,13 +304,13 @@ public class AndroidWirelessStatsCollector {
         }
     }
 
-    protected void logNetwork(NetworkStat networkStat, ObservingDevice device) {
+    protected void logNetwork(NetworkStat networkStat, ReportingDevice device) {
         new Thread(() -> {
             networkLogger.log(networkStat, device);
         }).start();
     }
 
-    protected void logDatabase(NetworkStat networkStat, ObservingDevice device) {
+    protected void logDatabase(NetworkStat networkStat, ReportingDevice device) {
         new Thread(() -> {
             databaseLogger.log(networkStat, thisDevice);
             Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");

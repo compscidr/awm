@@ -11,16 +11,14 @@ import androidx.core.util.Pair;     // https://stackoverflow.com/a/59462618/5166
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 
-import org.json.JSONException;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.InvalidParameterException;
 
-import com.jasonernst.awm.ObservingDevice;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.ReportingDevice;
+import com.jasonernst.awm_common.stats.NetworkStat;
 
 public class NetworkLogger implements StatsLogger {
 
@@ -157,10 +155,10 @@ public class NetworkLogger implements StatsLogger {
      * @param thisDevice the state of the observing device.
      */
     @Override
-    public void log(NetworkStat stat, ObservingDevice thisDevice) {
+    public void log(NetworkStat stat, ReportingDevice thisDevice) {
         try {
-            uploadJsonEntry(stat.toJSON(thisDevice));
-        } catch (JSONException ex) {
+            uploadJsonEntry(stat.toJSON());
+        } catch (IllegalArgumentException ex) {
             //ignore this entry if this gets thrown
         } catch(IOException ex) {
             //we don't keep track of fails atm so just do nothing

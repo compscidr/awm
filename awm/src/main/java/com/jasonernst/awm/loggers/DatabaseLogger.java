@@ -1,21 +1,16 @@
 package com.jasonernst.awm.loggers;
 
-import android.content.Context;
 import android.util.Log;
-
-import androidx.room.Room;
 
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
-
-import org.json.JSONException;
 
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-import com.jasonernst.awm.ObservingDevice;
-import com.jasonernst.awm.stats.NetworkStat;
+import com.jasonernst.awm_common.stats.ReportingDevice;
+import com.jasonernst.awm_common.stats.NetworkStat;
 
 import lombok.Setter;
 
@@ -104,12 +99,12 @@ public class DatabaseLogger implements StatsLogger {
     }
 
     @Override
-    public void log(NetworkStat stat, ObservingDevice thisDevice) {
+    public void log(NetworkStat stat, ReportingDevice thisDevice) {
 
         DatabaseObservation databaseObservation = new DatabaseObservation();
         try {
-            databaseObservation.setObservationJson(stat.toJSON(thisDevice));
-        } catch (JSONException e) {
+            databaseObservation.setObservationJson(stat.toJSON());
+        } catch (IllegalArgumentException e) {
             Log.d(TAG, e.toString());
         }
 
