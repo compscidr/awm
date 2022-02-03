@@ -1,5 +1,6 @@
 package com.jasonernst.awm.collectors;
 
+import android.Manifest;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -8,14 +9,18 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.jasonernst.awm.stats.NetworkDevice;
 import com.jasonernst.awm.stats.NetworkStat;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -27,9 +32,12 @@ public class BluetoothStatsCollector extends StatsCollector {
 
     private static BluetoothAdapter mBluetoothAdapter;
     private static volatile BluetoothStates btState;
-    @Setter @Getter private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
+    @Setter
+    @Getter
+    private BluetoothBroadcastReceiver bluetoothBroadcastReceiver;
     private ConcurrentHashMap<String, NetworkDevice> btDevices;
-    @Setter private volatile boolean started = false;
+    @Setter
+    private volatile boolean started = false;
 
     enum BluetoothStates {
         ON, OFF, REJECTED
@@ -38,10 +46,10 @@ public class BluetoothStatsCollector extends StatsCollector {
     public BluetoothStatsCollector(Context context) {
         this.context = context;
 
-        BluetoothManager bluetoothManager = (BluetoothManager)context
+        BluetoothManager bluetoothManager = (BluetoothManager) context
                 .getSystemService(Context.BLUETOOTH_SERVICE);
 
-        if(bluetoothManager == null) {
+        if (bluetoothManager == null) {
             Log.d(TAG, "BTMANAGER null");
             return;
         }
@@ -58,12 +66,12 @@ public class BluetoothStatsCollector extends StatsCollector {
 
     @Override
     public void start() throws Exception {
-        if(mBluetoothAdapter == null) {
+        if (mBluetoothAdapter == null) {
             throw new Exception("Bluetooth adapter is null, likely not supported by phone");
         }
 
         //turn on BT if its not already on
-        if(!mBluetoothAdapter.isEnabled()) {
+        if (!mBluetoothAdapter.isEnabled()) {
             btState = BluetoothStates.OFF;
             Log.i(TAG, "Bluetooth off, requesting to turn on");
             context.startActivity(new Intent(context, BluetoothEnableActivity.class)
@@ -71,6 +79,16 @@ public class BluetoothStatsCollector extends StatsCollector {
         } else {
             btState = BluetoothStates.ON;
             Log.i(TAG, "Bluetooth already on. Starting discovery");
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             mBluetoothAdapter.startDiscovery();
         }
 
@@ -82,7 +100,7 @@ public class BluetoothStatsCollector extends StatsCollector {
         //we may want to consider restoring the initial state of the bt device from before
         //the library started, ie if it was on, leave it on, if it was off, turn it back off.
 
-        if(bluetoothBroadcastReceiver != null && started) {
+        if (bluetoothBroadcastReceiver != null && started) {
             context.unregisterReceiver(bluetoothBroadcastReceiver);
             bluetoothBroadcastReceiver = null;
         }
@@ -106,7 +124,17 @@ public class BluetoothStatsCollector extends StatsCollector {
                 if (device == null) {
                     Log.d(TAG, "Device is null in the broadcastreceiver");
                 } else {
-                    int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,Short.MIN_VALUE);
+                    int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI, Short.MIN_VALUE);
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
                     Log.d(TAG, "Found: " + device.getName() + " " + device.getAddress() + " RSSI: " + rssi);
                     NetworkDevice networkDevice = new NetworkDevice(
                             device.getName(),
@@ -115,11 +143,11 @@ public class BluetoothStatsCollector extends StatsCollector {
                             0,
                             0,
                             ""
-                            );
+                    );
                     btDevices.put(networkDevice.getMac(), networkDevice);
                 }
             } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
-                if(btDevices.size() > 0) {
+                if (btDevices.size() > 0) {
                     Log.d(TAG, "After scan found a total of " + btDevices.size() + " devices");
                     eventBus.post(new NetworkStat(NetworkStat.DeviceType.BLUETOOTH, new ConcurrentHashMap<>(btDevices)));
                     btDevices.clear();
@@ -149,6 +177,16 @@ public class BluetoothStatsCollector extends StatsCollector {
             Log.d(TAG, "BTENABLEACTIVITY");
 
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+                return;
+            }
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
         }
 
@@ -156,9 +194,19 @@ public class BluetoothStatsCollector extends StatsCollector {
         protected void onActivityResult(int requestCode, int resultCode, Intent data) {
             if (requestCode == REQUEST_ENABLE_BT) {
                 Log.d(TAG, "REQUEST ENABLE BT RESULT: " + resultCode);
-                if(mBluetoothAdapter.isEnabled()) {
+                if (mBluetoothAdapter.isEnabled()) {
                     Log.d(TAG, "Accepted turning on BT device. Starting discovery.");
                     btState = BluetoothStates.ON;
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+                        // TODO: Consider calling
+                        //    ActivityCompat#requestPermissions
+                        // here to request the missing permissions, and then overriding
+                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                        //                                          int[] grantResults)
+                        // to handle the case where the user grants the permission. See the documentation
+                        // for ActivityCompat#requestPermissions for more details.
+                        return;
+                    }
                     mBluetoothAdapter.startDiscovery();
                 } else {
                     btState = BluetoothStates.REJECTED;
