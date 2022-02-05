@@ -1,4 +1,15 @@
 # awm-lib-server
+
+## Endpoints:
+/upload: send stats from phones to server
+/download: obtain stats from all regions and all users
+  - /download/observer: obtain stats for a particular observer
+    - /download/observer/region: obtain stats for a particular observer over a particular region
+  - /download/region: obtain all stats in a particular region
+/: router
+
+#### older readme
+
 The data collection format is designed to allow for bulk uploading of statistics
 data. This means the device can store measurements locally and upload them all
 at once so that it may collect data while there is no Internet connection.
