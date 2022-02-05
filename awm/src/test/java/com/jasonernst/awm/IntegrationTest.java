@@ -35,7 +35,7 @@ public class IntegrationTest {
 
     @Test
     public void smokeTest() throws IOException {
-        URL url = new URL("http://" + awm_server.getHost() + ":" + awm_server.getMappedPort(AWM_SERVER_PORT) + "/index.php");
+        URL url = new URL("http://" + awm_server.getHost() + ":" + awm_server.getMappedPort(AWM_SERVER_PORT) + "/");
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
         con.setRequestMethod("GET");
         con.setConnectTimeout(5000);
