@@ -9,8 +9,6 @@ import android.util.Log;
 import com.anadeainc.rxbus.Bus;
 import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
-//import com.google.android.gms.common.ConnectionResult;
-//import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.jasonernst.awm.collectors.GPSStatsCollector;
@@ -30,7 +28,6 @@ import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.CompositeDisposable;
 import com.jasonernst.awm.collectors.BatteryStatsCollector;
 import com.jasonernst.awm.collectors.BluetoothStatsCollector;
-// import com.jasonernst.awm.collectors.GPSStatsCollector;
 import com.jasonernst.awm.collectors.InternetStatsCollector;
 import com.jasonernst.awm.collectors.StatsCollector;
 import com.jasonernst.awm.collectors.WiFiAPStatsCollector;
@@ -109,7 +106,7 @@ public class AndroidWirelessStatsCollector {
 
     private ScheduledExecutorService scheduleTaskExecutor;
 
-    @Setter private ObservingDevice thisDevice;
+    @Setter private ReportingDevice thisDevice;
     private SharedPreferences sharedPreferences;
 
     private WiFiAPStatsCollector wifiStats;
@@ -153,7 +150,7 @@ public class AndroidWirelessStatsCollector {
         //detect Android OS version
         String OS = Build.MANUFACTURER + " " + Build.MODEL + " " + Build.VERSION.SDK_INT + " "
                 + Build.VERSION.RELEASE;
-        thisDevice = new ObservingDevice(uuid, OS);
+        thisDevice = new ReportingDevice(uuid, OS);
 
         statsCollectors = new HashSet<>();
         statsLoggers = new HashSet<>();
@@ -164,12 +161,15 @@ public class AndroidWirelessStatsCollector {
         statsCollectors.add(gpsStats);
 
         btStats = new BluetoothStatsCollector(activity.getApplicationContext());
+        btStats.setThisDevice(thisDevice);
         statsCollectors.add(btStats);
 
         wifiStats = new WiFiAPStatsCollector(activity.getApplicationContext());
+        wifiStats.setThisDevice(thisDevice);
         statsCollectors.add(wifiStats);
 
         WiFiDirectStatsCollector wifiDirectStats = new WiFiDirectStatsCollector(activity.getApplicationContext());
+        wifiDirectStats.setThisDevice(thisDevice);
         statsCollectors.add(wifiDirectStats);
 
         InternetStatsCollector itStats = new InternetStatsCollector(activity.getApplicationContext());
@@ -303,13 +303,13 @@ public class AndroidWirelessStatsCollector {
         }
     }
 
-    protected void logNetwork(NetworkStat networkStat, ObservingDevice device) {
+    protected void logNetwork(NetworkStat networkStat, ReportingDevice device) {
         new Thread(() -> {
             networkLogger.log(networkStat, device);
         }).start();
     }
 
-    protected void logDatabase(NetworkStat networkStat, ObservingDevice device) {
+    protected void logDatabase(NetworkStat networkStat, ReportingDevice device) {
         new Thread(() -> {
             databaseLogger.log(networkStat, thisDevice);
             Log.d(TAG, "LOGGED IN DB: " + databaseLogger.getTotalCount() + " records");

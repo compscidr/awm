@@ -1,5 +1,8 @@
 package com.jasonernst.awm_example;
 
+import static com.jasonernst.awm.stats.ObservedDevice.DeviceType.BLUETOOTH;
+import static com.jasonernst.awm.stats.ObservedDevice.DeviceType.WIFI;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,7 +22,7 @@ import com.anadeainc.rxbus.Subscribe;
 import com.jasonernst.awm.loggers.LogEvent;
 import com.jasonernst.awm.loggers.WiFiScan;
 import com.jasonernst.awm.stats.GPSStats;
-import com.jasonernst.awm.stats.NetworkDevice;
+import com.jasonernst.awm.stats.ObservedDevice;
 import com.jasonernst.awm.stats.NetworkStat;
 
 import java.util.concurrent.Executors;
@@ -27,9 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import io.rightmesh.awm_lib_example.R;
-
-import static com.jasonernst.awm.stats.NetworkStat.DeviceType.BLUETOOTH;
-import static com.jasonernst.awm.stats.NetworkStat.DeviceType.WIFI;
 
 public class ScanFragment extends Fragment implements View.OnClickListener {
 
@@ -95,32 +95,35 @@ public class ScanFragment extends Fragment implements View.OnClickListener {
 
     @Subscribe
     public void updateNetworkDevices(NetworkStat networkStat) {
-        if (networkStat.getType() == BLUETOOTH) {
-            Log.d("MA", "GOT BT NETWORK STAT TYPE. Devices found: " + networkStat.getDevices().size());
-            String status = "btDevices: ";
-            status = status + networkStat.getDevices().size();
-            for(NetworkDevice device : networkStat.getDevices().values()) {
-                status = status + "\n" + device.getMac() + " " + device.getName() + " "
+        int btCount = 0;
+        int wifiCount = 0;
+        String btStatus = "btDevices: ";
+        String wifiStatus = "wifiDevices: ";
+
+        for(ObservedDevice device : networkStat.getDevices().values()) {
+            if (device.getType() == BLUETOOTH) {
+                btCount++;
+                btStatus = btStatus + "\n" + device.getMac() + " " + device.getName() + " "
                         + device.getSignalStrength() + "dB";
-            }
-            txtBtDevices.setText(status);
-        } else if (networkStat.getType() == WIFI) {
-            Log.d("MA", "GOT WIFI NETWORK STAT TYPE: " + networkStat.getDevices().size());
-            String status = "wifiDevices: ";
-            status = status + networkStat.getDevices().size();
-            for(NetworkDevice device : networkStat.getDevices().values()) {
-                status = status + "\n" + device.getMac() + " " + device.getName() + " "
+            } else if (device.getType() == WIFI) {
+                wifiCount++;
+                wifiStatus = wifiStatus + "\n" + device.getMac() + " " + device.getName() + " "
                         + device.getFrequency() + "Mhz " + device.getSignalStrength() + "dB";
             }
-            txtWifiDevices.setText(status);
-
-            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.schedule(() -> {
-                eventBus.post(new WiFiScan());
-            }, 5, TimeUnit.SECONDS);
-        } else {
-            Log.d("MA", "GOT UNKNOWN NETWORK STAT TYPE");
         }
+
+        if (btCount > 0) {
+            txtBtDevices.setText(btStatus);
+        }
+
+        if (wifiCount > 0) {
+            txtWifiDevices.setText(wifiStatus);
+        }
+
+        ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+        scheduler.schedule(() -> {
+            eventBus.post(new WiFiScan());
+        }, 5, TimeUnit.SECONDS);
     }
 
     @Subscribe

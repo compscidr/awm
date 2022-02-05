@@ -13,11 +13,10 @@ import com.anadeainc.rxbus.BusProvider;
 import com.anadeainc.rxbus.Subscribe;
 
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.jasonernst.awm.loggers.WiFiScan;
-import com.jasonernst.awm.stats.NetworkDevice;
+import com.jasonernst.awm.stats.ObservedDevice;
 import com.jasonernst.awm.stats.NetworkStat;
 
 public class WiFiAPStatsCollector extends StatsCollector {
@@ -28,7 +27,7 @@ public class WiFiAPStatsCollector extends StatsCollector {
     private WifiManager wifiManager;
     private WifiManager.WifiLock wifiLock;
     private WiFiScanReceiver wiFiScanReceiver;
-    private ConcurrentHashMap<String, NetworkDevice> devices;
+    private ConcurrentHashMap<String, ObservedDevice> devices;
     private Bus eventBus = BusProvider.getInstance();
     private volatile boolean started = false;
 
@@ -89,28 +88,30 @@ public class WiFiAPStatsCollector extends StatsCollector {
                     Log.d(TAG, scan.BSSID + " " + scan.SSID + "\n  " + scan);
 
 
-                    NetworkDevice networkDevice = null;
+                    ObservedDevice observedDevice = null;
                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        networkDevice = new NetworkDevice(
+                        observedDevice = new ObservedDevice(
                                 scan.SSID,
                                 scan.BSSID,
                                 scan.level,
                                 scan.frequency,
                                 scan.channelWidth,
-                                scan.capabilities);
+                                scan.capabilities,
+                                ObservedDevice.DeviceType.WIFI);
                     } else {
-                        networkDevice = new NetworkDevice(
+                        observedDevice = new ObservedDevice(
                                 scan.SSID,
                                 scan.BSSID,
                                 scan.level,
                                 scan.frequency,
                                 0,
-                                scan.capabilities);
+                                scan.capabilities,
+                                ObservedDevice.DeviceType.WIFI);
                     }
-                    devices.put(networkDevice.getMac(), networkDevice);
+                    devices.put(observedDevice.getMac(), observedDevice);
                 }
                 Log.d(TAG, "POSTING WIFI EVENT on thread: " + Thread.currentThread().getName());
-                eventBus.post(new NetworkStat(NetworkStat.DeviceType.WIFI, devices));
+                eventBus.post(new NetworkStat(thisDevice, devices));
             }
         }
     }

@@ -19,7 +19,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.InvalidParameterException;
 
-import com.jasonernst.awm.ObservingDevice;
+import com.jasonernst.awm.ReportingDevice;
 import com.jasonernst.awm.stats.NetworkStat;
 
 public class NetworkLogger implements StatsLogger {
@@ -157,9 +157,9 @@ public class NetworkLogger implements StatsLogger {
      * @param thisDevice the state of the observing device.
      */
     @Override
-    public void log(NetworkStat stat, ObservingDevice thisDevice) {
+    public void log(NetworkStat stat, ReportingDevice thisDevice) {
         try {
-            uploadJsonEntry(stat.toJSON(thisDevice));
+            uploadJsonEntry(stat.toJSON());
         } catch (JSONException ex) {
             //ignore this entry if this gets thrown
         } catch(IOException ex) {

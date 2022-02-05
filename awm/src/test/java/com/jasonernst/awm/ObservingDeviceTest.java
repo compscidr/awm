@@ -9,8 +9,8 @@ import java.util.UUID;
 public class ObservingDeviceTest {
     @Test public void prepareJsonTest() {
         UUID uuid = UUID.randomUUID();
-        ObservingDevice observingDevice = new ObservingDevice(uuid, "TestOS");
+        ReportingDevice reportingDevice = new ReportingDevice(uuid, "TestOS");
         Timestamp now = new Timestamp(new Date().getTime());
-        String json = observingDevice.prepareJSON("", now);
+        String json = reportingDevice.prepareJSON("", now);
     }
 }

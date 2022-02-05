@@ -3,6 +3,7 @@ package com.jasonernst.awm_example;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -13,6 +14,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
 import com.jasonernst.awm.AndroidWirelessStatsCollector;
+import com.jasonernst.awm.ReportingDevice;
+
+import java.util.UUID;
 
 import io.rightmesh.awm_lib_example.R;
 
@@ -102,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
 
             awsc = new AndroidWirelessStatsCollector(this, caching, wifiuploads, clearboot,
                     clearUpload, privacy, url);
+
+            UUID uuid = UUID.randomUUID();
+            ReportingDevice reportingDevice = new ReportingDevice(uuid, Build.VERSION.SDK_INT + ":" + Build.VERSION.RELEASE);
+            awsc.setThisDevice(reportingDevice);
 
             awsc.start();
             started = true;

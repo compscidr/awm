@@ -9,7 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 
-import com.jasonernst.awm.ObservingDevice;
+import com.jasonernst.awm.ReportingDevice;
 import com.jasonernst.awm.stats.NetworkStat;
 
 import org.json.JSONException;
@@ -53,7 +53,7 @@ public class DatabaseLoggerTest {
         // good path
         DatabaseLogger logger = Mockito.spy(new DatabaseLogger(networkLogger, db,false, false));
         NetworkStat networkStat = Mockito.mock(NetworkStat.class);
-        ObservingDevice device = Mockito.mock(ObservingDevice.class);
+        ReportingDevice device = Mockito.mock(ReportingDevice.class);
         logger.log(networkStat, device);
 
         // json ex on toJSON

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.verify;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.util.StatsLog;
 
 import com.jasonernst.awm.collectors.StatsCollector;
 import com.jasonernst.awm.loggers.DatabaseLogger;
@@ -36,13 +35,13 @@ import java.util.Set;
 public class AndroidWirelessStatsCollectorTest {
 
     private static AndroidWirelessStatsCollector androidWirelessStatsCollector;
-    private static ObservingDevice observingDevice;
+    private static ReportingDevice reportingDevice;
 
     @BeforeAll
     public static void init() {
         androidWirelessStatsCollector = Mockito.spy(new AndroidWirelessStatsCollector());
-        observingDevice = Mockito.mock(ObservingDevice.class);
-        androidWirelessStatsCollector.setThisDevice(observingDevice);
+        reportingDevice = Mockito.mock(ReportingDevice.class);
+        androidWirelessStatsCollector.setThisDevice(reportingDevice);
     }
 
     // todo: fix - still needs some work
@@ -68,28 +67,28 @@ public class AndroidWirelessStatsCollectorTest {
         androidWirelessStatsCollector.setDatabaseLogger(databaseLogger);
         // caching = false, wifiUploads = false
         androidWirelessStatsCollector.updateNetworkStats(networkStat);
-        verify(androidWirelessStatsCollector, never()).logNetwork(networkStat, observingDevice);
+        verify(androidWirelessStatsCollector, never()).logNetwork(networkStat, reportingDevice);
 
         // caching = false, wifi uploads = true
         androidWirelessStatsCollector.setWifiUploads(true);
         androidWirelessStatsCollector.updateNetworkStats(networkStat);
-        verify(androidWirelessStatsCollector, never()).logNetwork(networkStat, observingDevice);
+        verify(androidWirelessStatsCollector, never()).logNetwork(networkStat, reportingDevice);
         doReturn(true).when(networkLogger).isWifiConnected();
         androidWirelessStatsCollector.updateNetworkStats(networkStat);
-        verify(androidWirelessStatsCollector, never()).logNetwork(networkStat, observingDevice);
+        verify(androidWirelessStatsCollector, never()).logNetwork(networkStat, reportingDevice);
         doReturn(true).when(networkLogger).isOnline();
         androidWirelessStatsCollector.updateNetworkStats(networkStat);
-        verify(androidWirelessStatsCollector, times(1)).logNetwork(networkStat, observingDevice);
+        verify(androidWirelessStatsCollector, times(1)).logNetwork(networkStat, reportingDevice);
 
         // caching = false, wifi uploads = false
         androidWirelessStatsCollector.setWifiUploads(false);
         androidWirelessStatsCollector.updateNetworkStats(networkStat);
-        verify(androidWirelessStatsCollector, times(2)).logNetwork(networkStat, observingDevice);
+        verify(androidWirelessStatsCollector, times(2)).logNetwork(networkStat, reportingDevice);
 
         // caching = true
         androidWirelessStatsCollector.setCaching(true);
         androidWirelessStatsCollector.updateNetworkStats(networkStat);
-        verify(androidWirelessStatsCollector, times(2)).logNetwork(networkStat, observingDevice);
+        verify(androidWirelessStatsCollector, times(2)).logNetwork(networkStat, reportingDevice);
     }
 
     @Test public void startLoggers() throws Exception {
