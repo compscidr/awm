@@ -56,10 +56,6 @@ public class DatabaseLoggerTest {
         ReportingDevice device = Mockito.mock(ReportingDevice.class);
         logger.log(networkStat, device);
 
-        // json ex on toJSON
-        doThrow(JSONException.class).when(networkStat).toJSON(device);
-        logger.log(networkStat, device);
-
         // record saved correctly
         doReturn(1L).when(dao).insert(any());
         logger.log(networkStat, device);
