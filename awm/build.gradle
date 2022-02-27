@@ -132,7 +132,7 @@ dependencies {
 
     //logging
     testImplementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.1'
-    testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    testAnnotationProcessor group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
 
     // integration test with docker container
     testImplementation "org.testcontainers:testcontainers:1.16.3"
