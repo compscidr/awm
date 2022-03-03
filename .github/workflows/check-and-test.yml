@@ -61,7 +61,7 @@ jobs:
         run: ./gradlew awm:checkstyle
       - name: junit5 units tests (with jacoco covarege reports)
         run: ./gradlew awm:jacocoTestReport
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: awm-reports
           path: awm/build/reports
