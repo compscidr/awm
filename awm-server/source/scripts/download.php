@@ -1,3 +1,0 @@
-<?
-// TODO: implement download endpoint
-?>

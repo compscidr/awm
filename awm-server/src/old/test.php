@@ -1,5 +1,5 @@
 <?php
-require_once("common.php");
+require_once("scripts/common.php");
 
 $mysqli = attemptConnect();
 if($mysqli->connect_error){

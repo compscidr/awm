@@ -1,5 +1,5 @@
 <?php
-require_once("common.php");
+require_once("scripts/common.php");
 
 if(!isset($_GET['latitude_top_left']) || !isset($_GET['longitude_top_left']) ||
   !isset($_GET['latitude_bottom_right']) ||
