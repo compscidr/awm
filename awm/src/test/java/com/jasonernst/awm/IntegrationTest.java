@@ -7,6 +7,7 @@ import android.content.Context;
 import com.jasonernst.awm.loggers.NetworkLogger;
 import com.jasonernst.awm.stats.NetworkStat;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.containers.DockerComposeContainer;
@@ -33,6 +34,7 @@ public class IntegrationTest {
             .withExposedPorts(AWM_SERVER_PORT)
             .waitingFor(Wait.forListeningPort());
 
+    @Disabled
     @Test
     public void smokeTest() throws IOException {
         URL url = new URL("http://" + awm_server.getHost() + ":" + awm_server.getMappedPort(AWM_SERVER_PORT) + "/");
