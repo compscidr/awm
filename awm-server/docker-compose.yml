@@ -18,14 +18,14 @@ services:
       - 8080:80
 
   awm-server:
-    container_name: php-72
+    container_name: awm-server
     build:
       context: .
       target: app
     volumes:
-      - ./src:/var/www/html
+      - ./:/var/www/html
     ports:
-      - 80:80
+      - 80:8000
     depends_on:
       - mysql
     environment:
