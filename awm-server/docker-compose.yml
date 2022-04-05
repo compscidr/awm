@@ -3,9 +3,13 @@ services:
   mysql:
     image: mysql:8.0
     container_name: awm-sql
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
-    env_file: .env
+    environment:
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
       - ./docker-compose/mysql:/docker-entrypoint-initdb.d
     networks:
@@ -14,6 +18,11 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
+    environment:
+      - MYSQL_HOST=${DB_HOST}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
     links:
       - mysql:db
     ports:
@@ -44,15 +53,11 @@ services:
     working_dir: /var/www/html
     volumes:
       - ./:/var/www/html
+    entrypoint: "/var/www/html/entrypoint.sh"
     depends_on:
       - mysql
       - nginx
-    environment:
-      - MYSQL_HOST=${MYSQL_HOST}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MAPS_KEY=${MAPS_KEY}
+    env_file: .env
     networks:
       - awm-net
 

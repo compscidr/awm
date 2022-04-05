@@ -2,7 +2,7 @@
 FROM php:8.1-fpm as base
 
 # git and unizp required for composer to install stuff it seems
-RUN apt-get update && apt-get install --no-install-recommends -y wget git unzip libonig-dev libpng-dev
+RUN apt-get update && apt-get install --no-install-recommends -y wget git unzip libonig-dev libpng-dev default-mysql-client
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -17,8 +17,8 @@ RUN wget https://raw.githubusercontent.com/composer/getcomposer.org/76a7060ccb93
 FROM base as app
 
 # Arguments defined in docker-compose.yml
-ARG user
-ARG uid
+ARG user=default
+ARG uid=1000
 
 # copy the app
 # Create system user to run Composer and Artisan Commands
@@ -29,7 +29,9 @@ RUN mkdir -p /home/$user/.composer && \
 WORKDIR /var/www/html
 COPY . /var/www/html
 EXPOSE 80
-RUN composer install && php artisan storage:link && php artisan key:generate && php artisan config:cache
+RUN composer install
+ENTRYPOINT [ "entrypoint.sh" ]
+CMD ["run"]
 
 FROM base as test
 
