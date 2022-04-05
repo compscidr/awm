@@ -78,7 +78,7 @@ jobs:
       - uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
-          java-version: '11.0.4'
+          java-version: '11.0.11'
       - name: lint
         run: ./gradlew awm:lint
       - name: lint results
