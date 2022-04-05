@@ -35,10 +35,38 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
+      
+      - name: Build tests
+        uses: docker/build-push-action@v2
+        with:
+          context: awm-sever
+          target: test
+          push: false
+          load: true
+          tags: compscidr/awm-server:test
+      
+      - name: Run tests
+        run: |
+          docker run --rm compscidr/awm-server:test
+      
+      - name: Build lint
+        uses: docker/build-push-action@v2
+        with:
+          context: awm-sever
+          target: check
+          push: false
+          load: true
+          tags: compscidr/awm-server:check
+      
+      - name: Run tests
+        run: |
+          docker run --rm compscidr/awm-server:check
+
+      - name: Build app and push
         uses: docker/build-push-action@v2
         with:
           context: awm-server
+          target: app
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
