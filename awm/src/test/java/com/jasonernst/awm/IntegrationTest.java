@@ -47,6 +47,7 @@ public class IntegrationTest {
         assert(status == 200);
     }
 
+    @Disabled
     @Test
     public void uploadTest() {
         // step 1: assert there is nothing in the downloads

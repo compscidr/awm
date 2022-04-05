@@ -1,4 +1,4 @@
-name: awm-lib test
+name: awm tests
 
 on:
   pull_request:
@@ -87,7 +87,7 @@ jobs:
           report-path: awm/build/reports/lint/report.xml
       - name: checkstyle
         run: ./gradlew awm:checkstyle
-      - name: junit5 units tests (with jacoco covarege reports)
+      - name: junit5 units tests (with jacoco coverage reports)
         run: ./gradlew awm:jacocoTestReport
       - uses: actions/upload-artifact@v3
         with:
