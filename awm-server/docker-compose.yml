@@ -2,12 +2,14 @@ version: '2'
 services:
   mysql:
     image: mysql:8.0
-    container_name: mysql-server-80
+    container_name: awm-sql
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     env_file: .env
     volumes:
-      - ./wireless_stats.sql:/docker-entrypoint-initdb.d/schema.sql
+      - ./docker-compose/mysql:/docker-entrypoint-initdb.d
+    networks:
+      - awm-net
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -16,21 +18,44 @@ services:
       - mysql:db
     ports:
       - 8080:80
+    networks:
+      - awm-net
 
-  awm-server:
-    container_name: awm-server
-    build:
-      context: .
-      target: app
+  nginx:
+    image: nginx:1.21.6-alpine
+    container_name: awm-nginx
+    restart: unless-stopped
+    ports:
+      - 8000:80
     volumes:
       - ./:/var/www/html
-    ports:
-      - 80:8000
+      - ./docker-compose/nginx:/etc/nginx/conf.d
+    networks:
+      - awm-net
+
+  app:
+    container_name: awm-app
+    build:
+      args:
+        user: jason
+        uid: 1000
+      context: .
+      target: app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
     depends_on:
       - mysql
+      - nginx
     environment:
       - MYSQL_HOST=${MYSQL_HOST}
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MAPS_KEY=${MAPS_KEY}
+    networks:
+      - awm-net
+
+networks:
+  awm-net:
+    driver: bridge
