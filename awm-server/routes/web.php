@@ -16,3 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::resource('reporting_devices', ReportingDeviceController::class);
+Route::resource('observed_devices', ObservedDeviceController::class);
