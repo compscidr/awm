@@ -136,7 +136,7 @@ dependencies {
 
     // integration test with docker container
     testImplementation "org.testcontainers:testcontainers:1.17.0"
-    testImplementation "org.testcontainers:junit-jupiter:1.17.0"
+    testImplementation "org.testcontainers:junit-jupiter:1.17.1"
 }
 
 
