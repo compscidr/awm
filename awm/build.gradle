@@ -99,7 +99,7 @@ dependencies {
     implementation 'com.vanniktech:rxpermission:0.7.0'
     api 'com.github.anadea:rxbus:1.0.1'
 
-    implementation "com.google.android.gms:play-services-location:19.0.1"
+    implementation "com.google.android.gms:play-services-location:20.0.0"
 
     //noinspection AnnotationProcessorOnCompilePath
     compileOnly 'org.projectlombok:lombok:1.18.24'
