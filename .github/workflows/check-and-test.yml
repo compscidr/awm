@@ -37,7 +37,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       
       - name: Build tests
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: awm-server
           target: test
@@ -50,7 +50,7 @@ jobs:
           docker run --rm compscidr/awm-server:test
       
       - name: Build lint
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: awm-server
           target: check
@@ -63,7 +63,7 @@ jobs:
           docker run --rm compscidr/awm-server:check
 
       - name: Build app and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: awm-server
           target: app
