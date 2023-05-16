@@ -31,7 +31,7 @@ services:
       - awm-net
 
   nginx:
-    image: nginx:1.21.6-alpine
+    image: nginx:1.24.0-alpine
     container_name: awm-nginx
     restart: unless-stopped
     ports:
