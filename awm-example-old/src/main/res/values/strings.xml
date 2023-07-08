@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">awm-lib-example</string>
+    <string name="gps_position">GPS Position:</string>
+    <string name="btdevices_0">btDevices: 0</string>
+    <string name="wifidevices_0">wifiDevices: 0</string>
+    <string name="saved_records_0">Saved Records: 0</string>
+    <string name="uploaded_records">Uploaded Records:</string>
+    <string name="turn_off">TURN OFF</string>
+    <string name="scan_list">Scan List</string>
+    <string name="map_view">Map View</string>
+    <string name="settings">Settings</string>
+    <string name="decline">Decline</string>
+    <string name="accept">Accept</string>
+    <string name="privacy_policy">Privacy Policy</string>
+</resources>
