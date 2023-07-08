@@ -1,4 +1,4 @@
-package com.github.compscidr.awm.db
+package com.github.compscidr.awm.db.room
 
 import android.bluetooth.le.ScanResult
 import android.os.Build

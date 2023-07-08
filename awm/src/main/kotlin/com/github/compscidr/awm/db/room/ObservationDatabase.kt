@@ -1,4 +1,4 @@
-package com.github.compscidr.awm.db
+package com.github.compscidr.awm.db.room
 
 import android.content.Context
 import androidx.room.Database

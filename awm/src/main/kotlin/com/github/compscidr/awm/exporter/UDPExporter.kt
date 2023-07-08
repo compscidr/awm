@@ -1,8 +1,8 @@
 package com.github.compscidr.awm.exporter
 
-import com.github.compscidr.awm.db.BLEObservation
-import com.github.compscidr.awm.db.BLEObservationRepository
-import com.github.compscidr.awm.db.ObservationEntity
+import com.github.compscidr.awm.db.room.BLEObservation
+import com.github.compscidr.awm.db.room.BLEObservationRepository
+import com.github.compscidr.awm.db.room.ObservationEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

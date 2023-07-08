@@ -2,9 +2,9 @@ package com.github.compscidr.awm
 
 import android.content.Context
 import com.github.compscidr.awm.collector.BLECollector
-import com.github.compscidr.awm.db.BLEObservationEntity
-import com.github.compscidr.awm.db.BLEObservationRepository
-import com.github.compscidr.awm.db.ObservationDatabase
+import com.github.compscidr.awm.db.room.BLEObservationEntity
+import com.github.compscidr.awm.db.room.BLEObservationRepository
+import com.github.compscidr.awm.db.room.ObservationDatabase
 import com.github.compscidr.awm.exporter.UDPExporter
 import com.github.compscidr.awm.id.ID.getUUID
 import java.util.UUID

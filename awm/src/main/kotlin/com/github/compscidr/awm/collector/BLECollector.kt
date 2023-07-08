@@ -10,8 +10,8 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.core.app.ActivityCompat
-import com.github.compscidr.awm.db.BLEObservationEntity
-import com.github.compscidr.awm.db.BLEObservationRepository
+import com.github.compscidr.awm.db.room.BLEObservationEntity
+import com.github.compscidr.awm.db.room.BLEObservationRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope

@@ -1,4 +1,4 @@
-package com.github.compscidr.awm.db
+package com.github.compscidr.awm.db.room
 
 import androidx.lifecycle.LiveData
 import org.slf4j.LoggerFactory
