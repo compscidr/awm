@@ -31,9 +31,14 @@ class UDPExporter<T> {
                     val btObservation = observation as BLEObservation
                     val message = Json.encodeToString(btObservation).toByteArray()
                     val packet = java.net.DatagramPacket(message, message.size, InetAddress.getByName(serverAddress), serverPort)
-                    datagramSocket.send(packet)
-                    observationRepository.delete(observationEntity)
-                    logger.debug("Sent ${packet.length} bytes to $serverAddress:$serverPort")
+                    try {
+                        datagramSocket.send(packet)
+                        observationRepository.delete(observationEntity)
+                        logger.debug("Sent ${packet.length} bytes to $serverAddress:$serverPort")
+                    } catch (e: Exception) {
+                        logger.warn("Failed sending data: ", e)
+                        Thread.sleep(10000)
+                    }
                 }
             }
         }

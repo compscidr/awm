@@ -15,10 +15,10 @@ import java.util.UUID
 class AWM private constructor() {
     lateinit var uuid: UUID
     lateinit var observationRepository: BLEObservationRepository
+    var started = false
 
     companion object {
         private var instance: AWM? = null
-
 
         fun getInstance(context: Context): AWM {
             if (instance == null) {
@@ -32,6 +32,10 @@ class AWM private constructor() {
     }
 
     fun start(context: Context) {
+        if (started) {
+            return
+        }
+        started = true
         // try to start every time so that if permissions have changed we can restart
         // this means the collector must be able to handle start being called multiple times
         // even if alreday started
@@ -44,6 +48,7 @@ class AWM private constructor() {
     }
 
     fun stop(context: Context) {
+        started = false
         BLECollector.stop(context)
     }
 }

@@ -11,7 +11,7 @@ class BLEObservationRepository(private val observationDao: BLEObservationDao, pr
         while (observationDao.size() + 1 > unsyncedLimit) {
             val entryToDelete = observationDao.getOldest()
             if (entryToDelete != null) {
-                logger.debug("Deleting oldest")
+                //logger.debug("Deleting oldest")
                 observationDao.delete(entryToDelete)
                 // todo keep track of a count of deleted entries that never got synced
             } else {
