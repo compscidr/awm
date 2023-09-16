@@ -33,7 +33,7 @@
     <dependency>
       <groupId>com.vanniktech</groupId>
       <artifactId>rxpermission</artifactId>
-      <version>0.7.0</version>
+      <version>0.10.0</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
