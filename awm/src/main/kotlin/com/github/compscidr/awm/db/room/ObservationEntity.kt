@@ -3,21 +3,9 @@ package com.github.compscidr.awm.db.room
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-
-enum class ObservationType {
-    BLE,
-    WIFI,
-    WIFI_DIRECT
-}
-
-sealed class Observation {
-    open val id: Long = 0L
-    open val timestampUTCMillis: Long = 0L
-    open val location: Location? = null
-    open val observationType: ObservationType? = null
-    open val rssi: Int = 0
-    open val mac: String = "" // bssid on wifi, address on ble
-}
+import com.github.compscidr.awm.db.BLEObservation
+import com.github.compscidr.awm.db.Observation
+import com.github.compscidr.awm.db.ObservationType
 
 // entity inheritance: https://stackoverflow.com/questions/56007170/entity-inheritance-in-android-room
 @Entity
@@ -33,6 +21,13 @@ open class ObservationEntity(
         fun toObservation(observationEntity: ObservationEntity): Observation {
             if (observationEntity.observationType == ObservationType.BLE) {
                 return BLEObservationEntity.toBLEObservation(observationEntity as BLEObservationEntity)
+            }
+            throw RuntimeException("Unknown observation type")
+        }
+
+        fun fromObservation(observation: Observation): ObservationEntity {
+            if (observation.observationType == ObservationType.BLE) {
+                return BLEObservationEntity.fromBLEObservation(observation as BLEObservation)
             }
             throw RuntimeException("Unknown observation type")
         }

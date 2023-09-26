@@ -3,10 +3,14 @@ package com.github.compscidr.awm
 import android.content.Context
 import com.github.compscidr.awm.collector.BLECollector
 import com.github.compscidr.awm.db.room.BLEObservationEntity
-import com.github.compscidr.awm.db.room.BLEObservationRepository
-import com.github.compscidr.awm.db.room.ObservationDatabase
+import com.github.compscidr.awm.db.room.RoomObservationRepository
+import com.github.compscidr.awm.db.room.RoomObservationDatabase
 import com.github.compscidr.awm.exporter.UDPExporter
 import com.github.compscidr.awm.id.ID.getUUID
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 /**
@@ -14,7 +18,7 @@ import java.util.UUID
  */
 class AWM private constructor() {
     lateinit var uuid: UUID
-    lateinit var observationRepository: BLEObservationRepository
+    lateinit var observationRepository: RoomObservationRepository
     var started = false
 
     companion object {
@@ -24,8 +28,11 @@ class AWM private constructor() {
             if (instance == null) {
                 instance = AWM()
                 instance!!.uuid = getUUID(context)
-                val observationDatabase = ObservationDatabase.getInstance(context)
-                instance!!.observationRepository = BLEObservationRepository(observationDatabase.bleObservationDao())
+                val scope = CoroutineScope(Dispatchers.IO)
+                scope.launch {
+                    val roomObservationDatabase = RoomObservationDatabase.getInstance(context)
+                    instance!!.observationRepository = RoomObservationRepository(roomObservationDatabase.daoMap())
+                }
             }
             return instance!!
         }

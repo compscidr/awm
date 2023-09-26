@@ -1,20 +1,7 @@
 package com.github.compscidr.awm.db.room
 
 import androidx.room.Entity
-import kotlinx.serialization.Serializable
-
-// https://jacquessmuts.github.io/post/modularization_room/
-@Serializable
-data class Location(
-    val timestampUTC: Long,
-    val longitude: Double,
-    val latitude: Double,
-    val altitude: Double,
-    val accuracy: Float,
-    val speed: Float,
-    val bearing: Float,
-    val provider: String,
-)
+import com.github.compscidr.awm.db.Location
 
 // https://developer.android.com/reference/android/location/Location
 @Entity

@@ -11,7 +11,7 @@ import android.location.Location
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.core.app.ActivityCompat
 import com.github.compscidr.awm.db.room.BLEObservationEntity
-import com.github.compscidr.awm.db.room.BLEObservationRepository
+import com.github.compscidr.awm.db.room.RoomObservationRepository
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,7 @@ object BLECollector {
 
     val scanMap = mutableStateMapOf<String, BLEResult>() // mac address -> result
 
-    fun start(context: Context, observationRepository: BLEObservationRepository) {
+    fun start(context: Context, observationRepository: RoomObservationRepository) {
         if (running) {
             return
         }

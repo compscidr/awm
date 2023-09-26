@@ -3,76 +3,11 @@ package com.github.compscidr.awm.db.room
 import android.bluetooth.le.ScanResult
 import android.os.Build
 import androidx.room.Entity
+import com.github.compscidr.awm.db.BLEObservation
+import com.github.compscidr.awm.db.ObservationType
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import java.util.UUID
-
-@Serializable
-data class BLEObservation(
-    override val id : Long = 0L,
-    override val timestampUTCMillis: Long,
-    override val location: Location,
-    override val observationType: ObservationType = ObservationType.BLE,
-    override val rssi: Int,
-    override val mac: String, // bssid on wifi, address on ble
-    val advertisingSid: Int,
-    val dataStatus: Int, val advertisingInterval: Int,
-    val primaryPhy: Int, val secondaryPhy: Int, val txPower: Int,
-    val connectable: Boolean, val advertiseFlags: Int)
-//    val adverisingMap: Map<Int, ByteArray>,
-//    val rawAdvertisement: ByteArray, val manufacturerData: Map<Int, ByteArray>,
-//    val serviceData: Map<@Contextual UUID, ByteArray>
-    : Observation() {
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as BLEObservation
-
-        if (id != other.id) return false
-        if (timestampUTCMillis != other.timestampUTCMillis) return false
-        if (location != other.location) return false
-        if (observationType != other.observationType) return false
-        if (rssi != other.rssi) return false
-        if (mac != other.mac) return false
-        if (advertisingSid != other.advertisingSid) return false
-        if (dataStatus != other.dataStatus) return false
-        if (advertisingInterval != other.advertisingInterval) return false
-        if (primaryPhy != other.primaryPhy) return false
-        if (secondaryPhy != other.secondaryPhy) return false
-        if (txPower != other.txPower) return false
-        if (connectable != other.connectable) return false
-        if (advertiseFlags != other.advertiseFlags) return false
-//        if (adverisingMap != other.adverisingMap) return false
-//        if (!rawAdvertisement.contentEquals(other.rawAdvertisement)) return false
-//        if (manufacturerData != other.manufacturerData) return false
-//        if (serviceData != other.serviceData) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = id.hashCode()
-        result = 31 * result + timestampUTCMillis.hashCode()
-        result = 31 * result + location.hashCode()
-        result = 31 * result + observationType.hashCode()
-        result = 31 * result + rssi
-        result = 31 * result + mac.hashCode()
-        result = 31 * result + advertisingSid
-        result = 31 * result + dataStatus
-        result = 31 * result + advertisingInterval
-        result = 31 * result + primaryPhy
-        result = 31 * result + secondaryPhy
-        result = 31 * result + txPower
-        result = 31 * result + connectable.hashCode()
-        result = 31 * result + advertiseFlags
-//        result = 31 * result + adverisingMap.hashCode()
-//        result = 31 * result + rawAdvertisement.contentHashCode()
-//        result = 31 * result + manufacturerData.hashCode()
-//        result = 31 * result + serviceData.hashCode()
-        return result
-    }
-}
 
 // https://developer.android.com/reference/android/bluetooth/le/ScanResult
 // https://developer.android.com/reference/android/bluetooth/BluetoothDevice
@@ -134,6 +69,11 @@ class BLEObservationEntity(id: Long, timestampUTCMillis: Long, locationEntity: L
             return BLEObservation(bleObservationEntity.id, bleObservationEntity.timestampUTCMillis, LocationEntity.toLocation(bleObservationEntity.locationEntity), ObservationType.BLE, bleObservationEntity.rssi, bleObservationEntity.mac, bleObservationEntity.advertisingSid,
                 bleObservationEntity.dataStatus, bleObservationEntity.advertisingInterval, bleObservationEntity.primaryPhy, bleObservationEntity.secondaryPhy, bleObservationEntity.txPower, bleObservationEntity.connectable,
                 bleObservationEntity.advertiseFlags) //, bleObservationEntity.adverisingMap, bleObservationEntity.rawAdvertisement, bleObservationEntity.manufacturerData, bleObservationEntity.serviceData)
+        }
+
+        fun fromBLEObservation(bleObservation: BLEObservation): BLEObservationEntity {
+            val locationEntity = LocationEntity.fromLocation(bleObservation.location)
+            return BLEObservationEntity(bleObservation.id, bleObservation.timestampUTCMillis, locationEntity, ObservationType.BLE, bleObservation.rssi, bleObservation.mac, bleObservation.advertisingSid, bleObservation.dataStatus, bleObservation.advertisingInterval, bleObservation.primaryPhy, bleObservation.secondaryPhy, bleObservation.txPower, bleObservation.connectable, bleObservation.advertiseFlags) //, bleObservation.adverisingMap, bleObservation.rawAdvertisement, bleObservation.manufacturerData, bleObservation.serviceData
         }
     }
 }
