@@ -45,13 +45,13 @@ class AWM private constructor() {
         started = true
         // try to start every time so that if permissions have changed we can restart
         // this means the collector must be able to handle start being called multiple times
-        // even if alreday started
+        // even if already started
         // todo: iterate though a bunch of collectors and start them all here
         // todo: handle bt, and other radios going down and coming back up
         BLECollector.start(context, observationRepository)
 
         val btUdpExporter = UDPExporter<BLEObservationEntity>()
-        btUdpExporter.start("10.0.0.15", 5050, observationRepository)
+        btUdpExporter.start("10.0.0.89", 5050, observationRepository)
     }
 
     fun stop(context: Context) {

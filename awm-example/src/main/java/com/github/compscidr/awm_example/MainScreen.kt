@@ -70,7 +70,7 @@ fun MainScreen() {
     val locationPermissionState = rememberLocationPermissionsState()
     val results = BLECollector.scanMap.values.sortedBy { it.firstSeen }
     val awm = AWM.getInstance(context)
-    val unsyncedObservations = awm.observationRepository.unsycnedEntries.observeAsState()
+    val unsyncedObservations = awm.observationRepository.getNumObservations().observeAsState()
 
     Column(
         modifier = Modifier

@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.github.compscidr.awm.db.ObservationRepository
 import com.github.compscidr.awm.db.ObservationType
 
 @Database(entities = [ObservationEntity::class, BLEObservationEntity::class], version = 4, exportSchema = false)

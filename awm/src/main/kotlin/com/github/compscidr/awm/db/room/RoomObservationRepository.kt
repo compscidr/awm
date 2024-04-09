@@ -5,63 +5,100 @@ import androidx.lifecycle.MediatorLiveData
 import com.github.compscidr.awm.db.Observation
 import com.github.compscidr.awm.db.ObservationRepository
 import com.github.compscidr.awm.db.ObservationType
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.slf4j.LoggerFactory
 
 class RoomObservationRepository(private val daoMap: Map<ObservationType, ObservationDao<*>>, private val unsyncedLimit: Int = 1000): ObservationRepository {
 
-    val logger = LoggerFactory.getLogger(javaClass)
-    val unsycnedEntries: LiveData<Int> = MediatorLiveData<Int>().apply {
-        fun update() {
-            val tempValue = daoMap.values.sumOf { it.getNumEntries().value ?: 0 }
-            GlobalScope.launch {
-                withContext(Dispatchers.Main) {
-                    value = tempValue
+    private val logger = LoggerFactory.getLogger(javaClass)
+
+    private var previousOldestEntry: ObservationEntity? = null
+
+    private val numObservations = MediatorLiveData<Int>().apply {
+        val latestValues = mutableMapOf<ObservationType, Int>()
+        fun update(observationType: ObservationType, latestValue: Int) {
+            latestValues[observationType] = latestValue
+            value = latestValues.values.sum()
+        }
+
+        for (daoEntry in daoMap) {
+            val daoType = daoEntry.key
+            val dao = daoEntry.value
+            addSource(dao.getNumEntries()) { update(daoType, it) }
+        }
+    }
+
+    private val oldestObservationEntity = MediatorLiveData<ObservationEntity?>().apply {
+        fun update(observationEntity: ObservationEntity?) {
+            if (observationEntity != null) {
+                logger.debug("OLDEST ENTITY: $observationEntity")
+                if (observationEntity is BLEObservationEntity) {
+                    logger.debug("BLE ENTITY: $observationEntity")
+                }
+                val oldestTimestamp = previousOldestEntry?.timestampUTCMillis ?: Long.MAX_VALUE
+                if (observationEntity.timestampUTCMillis < oldestTimestamp) {
+                    previousOldestEntry = observationEntity
+                    value = observationEntity
+                } else {
+                    logger.debug("Not updating oldest, new: $observationEntity, old: $previousOldestEntry")
                 }
             }
         }
-        update()
-    }
 
-    val oldestObservationEntity: LiveData<ObservationEntity?> = MediatorLiveData<ObservationEntity?>().apply {
-        fun update() {
-            val tempValue = daoMap.values.mapNotNull { it.getOldest() }.minByOrNull { it.timestampUTCMillis }
-            GlobalScope.launch {
-                withContext(Dispatchers.Main) {
-                    value = tempValue
-                }
+        for (dao in daoMap.values) {
+            addSource(dao.getOldest()) {
+                logger.error("FIREEEEDD")
+                update(it as ObservationEntity?)
             }
         }
-        update()
     }
 
-    fun insert(observationEntity: ObservationEntity) {
-        while ((unsycnedEntries.value?.plus(1) ?: 1) > unsyncedLimit) {
+    private val oldestObservation = MediatorLiveData<Observation?>().apply {
+        addSource(oldestObservationEntity) {
+            if (it != null) {
+                value = ObservationEntity.toObservation(it)
+            }
+        }
+    }
+
+    override fun insert(observation: Observation) {
+        while ((getNumObservations().value?.plus(1) ?: 1) > unsyncedLimit) {
+            logger.debug("can't insert, too many entries, finding oldest to delete")
             val entryToDelete = oldestObservationEntity.value
             if (entryToDelete != null) {
-                daoMap[entryToDelete.observationType]?.delete(entryToDelete)
+                logger.debug("oldest to delete: $entryToDelete")
+                if (entryToDelete.observationType == ObservationType.BLE) {
+                    val dao = daoMap[entryToDelete.observationType] as BluetoothDao
+                    dao.delete(entryToDelete as BLEObservationEntity)
+                    logger.debug("deleted: $entryToDelete")
+                }
                 // todo keep track of a count of deleted entries that never got synced
             } else {
                 logger.error("Couldn't find oldest to delete")
             }
         }
-        daoMap[observationEntity.observationType]?.insert(observationEntity)
+
+        if (observation.observationType == ObservationType.BLE) {
+            val dao = daoMap[observation.observationType] as BluetoothDao
+            val observationEntity = ObservationEntity.fromObservation(observation)
+            dao.insert(observationEntity as BLEObservationEntity)
+        }
     }
 
-    fun getOldest(): ObservationEntity? {
-        return oldestObservationEntity.value
-    }
+    private fun delete(observationEntity: ObservationEntity) {
+        // if we don't do this, we won't be able to delete the next oldest entry
+        if (observationEntity.timestampUTCMillis == previousOldestEntry?.timestampUTCMillis) {
+            previousOldestEntry = null
+        }
 
-    fun delete(observationEntity: ObservationEntity) {
-        daoMap[observationEntity.observationType]?.delete(observationEntity)
-    }
-
-    override fun insert(observation: Observation) {
-        val observationEntity = ObservationEntity.fromObservation(observation)
-        daoMap[observationEntity.observationType]?.insert(observationEntity)
+        if (observationEntity.observationType == ObservationType.BLE) {
+            val dao = daoMap[observationEntity.observationType] as BluetoothDao
+            val entity = observationEntity as BLEObservationEntity
+            logger.debug("Trying to delete observation: $entity")
+            val result = dao.delete(entity)
+            logger.debug("Deleted observation: $entity, result: $result")
+        } else {
+            logger.error("Unknown observation type")
+        }
     }
 
     override fun delete(observation: Observation) {
@@ -69,19 +106,11 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
         delete(observationEntity)
     }
 
-    override fun getNumObservations(observationType: ObservationType): LiveData<Int> {
-        return daoMap[observationType]?.getNumEntries() ?: throw RuntimeException("Unknown observation type")
-    }
-
     override fun getNumObservations(): LiveData<Int> {
-        return unsycnedEntries
+        return numObservations
     }
 
-    override fun getOldestObservation(observationType: ObservationType): Observation? {
-        return daoMap[observationType]?.getOldest()?.let { ObservationEntity.toObservation(it) }
-    }
-
-    override fun getOldestObservation(): Observation? {
-        return oldestObservationEntity.value?.let { ObservationEntity.toObservation(it) }
+    override fun getOldestObservation(): LiveData<Observation?> {
+        return oldestObservation
     }
 }

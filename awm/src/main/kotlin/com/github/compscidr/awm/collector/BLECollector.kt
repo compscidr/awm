@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.core.app.ActivityCompat
+import com.github.compscidr.awm.db.ObservationRepository
 import com.github.compscidr.awm.db.room.BLEObservationEntity
 import com.github.compscidr.awm.db.room.RoomObservationRepository
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -30,7 +31,7 @@ object BLECollector {
 
     val scanMap = mutableStateMapOf<String, BLEResult>() // mac address -> result
 
-    fun start(context: Context, observationRepository: RoomObservationRepository) {
+    fun start(context: Context, observationRepository: ObservationRepository) {
         if (running) {
             return
         }
@@ -58,15 +59,16 @@ object BLECollector {
             @SuppressLint("MissingPermission")
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 locationProvider?.lastLocation?.addOnSuccessListener { location ->
-                    val observation = BLEObservationEntity.fromScanResultAndLocation(result, location)
+                    val observationEntity = BLEObservationEntity.fromScanResultAndLocation(result, location)
+                    val observation = BLEObservationEntity.toBLEObservation(observationEntity)
                     CoroutineScope(Dispatchers.IO).launch {
                         observationRepository.insert(observation)
                     }
                     if (scanMap.containsKey(result.device.address)) {
                         scanMap[result.device.address]?.updateResult(result, location)
                     } else {
-                        logger.debug("Got BLE SCAN: ${result.device.address}, at location: $location total devices: ${scanMap.size}")
-                        logger.info("$result")
+                        //logger.debug("Got BLE SCAN: ${result.device.address}, at location: $location total devices: ${scanMap.size}")
+                        //logger.info("$result")
                         scanMap[result.device.address] = BLEResult(result, location)
                     }
                 }

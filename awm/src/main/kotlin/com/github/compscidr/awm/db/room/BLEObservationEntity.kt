@@ -5,9 +5,6 @@ import android.os.Build
 import androidx.room.Entity
 import com.github.compscidr.awm.db.BLEObservation
 import com.github.compscidr.awm.db.ObservationType
-import kotlinx.serialization.Contextual
-import kotlinx.serialization.Serializable
-import java.util.UUID
 
 // https://developer.android.com/reference/android/bluetooth/le/ScanResult
 // https://developer.android.com/reference/android/bluetooth/BluetoothDevice
@@ -23,7 +20,7 @@ class BLEObservationEntity(id: Long, timestampUTCMillis: Long, locationEntity: L
 //, val adverisingMap: Map<Int, ByteArray>,
 //                           val rawAdvertisement: ByteArray, val manufacturerData: Map<Int, ByteArray>,
 //                           val serviceData: Map<UUID, ByteArray>)
-    : ObservationEntity(timestampUTCMillis = timestampUTCMillis, locationEntity = locationEntity, observationType = ObservationType.BLE, rssi = rssi, mac = mac) {
+    : ObservationEntity(id = id, timestampUTCMillis = timestampUTCMillis, locationEntity = locationEntity, observationType = ObservationType.BLE, rssi = rssi, mac = mac) {
     companion object {
         fun fromScanResultAndLocation(result: ScanResult, location: android.location.Location): BLEObservationEntity {
             val time = System.currentTimeMillis()
@@ -66,14 +63,29 @@ class BLEObservationEntity(id: Long, timestampUTCMillis: Long, locationEntity: L
         }
 
         fun toBLEObservation(bleObservationEntity: BLEObservationEntity): BLEObservation {
-            return BLEObservation(bleObservationEntity.id, bleObservationEntity.timestampUTCMillis, LocationEntity.toLocation(bleObservationEntity.locationEntity), ObservationType.BLE, bleObservationEntity.rssi, bleObservationEntity.mac, bleObservationEntity.advertisingSid,
-                bleObservationEntity.dataStatus, bleObservationEntity.advertisingInterval, bleObservationEntity.primaryPhy, bleObservationEntity.secondaryPhy, bleObservationEntity.txPower, bleObservationEntity.connectable,
-                bleObservationEntity.advertiseFlags) //, bleObservationEntity.adverisingMap, bleObservationEntity.rawAdvertisement, bleObservationEntity.manufacturerData, bleObservationEntity.serviceData)
+            return BLEObservation(id = bleObservationEntity.id,
+                timestampUTCMillis =  bleObservationEntity.timestampUTCMillis,
+                location = LocationEntity.toLocation(bleObservationEntity.locationEntity),
+                observationType = ObservationType.BLE,
+                rssi = bleObservationEntity.rssi,
+                mac = bleObservationEntity.mac,
+                advertisingSid = bleObservationEntity.advertisingSid,
+                dataStatus = bleObservationEntity.dataStatus,
+                advertisingInterval = bleObservationEntity.advertisingInterval,
+                primaryPhy = bleObservationEntity.primaryPhy,
+                secondaryPhy = bleObservationEntity.secondaryPhy,
+                txPower = bleObservationEntity.txPower,
+                connectable = bleObservationEntity.connectable,
+                advertiseFlags = bleObservationEntity.advertiseFlags) //, bleObservationEntity.adverisingMap, bleObservationEntity.rawAdvertisement, bleObservationEntity.manufacturerData, bleObservationEntity.serviceData)
         }
 
         fun fromBLEObservation(bleObservation: BLEObservation): BLEObservationEntity {
             val locationEntity = LocationEntity.fromLocation(bleObservation.location)
             return BLEObservationEntity(bleObservation.id, bleObservation.timestampUTCMillis, locationEntity, ObservationType.BLE, bleObservation.rssi, bleObservation.mac, bleObservation.advertisingSid, bleObservation.dataStatus, bleObservation.advertisingInterval, bleObservation.primaryPhy, bleObservation.secondaryPhy, bleObservation.txPower, bleObservation.connectable, bleObservation.advertiseFlags) //, bleObservation.adverisingMap, bleObservation.rawAdvertisement, bleObservation.manufacturerData, bleObservation.serviceData
         }
+    }
+
+    override fun toString(): String {
+        return "BLEObservationEntity(id=$id, timestampUTCMillis=$timestampUTCMillis, locationEntity=$locationEntity, observationType=$observationType, rssi=$rssi, mac=$mac, advertisingSid=$advertisingSid, dataStatus=$dataStatus, advertisingInterval=$advertisingInterval, primaryPhy=$primaryPhy, secondaryPhy=$secondaryPhy, txPower=$txPower, connectable=$connectable, advertiseFlags=$advertiseFlags)"
     }
 }
