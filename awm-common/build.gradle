@@ -1,5 +1,5 @@
 plugins {
-    id 'application'
+    id 'java-library'
     id 'org.jetbrains.kotlin.jvm'
     id 'kotlinx-serialization'
 }
@@ -14,8 +14,15 @@ java {
 }
 
 dependencies {
-    api "org.slf4j:slf4j-api:$slf4j_version"
-    implementation "ch.qos.logback:logback-classic:1.5.3"
-    implementation project(path: ':awm-common')
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.1"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.10.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.10.2"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.test {
+    useJUnitPlatform()
 }

@@ -4,7 +4,7 @@ buildscript {
     ext {
         kotlin_version = '1.9.10'
         compose_version = '1.5.3' // https://developer.android.com/jetpack/androidx/releases/compose-kotlin
-        accompanyist_version = '0.28.0'
+        accompanyist_version = '0.34.0'
         slf4j_version = '2.0.7'
         android_logback = '3.0.0'
         logback_classic = "1.4.7"

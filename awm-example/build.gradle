@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'com.github.compscidr.awm_example'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.github.compscidr.awm_example"
         minSdk 21
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -50,12 +50,12 @@ android {
 }
 
 dependencies {
-    implementation project(path: ':awm')
-    implementation 'androidx.core:core-ktx:1.10.1'
-    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+    implementation project(path: ':awm-android')
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
 
-    def composeBom = platform("androidx.compose:compose-bom:2022.12.00")
+    def composeBom = platform("androidx.compose:compose-bom:2024.04.00")
     implementation composeBom
     androidTestImplementation composeBom
 

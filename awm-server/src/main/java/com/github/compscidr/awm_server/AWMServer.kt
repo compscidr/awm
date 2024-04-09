@@ -1,5 +1,10 @@
 package com.github.compscidr.awm_server
 
+import com.jasonernst.awm_common.db.BLEObservation
+import com.jasonernst.awm_common.db.Observation
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.modules.polymorphic
 import org.slf4j.LoggerFactory
 import java.net.InetSocketAddress
 import java.net.SocketException
@@ -24,7 +29,14 @@ object AWMServer {
         logger.debug("Waiting for data")
         while (true) {
             datagramChannel.receive(buffer)
-            logger.debug("got data")
+            logger.debug("Got ${buffer.limit()} bytes")
+            buffer.flip()
+            val bufferBytes = ByteArray(buffer.limit())
+            buffer.get(bufferBytes)
+            val observationString = String(bufferBytes)
+            //logger.debug("Got observation string: $observationString")
+            val observation = Json.decodeFromString<Observation>(observationString)
+            logger.debug("Got observation: $observation")
         }
     }
 
