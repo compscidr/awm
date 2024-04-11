@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.jasonernst.awm_common.db.ObservationType
 
-@Database(entities = [ObservationEntity::class, BLEObservationEntity::class], version = 4, exportSchema = false)
+@Database(entities = [ObservationRoomEntity::class, BLEObservationRoomEntity::class], version = 4, exportSchema = false)
 abstract class RoomObservationDatabase : RoomDatabase() {
     abstract fun bluetoothDao(): BluetoothDao
 

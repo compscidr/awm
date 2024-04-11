@@ -3,6 +3,7 @@ package com.jasonernst.awm_common.db
 import kotlinx.serialization.Serializable
 
 enum class ObservationType {
+    UNKNOWN,
     BLE,
     WIFI,
     WIFI_DIRECT

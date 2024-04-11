@@ -2,7 +2,7 @@ package com.github.compscidr.awm
 
 import android.content.Context
 import com.github.compscidr.awm.collector.BLECollector
-import com.github.compscidr.awm.db.room.BLEObservationEntity
+import com.github.compscidr.awm.db.room.BLEObservationRoomEntity
 import com.github.compscidr.awm.db.room.RoomObservationRepository
 import com.github.compscidr.awm.db.room.RoomObservationDatabase
 import com.github.compscidr.awm.exporter.UDPExporter
@@ -10,7 +10,6 @@ import com.github.compscidr.awm.id.ID.getUUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.UUID
 
 /**
@@ -50,7 +49,7 @@ class AWM private constructor() {
         // todo: handle bt, and other radios going down and coming back up
         BLECollector.start(context, observationRepository)
 
-        val btUdpExporter = UDPExporter<BLEObservationEntity>()
+        val btUdpExporter = UDPExporter<BLEObservationRoomEntity>()
         btUdpExporter.start("10.0.0.89", 5050, observationRepository)
     }
 

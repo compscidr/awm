@@ -7,16 +7,16 @@ import androidx.room.Insert
 import androidx.room.Query
 
 @Dao
-interface BluetoothDao: ObservationDao<BLEObservationEntity> {
+interface BluetoothDao: ObservationDao<BLEObservationRoomEntity> {
     @Insert
-    fun insert(entity: BLEObservationEntity)
+    fun insert(entity: BLEObservationRoomEntity)
 
     @Delete
-    fun delete(entity: BLEObservationEntity): Int
+    fun delete(entity: BLEObservationRoomEntity): Int
 
-    @Query("SELECT COUNT(*) FROM BLEObservationEntity")
+    @Query("SELECT COUNT(*) FROM BLEObservationRoomEntity")
     override fun getNumEntries(): LiveData<Int>
 
-    @Query("SELECT * FROM BLEObservationEntity ORDER BY timestampUTCMillis ASC LIMIT 1")
-    override fun getOldest(): LiveData<BLEObservationEntity?>
+    @Query("SELECT * FROM BLEObservationRoomEntity ORDER BY timestampUTCMillis ASC LIMIT 1")
+    override fun getOldest(): LiveData<BLEObservationRoomEntity?>
 }

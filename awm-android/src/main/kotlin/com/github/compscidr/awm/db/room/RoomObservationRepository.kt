@@ -12,7 +12,7 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
 
     private val logger = LoggerFactory.getLogger(javaClass)
 
-    private var previousOldestEntry: ObservationEntity? = null
+    private var previousOldestEntry: ObservationRoomEntity? = null
 
     private val numObservations = MediatorLiveData<Int>().apply {
         val latestValues = mutableMapOf<ObservationType, Int>()
@@ -28,19 +28,19 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
         }
     }
 
-    private val oldestObservationEntity = MediatorLiveData<ObservationEntity?>().apply {
-        fun update(observationEntity: ObservationEntity?) {
-            if (observationEntity != null) {
-                logger.debug("OLDEST ENTITY: $observationEntity")
-                if (observationEntity is BLEObservationEntity) {
-                    logger.debug("BLE ENTITY: $observationEntity")
+    private val oldestObservationRoomEntity = MediatorLiveData<ObservationRoomEntity?>().apply {
+        fun update(observationRoomEntity: ObservationRoomEntity?) {
+            if (observationRoomEntity != null) {
+                logger.debug("OLDEST ENTITY: $observationRoomEntity")
+                if (observationRoomEntity is BLEObservationRoomEntity) {
+                    logger.debug("BLE ENTITY: $observationRoomEntity")
                 }
                 val oldestTimestamp = previousOldestEntry?.timestampUTCMillis ?: Long.MAX_VALUE
-                if (observationEntity.timestampUTCMillis < oldestTimestamp) {
-                    previousOldestEntry = observationEntity
-                    value = observationEntity
+                if (observationRoomEntity.timestampUTCMillis < oldestTimestamp) {
+                    previousOldestEntry = observationRoomEntity
+                    value = observationRoomEntity
                 } else {
-                    logger.debug("Not updating oldest, new: $observationEntity, old: $previousOldestEntry")
+                    logger.debug("Not updating oldest, new: $observationRoomEntity, old: $previousOldestEntry")
                 }
             }
         }
@@ -48,15 +48,15 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
         for (dao in daoMap.values) {
             addSource(dao.getOldest()) {
                 logger.error("FIREEEEDD")
-                update(it as ObservationEntity?)
+                update(it as ObservationRoomEntity?)
             }
         }
     }
 
     private val oldestObservation = MediatorLiveData<Observation?>().apply {
-        addSource(oldestObservationEntity) {
+        addSource(oldestObservationRoomEntity) {
             if (it != null) {
-                value = ObservationEntity.toObservation(it)
+                value = ObservationRoomEntity.toObservation(it)
             }
         }
     }
@@ -64,12 +64,12 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
     override fun insert(observation: Observation) {
         while ((getNumObservations().value?.plus(1) ?: 1) > unsyncedLimit) {
             logger.debug("can't insert, too many entries, finding oldest to delete")
-            val entryToDelete = oldestObservationEntity.value
+            val entryToDelete = oldestObservationRoomEntity.value
             if (entryToDelete != null) {
                 logger.debug("oldest to delete: $entryToDelete")
                 if (entryToDelete.observationType == ObservationType.BLE) {
                     val dao = daoMap[entryToDelete.observationType] as BluetoothDao
-                    dao.delete(entryToDelete as BLEObservationEntity)
+                    dao.delete(entryToDelete as BLEObservationRoomEntity)
                     logger.debug("deleted: $entryToDelete")
                 }
                 // todo keep track of a count of deleted entries that never got synced
@@ -80,20 +80,20 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
 
         if (observation.observationType == ObservationType.BLE) {
             val dao = daoMap[observation.observationType] as BluetoothDao
-            val observationEntity = ObservationEntity.fromObservation(observation)
-            dao.insert(observationEntity as BLEObservationEntity)
+            val observationRoomEntity = ObservationRoomEntity.fromObservation(observation)
+            dao.insert(observationRoomEntity as BLEObservationRoomEntity)
         }
     }
 
-    private fun delete(observationEntity: ObservationEntity) {
+    private fun delete(observationRoomEntity: ObservationRoomEntity) {
         // if we don't do this, we won't be able to delete the next oldest entry
-        if (observationEntity.timestampUTCMillis == previousOldestEntry?.timestampUTCMillis) {
+        if (observationRoomEntity.timestampUTCMillis == previousOldestEntry?.timestampUTCMillis) {
             previousOldestEntry = null
         }
 
-        if (observationEntity.observationType == ObservationType.BLE) {
-            val dao = daoMap[observationEntity.observationType] as BluetoothDao
-            val entity = observationEntity as BLEObservationEntity
+        if (observationRoomEntity.observationType == ObservationType.BLE) {
+            val dao = daoMap[observationRoomEntity.observationType] as BluetoothDao
+            val entity = observationRoomEntity as BLEObservationRoomEntity
             logger.debug("Trying to delete observation: $entity")
             val result = dao.delete(entity)
             logger.debug("Deleted observation: $entity, result: $result")
@@ -103,8 +103,8 @@ class RoomObservationRepository(private val daoMap: Map<ObservationType, Observa
     }
 
     override fun delete(observation: Observation) {
-        val observationEntity = ObservationEntity.fromObservation(observation)
-        delete(observationEntity)
+        val observationRoomEntity = ObservationRoomEntity.fromObservation(observation)
+        delete(observationRoomEntity)
     }
 
     override fun getNumObservations(): LiveData<Int> {

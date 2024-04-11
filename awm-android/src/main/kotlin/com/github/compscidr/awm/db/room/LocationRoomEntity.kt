@@ -5,7 +5,7 @@ import com.jasonernst.awm_common.db.Location
 
 // https://developer.android.com/reference/android/location/Location
 @Entity
-data class LocationEntity(
+data class LocationRoomEntity(
     val timestampUTC: Long, // should be the same value as Observation.timestampUTC
     val longitude: Double,
     val latitude: Double,
@@ -16,8 +16,8 @@ data class LocationEntity(
     val provider: String,
 ) {
     companion object {
-        fun fromAndroidLocation(androidLocation: android.location.Location): LocationEntity {
-            return LocationEntity(
+        fun fromAndroidLocation(androidLocation: android.location.Location): LocationRoomEntity {
+            return LocationRoomEntity(
                 timestampUTC = androidLocation.time,
                 longitude = androidLocation.longitude,
                 latitude = androidLocation.latitude,
@@ -29,8 +29,8 @@ data class LocationEntity(
             )
         }
 
-        fun fromLocation(location: Location): LocationEntity {
-            return LocationEntity(
+        fun fromLocation(location: Location): LocationRoomEntity {
+            return LocationRoomEntity(
                 timestampUTC = location.timestampUTC,
                 longitude = location.longitude,
                 latitude = location.latitude,
@@ -42,16 +42,16 @@ data class LocationEntity(
             )
         }
 
-        fun toLocation(locationEntity: LocationEntity): Location {
+        fun toLocation(locationRoomEntity: LocationRoomEntity): Location {
             return Location(
-                timestampUTC = locationEntity.timestampUTC,
-                longitude = locationEntity.longitude,
-                latitude = locationEntity.latitude,
-                altitude = locationEntity.altitude,
-                accuracy = locationEntity.accuracy,
-                speed = locationEntity.speed,
-                bearing = locationEntity.bearing,
-                provider = locationEntity.provider,
+                timestampUTC = locationRoomEntity.timestampUTC,
+                longitude = locationRoomEntity.longitude,
+                latitude = locationRoomEntity.latitude,
+                altitude = locationRoomEntity.altitude,
+                accuracy = locationRoomEntity.accuracy,
+                speed = locationRoomEntity.speed,
+                bearing = locationRoomEntity.bearing,
+                provider = locationRoomEntity.provider,
             )
         }
     }

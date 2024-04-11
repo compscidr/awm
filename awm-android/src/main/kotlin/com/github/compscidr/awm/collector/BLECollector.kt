@@ -11,7 +11,7 @@ import android.location.Location
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.core.app.ActivityCompat
 import com.github.compscidr.awm.db.ObservationRepository
-import com.github.compscidr.awm.db.room.BLEObservationEntity
+import com.github.compscidr.awm.db.room.BLEObservationRoomEntity
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.CoroutineScope
@@ -58,8 +58,8 @@ object BLECollector {
             @SuppressLint("MissingPermission")
             override fun onScanResult(callbackType: Int, result: ScanResult) {
                 locationProvider?.lastLocation?.addOnSuccessListener { location ->
-                    val observationEntity = BLEObservationEntity.fromScanResultAndLocation(result, location)
-                    val observation = BLEObservationEntity.toBLEObservation(observationEntity)
+                    val observationEntity = BLEObservationRoomEntity.fromScanResultAndLocation(result, location)
+                    val observation = BLEObservationRoomEntity.toBLEObservation(observationEntity)
                     CoroutineScope(Dispatchers.IO).launch {
                         observationRepository.insert(observation)
                     }
