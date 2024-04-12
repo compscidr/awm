@@ -1,110 +1,18 @@
-name: awm tests
+name: Build and Test
 
-on:
-  pull_request:
-  push:
-    branches:
-      - master
+on: [push]
 
 jobs:
-  awm_server:
+  build-test:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
         with:
-          # list of Docker images to use as base name for tags
-          images: |
-            compscidr/awm-server
-          # generate Docker tags based on the following events/attributes
-          tags: |
-            type=schedule
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=semver,pattern={{major}}
-            type=sha
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - name: Login to DockerHub
-        if: github.event_name != 'pull_request'
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-      
-      - name: Build tests
-        uses: docker/build-push-action@v4
-        with:
-          context: awm-server
-          target: test
-          push: false
-          load: true
-          tags: compscidr/awm-server:test
-      
-      - name: Run tests
-        run: |
-          docker run --rm compscidr/awm-server:test
-      
-      - name: Build lint
-        uses: docker/build-push-action@v4
-        with:
-          context: awm-server
-          target: check
-          push: false
-          load: true
-          tags: compscidr/awm-server:check
-      
-      - name: Run tests
-        run: |
-          docker run --rm compscidr/awm-server:check
-
-      - name: Build app and push
-        uses: docker/build-push-action@v4
-        with:
-          context: awm-server
-          target: app
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
-
-  awm_checks:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '11.0.11'
-      - name: lint
-        run: ./gradlew awm:lint
-      - name: lint results
-        uses: yutailang0119/action-android-lint@v3.1.0
-        with:
-          report-path: awm/build/reports/lint/report.xml
-      - name: checkstyle
-        run: ./gradlew awm:checkstyle
-      - name: junit5 units tests (with jacoco coverage reports)
-        run: ./gradlew awm:jacocoTestReport
-      - uses: actions/upload-artifact@v3
-        with:
-          name: awm-reports
-          path: awm/build/reports
-
-
-  upload-coverage-reports:
-    needs: [awm_checks]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/download-artifact@v3
-      - name: Display structure of downloaded files
-        run: ls -R
-      - name: codecov upload
-        uses: codecov/codecov-action@v3.1.4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: awm-reports/jacoco/jacocoTestReportDebug/jacocoTestReportDebug.xml
+          distribution: 'temurin'
+          java-version: '17'
+      - name: Smoke-test
+        run: ./gradlew build

@@ -1,0 +1,39 @@
+plugins {
+    id 'application'
+    id 'org.jetbrains.kotlin.jvm'
+    id 'kotlinx-serialization'
+    id("io.quarkus") version "3.6.7"
+    id "org.jetbrains.kotlin.plugin.allopen" version "1.9.23"
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+allOpen {
+    annotation("javax.ws.rs.Path")
+    annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("jakarta.persistence.Entity")
+    annotation("io.quarkus.test.junit.QuarkusTest")
+}
+
+dependencies {
+    api "org.slf4j:slf4j-api:$slf4j_version"
+    implementation "ch.qos.logback:logback-classic:1.5.3"
+    implementation project(path: ':awm-common')
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
+
+    implementation(enforcedPlatform("io.quarkus:quarkus-bom:3.6.7"))
+    implementation("io.quarkus:quarkus-kotlin")
+    implementation("io.quarkus:quarkus-reactive-routes")
+    implementation("io.quarkus:quarkus-resteasy-reactive")
+    implementation("io.quarkus:quarkus-resteasy-reactive-qute")
+    implementation("io.quarkus:quarkus-hibernate-orm-panache-kotlin")
+    implementation("io.quarkus:quarkus-jdbc-postgresql")
+    implementation("io.quarkus:quarkus-flyway")
+}

@@ -13,79 +13,12 @@ such as:
 - [ ] periodically sample their network performance: throughput, delay, jitter, etc.
 - [x] obtain and track battery stats to measure the rate of discharge while scanning bt, wifi and wifi directly continually
 
-## Using the library
-Add to your repositories in `build.gradle`:
-```
-maven { url 'https://jitpack.io' }
-```
-
-Add to your dependencies in `build.gradle`:
-```
-dependencies {
-  implementation 'com.github.compscidr:awm:master-SNAPSHOT
-}
-```
-This has been tested with gradle 4.9 and Android Studio 3.3.
-
-
-Simply construct an `AndroidWirelessStatsCollector` and call the `start()`
-function. You can do this in the `onCreate` call if you like. The first boolean value
-is used to set whether data should be sent immediately to the network server, or
-if the data should be stored first locally and sent in larger groups, which is
-more efficient, but less "real-time". The second boolean is for whether you'd
-like to start with a fresh data file on each time the app starts (instead of
-using the cached saved data that may not have uploaded if Internet access was
-not available)
-
-```
-awsc = new AndroidWirelessStatsCollector(this, false, true);
-awsc.start();
-```
-
-Then to clean up, in the onDestroy just call the `stop()` function.
-```
-awsc.stop();
-```
-
-## Receiving the stats that are being collected
-The library is setup to publish RxJava events to the applications so they can
-receive the stats as they are being collected. Currently, there are Bluetooth,
-Wi-Fi hotspots (APs) and GPS stats being collected.
-
-In order to receive the EventBus events you need to initailise the event bus:
-```
-protected Bus eventBus = BusProvider.getInstance();
-```
-
-and register to receive the events:
-```
-eventBus.register(this);
-```
-
-To obtain Bluetooth or Wi-Fi hotspot stats:
-```
-@Subscribe public void updateNetworkDevices(NetworkStat networkStat) {
-  if (networkStat.getType() == BLUETOOTH) {
-    ...
-  } else if (networkStat.getType() == WIFI) {
-    ...
-  }
-}
-```
-
-To obtain GPS stats:
-```
-@Subscribe public void updateGPS(GPSStats gpsStats) {
-  ...
-}
-```
-
-To obtain Battery stats:
-```
-@Subscribe public void updateBattery(BatteryStats batteryStats) {
-  ...
-}
-```
-
-You can see an example of this data being displayed in an activity in the example project:
-https://github.com/compscidr/awm-lib-example/blob/master/app/src/main/java/io/rightmesh/awm_lib_example/MainActivity.java
+## TODO:
+- publish artifacts to gh releases or maven central
+- publish sample app to google play store
+- readthedocs
+- codecov
+- tests
+- google maps plotting on server side
+- google maps plotting on sample app
+- user accounts to only see your own data

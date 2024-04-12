@@ -1,2 +1,22 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        google()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        google()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots' } // required for de.mannodermaus.junit5:android-test-compose:0.1.0-SNAPSHOT
+    }
+}
+
+rootProject.name = 'awm'
+include ':awm-android'
 include ':awm-example'
-include ':awm'
+include ':awm-server'
+include ':awm-common'

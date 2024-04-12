@@ -1,79 +1,78 @@
-apply plugin: 'com.android.application'
-apply plugin: 'maven-publish'
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+}
 
 android {
-    compileSdkVersion 31
-    buildToolsVersion "30.0.3"
+    namespace 'com.github.compscidr.awm_example'
+    compileSdk 34
 
     defaultConfig {
-        applicationId "com.jasonernst.awm_example"
-        minSdkVersion 19
-        targetSdkVersion 31
+        applicationId "com.github.compscidr.awm_example"
+        minSdk 21
+        targetSdk 34
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true
+
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        vectorDrawables {
+            useSupportLibrary true
+        }
     }
 
     buildTypes {
+        debug {
+            minifyEnabled = false
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
-        debug {
-
-        }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = '17'
+    }
+    buildFeatures {
+        compose true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion "$compose_version"
+    }
+    packagingOptions {
+        resources {
+            excludes += '/META-INF/{AL2.0,LGPL2.1}'
+        }
     }
 }
 
 dependencies {
-    def multidex_version = "2.0.1"
-    implementation "androidx.multidex:multidex:$multidex_version"
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.coordinatorlayout:coordinatorlayout:1.2.0'
-    implementation 'androidx.preference:preference:1.2.1'
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
-    implementation project(path: ':awm')
-    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+    implementation project(path: ':awm-android')
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
+
+    def composeBom = platform("androidx.compose:compose-bom:2024.04.00")
+    implementation composeBom
+    androidTestImplementation composeBom
+
+    implementation 'androidx.activity:activity-compose'
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.ui:ui-graphics'
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    implementation 'androidx.compose.material3:material3'
+    implementation "androidx.compose.runtime:runtime-livedata"
+
+    // used to help determine permissions
+    implementation "com.google.accompanist:accompanist-permissions:$accompanyist_version"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            // Creates a Maven publication called "release".
-            release(MavenPublication) {
-                // Applies the component for the release build variant.
-                from components.release_apk
-
-                // You can then customize attributes of the publication as shown below.
-                groupId = 'com.jasonernst'
-                artifactId = 'awm-example'
-                version = '1.0'
-            }
-            // Creates a Maven publication called “debug”.
-            debug(MavenPublication) {
-                // Applies the component for the debug build variant.
-                from components.debug_apk
-                groupId = 'com.jasonernst'
-                artifactId = 'awm-example-debug'
-                version = '1.0'
-            }
-        }
-    }
-    task updatePom(type: Copy) {
-        from "$buildDir/publications/release/pom-default.xml"
-        into "."
-        rename ("pom-default.xml", "pom.xml")
-        dependsOn(generatePomFileForReleasePublication)
-    }
-    build.dependsOn(updatePom)
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation 'androidx.compose.ui:ui-test-manifest'
 }
