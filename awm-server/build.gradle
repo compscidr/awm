@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.jvm'
     id 'kotlinx-serialization'
     id("io.quarkus") version "3.6.7"
+    id "org.jetbrains.kotlin.plugin.allopen" version "1.9.23"
 }
 
 kotlin {
@@ -12,6 +13,13 @@ kotlin {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+allOpen {
+    annotation("javax.ws.rs.Path")
+    annotation("javax.enterprise.context.ApplicationScoped")
+    annotation("jakarta.persistence.Entity")
+    annotation("io.quarkus.test.junit.QuarkusTest")
 }
 
 dependencies {
