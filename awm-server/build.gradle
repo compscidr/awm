@@ -24,7 +24,7 @@ allOpen {
 
 dependencies {
     api "org.slf4j:slf4j-api:$slf4j_version"
-    implementation "ch.qos.logback:logback-classic:1.5.4"
+    implementation "ch.qos.logback:logback-classic:1.5.5"
     implementation project(path: ':awm-common')
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2"
 
