@@ -28,7 +28,7 @@ dependencies {
     implementation project(path: ':awm-common')
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 
-    implementation(enforcedPlatform("io.quarkus:quarkus-bom:3.6.7"))
+    implementation(enforcedPlatform("io.quarkus:quarkus-bom:3.9.3"))
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-reactive-routes")
     implementation("io.quarkus:quarkus-resteasy-reactive")
