@@ -8,7 +8,7 @@ buildscript {
         slf4j_version = '2.0.13'
         android_logback = '3.0.0'
         logback_classic = "1.4.7"
-        room_version = '2.5.1'
+        room_version = '2.6.1'
     }
     repositories {
         google()
