@@ -55,7 +55,7 @@ dependencies {
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.23')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
 
-    def composeBom = platform("androidx.compose:compose-bom:2024.04.00")
+    def composeBom = platform("androidx.compose:compose-bom:2024.04.01")
     implementation composeBom
     androidTestImplementation composeBom
 
