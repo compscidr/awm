@@ -2,7 +2,7 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm'
     id 'kotlinx-serialization'
-    id("io.quarkus") version "3.9.3"
+    id("io.quarkus") version "3.9.4"
     id "org.jetbrains.kotlin.plugin.allopen" version "1.9.23"
 }
 
