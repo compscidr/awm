@@ -2,7 +2,7 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm'
     id 'kotlinx-serialization'
-    id("io.quarkus") version "3.9.4"
+    id("io.quarkus") version "$quarkus_version"
     id "org.jetbrains.kotlin.plugin.allopen" version "1.9.23"
 }
 
@@ -28,7 +28,7 @@ dependencies {
     implementation project(path: ':awm-common')
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3"
 
-    implementation(enforcedPlatform("io.quarkus:quarkus-bom:3.9.4"))
+    implementation(enforcedPlatform("io.quarkus:quarkus-bom:$quarkus_version"))
     implementation("io.quarkus:quarkus-kotlin")
     implementation("io.quarkus:quarkus-reactive-routes")
     implementation("io.quarkus:quarkus-resteasy-reactive")
