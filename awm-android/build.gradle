@@ -37,7 +37,7 @@ dependencies {
     implementation project(path: ':awm-common')
     api "org.slf4j:slf4j-api:$slf4j_version"
     implementation "com.github.tony19:logback-android:$android_logback"
-    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.8.0"
     implementation 'com.google.android.gms:play-services-location:21.2.0'
     implementation "androidx.preference:preference-ktx:1.2.1"
 
