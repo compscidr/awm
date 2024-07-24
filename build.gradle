@@ -9,7 +9,7 @@ buildscript {
         android_logback = '3.0.0'
         logback_classic = "1.4.7"
         room_version = '2.6.1'
-        quarkus_version = '3.12.3'
+        quarkus_version = '3.13.0'
     }
     repositories {
         google()
