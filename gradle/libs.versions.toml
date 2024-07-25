@@ -1,0 +1,83 @@
+[versions]
+accompanist-permissions = "0.34.0"
+agp = "8.5.1"
+appcompat = "1.7.0"
+compose_bom = "2024.06.00"
+core-ktx = "1.13.1"
+espresso-core = "3.6.1"
+junit = "4.13.2"
+junit-version = "1.2.1"
+kotlin = "2.0.0"
+kotlin-reflect = "2.0.0"
+kotlinx-serialization-json = "1.7.1"
+ksp = "2.0.0-1.0.23"
+lifecycle-viewmodel-compose = "2.8.4"
+logback-android = "3.0.0"
+logback-classic = "1.5.6"
+material = "1.12.0"
+play-services-location = "21.3.0"
+preference-ktx = "1.2.1"
+quarkus = "3.13.0"
+room-runtime = "2.6.1"
+slf4j = "2.0.13"     # this should depend on what is supported by: https://github.com/tony19/logback-android
+ui = "1.6.8"
+
+[libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
+activity-compose = { module = "androidx.activity:activity-compose" }
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+compose_bom =  { module = "androidx.compose:compose-bom", version.ref = "compose_bom" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espresso-core" }
+ext-junit = { module = "androidx.test.ext:junit", version.ref = "junit-version" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin-reflect" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
+lifecycle-runtime-ktx = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "lifecycle-viewmodel-compose" }
+lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycle-viewmodel-compose" }
+logback-android = { module = "com.github.tony19:logback-android", version.ref = "logback-android" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+material3 = { module = "androidx.compose.material3:material3" }
+play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
+preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference-ktx" }
+quarkus-bom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
+quarkus-kotlin = { module = "io.quarkus:quarkus-kotlin", version.ref = "quarkus" }
+quarkus-reactive-routes = { module = "io.quarkus:quarkus-reactive-routes"}
+quarkus-resteasy-reactive = { module = "io.quarkus:quarkus-resteasy-reactive"}
+quarkus-resteasy-reactive-qute = { module = "io.quarkus:quarkus-resteasy-reactive-qute"}
+quarkus-hibernate-orm-panache-kotlin = { module = "io.quarkus:quarkus-hibernate-orm-panache-kotlin" }
+quarkus-jdbc-postgresql = { module = "io.quarkus:quarkus-jdbc-postgresql" }
+quarkus-flyway = { module = "io.quarkus:quarkus-flyway" }
+
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room-runtime" }
+room-guava = { module = "androidx.room:room-guava", version.ref = "room-runtime" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room-runtime" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room-runtime" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room-runtime" }
+room-rxjava2 = { module = "androidx.room:room-rxjava2", version.ref = "room-runtime" }
+room-rxjava3 = { module = "androidx.room:room-rxjava3", version.ref = "room-runtime" }
+room-testing = { module = "androidx.room:room-testing", version.ref = "room-runtime" }
+runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+ui = { module = "androidx.compose.ui:ui" }
+ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
+ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "ui"}
+ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest", version.ref = "ui" }
+ui-tooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "ui" }
+ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+
+[bundles]
+room = ["room-runtime", "room-ktx", "room-guava", "room-paging", "room-rxjava2", "room-rxjava3"]
+quarkus = ["quarkus-kotlin", "quarkus-reactive-routes", "quarkus-resteasy-reactive", "quarkus-resteasy-reactive-qute", "quarkus-hibernate-orm-panache-kotlin", "quarkus-jdbc-postgresql", "quarkus-flyway"]
+
+[plugins]
+allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+quarkus = { id = "io.quarkus", version.ref = "quarkus" }
