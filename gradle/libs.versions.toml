@@ -19,7 +19,7 @@ play-services-location = "21.3.0"
 preference-ktx = "1.2.1"
 quarkus = "3.13.1"
 room-runtime = "2.6.1"
-slf4j = "2.0.14"     # this should depend on what is supported by: https://github.com/tony19/logback-android
+slf4j = "2.0.15"     # this should depend on what is supported by: https://github.com/tony19/logback-android
 ui = "1.6.8"
 
 [libraries]
