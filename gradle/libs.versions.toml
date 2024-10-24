@@ -17,7 +17,7 @@ logback-classic = "1.5.11"
 material = "1.12.0"
 play-services-location = "21.3.0"
 preference-ktx = "1.2.1"
-quarkus = "3.15.1"
+quarkus = "3.16.0"
 room-runtime = "2.6.1"
 slf4j = "2.0.16"     # this should depend on what is supported by: https://github.com/tony19/logback-android
 ui = "1.7.4"
@@ -44,8 +44,8 @@ preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = 
 quarkus-bom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
 quarkus-kotlin = { module = "io.quarkus:quarkus-kotlin", version.ref = "quarkus" }
 quarkus-reactive-routes = { module = "io.quarkus:quarkus-reactive-routes"}
-quarkus-resteasy-reactive = { module = "io.quarkus:quarkus-resteasy-reactive"}
-quarkus-resteasy-reactive-qute = { module = "io.quarkus:quarkus-resteasy-reactive-qute"}
+quarkus-rest = { module = "io.quarkus:quarkus-rest"}
+quarkus-rest-qute = { module = "io.quarkus:quarkus-rest-qute"}
 quarkus-hibernate-orm-panache-kotlin = { module = "io.quarkus:quarkus-hibernate-orm-panache-kotlin" }
 quarkus-jdbc-postgresql = { module = "io.quarkus:quarkus-jdbc-postgresql" }
 quarkus-flyway = { module = "io.quarkus:quarkus-flyway" }
@@ -69,7 +69,7 @@ ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 
 [bundles]
 room = ["room-runtime", "room-ktx", "room-guava", "room-paging", "room-rxjava2", "room-rxjava3"]
-quarkus = ["quarkus-kotlin", "quarkus-reactive-routes", "quarkus-resteasy-reactive", "quarkus-resteasy-reactive-qute", "quarkus-hibernate-orm-panache-kotlin", "quarkus-jdbc-postgresql", "quarkus-flyway"]
+quarkus = ["quarkus-kotlin", "quarkus-reactive-routes", "quarkus-rest", "quarkus-rest-qute", "quarkus-hibernate-orm-panache-kotlin", "quarkus-jdbc-postgresql", "quarkus-flyway"]
 
 [plugins]
 allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
