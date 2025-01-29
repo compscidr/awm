@@ -20,7 +20,7 @@ preference-ktx = "1.2.1"
 quarkus = "3.18.1"
 room-runtime = "2.6.1"
 slf4j = "2.0.16"     # this should depend on what is supported by: https://github.com/tony19/logback-android
-ui = "1.7.6"
+ui = "1.7.7"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
