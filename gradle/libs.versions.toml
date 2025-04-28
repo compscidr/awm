@@ -1,5 +1,5 @@
 [versions]
-accompanist-permissions = "0.37.2"
+accompanist-permissions = "0.37.3"
 agp = "8.9.2"
 appcompat = "1.7.0"
 compose_bom = "2025.04.01"
