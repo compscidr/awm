@@ -43,7 +43,7 @@ logback-android = { module = "com.github.tony19:logback-android", version.ref = 
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 material3 = { module = "androidx.compose.material3:material3" }
-mockk = { module = "io.mockk:mockk", version = "1.14.0" }
+mockk = { module = "io.mockk:mockk", version = "1.14.2" }
 play-services-location = { module = "com.google.android.gms:play-services-location", version.ref = "play-services-location" }
 preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "preference-ktx" }
 quarkus-bom = { module = "io.quarkus:quarkus-bom", version.ref = "quarkus" }
