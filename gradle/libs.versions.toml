@@ -18,7 +18,7 @@ material = "1.13.0"
 play-services-location = "21.3.0"
 preference-ktx = "1.2.1"
 quarkus = "3.28.2"
-room-runtime = "2.8.1"
+room-runtime = "2.8.2"
 slf4j = "2.0.17"     # this should depend on what is supported by: https://github.com/tony19/logback-android
 ui = "1.9.2"
 
