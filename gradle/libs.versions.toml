@@ -2,7 +2,7 @@
 accompanist-permissions = "0.37.3"
 agp = "8.13.1"
 appcompat = "1.7.1"
-compose_bom = "2025.11.00"
+compose_bom = "2025.11.01"
 core-ktx = "1.17.0"
 espresso-core = "3.7.0"
 junit = "4.13.2"
