@@ -23,7 +23,7 @@ java {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.10.0")
     testImplementation(platform(libs.junit.bom))
     testImplementation(libs.bundles.test)
     testRuntimeOnly(libs.bundles.test.runtime)
