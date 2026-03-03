@@ -1,6 +1,7 @@
 [versions]
 accompanist-permissions = "0.37.3"
-agp = "8.13.2"
+activity-compose = "1.12.4"
+agp = "9.0.1"
 appcompat = "1.7.1"
 compose_bom = "2026.02.01"
 core-ktx = "1.17.0"
@@ -24,7 +25,7 @@ ui = "1.10.4"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanist-permissions" }
-activity-compose = { module = "androidx.activity:activity-compose" }
+activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activity-compose" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 compose_bom =  { module = "androidx.compose:compose-bom", version.ref = "compose_bom" }
 core-ktx = { module = "androidx.core:core-ktx", version.ref = "core-ktx" }
@@ -82,7 +83,6 @@ allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
