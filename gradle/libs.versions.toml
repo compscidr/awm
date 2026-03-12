@@ -1,6 +1,6 @@
 [versions]
 accompanist-permissions = "0.37.3"
-activity-compose = "1.12.4"
+activity-compose = "1.13.0"
 agp = "9.1.0"
 appcompat = "1.7.1"
 compose_bom = "2026.02.01"
