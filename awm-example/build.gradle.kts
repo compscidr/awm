@@ -14,7 +14,7 @@ java {
 
 android {
     namespace = "com.github.compscidr.awm_example"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.github.compscidr.awm_example"
